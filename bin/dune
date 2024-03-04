@@ -1,4 +1,3 @@
 (executable
  (public_name atp)
- (name main)
- (libraries atp))
+ (name main))

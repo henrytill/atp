@@ -1,26 +1,26 @@
 (lang dune 3.14)
 
+(using menhir 3.0)
+
 (name atp)
 
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github henrytill/atp))
 
-(authors "Author Name")
+(authors "Henry Till <henrytill@gmail.com>")
 
-(maintainers "Maintainer Name")
+(maintainers "Henry Till <henrytill@gmail.com>")
 
-(license LICENSE)
+(license Unlicense)
 
 (documentation https://url/to/documentation)
 
 (package
  (name atp)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml dune)
- (tags
-  (topics "to describe" your project)))
+ (synopsis "Handbook of Practical Logic and Automated Reasoning")
+ (description "Work from \"Handbook of Practical Logic and Automated Reasoning\"")
+ (depends ocaml dune menhir (alcotest (and :with-test (>= 1.7.0)))))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
