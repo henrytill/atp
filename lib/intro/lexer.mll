@@ -14,6 +14,7 @@ rule token = parse
   | id      { VARIABLE (Lexing.lexeme lexbuf) }
   | '+'     { PLUS }
   | '*'     { TIMES }
+  | '^'     { EXP }
   | '('     { LPAREN }
   | ')'     { RPAREN }
   | eof     { EOF }

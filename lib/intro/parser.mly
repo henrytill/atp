@@ -7,6 +7,7 @@
 %token <string> VARIABLE
 %token PLUS
 %token TIMES
+%token EXP
 %token LPAREN
 %token RPAREN
 %token EOF
@@ -14,6 +15,7 @@
 /* Precedence and associativity */
 %left PLUS
 %left TIMES
+%right EXP
 
 /* Top level rule */
 %start toplevel
@@ -33,5 +35,6 @@ expression:
   | n = NUMERAL                           { Const n }
   | e1 = expression TIMES e2 = expression { Mul (e1, e2) }
   | e1 = expression PLUS  e2 = expression { Add (e1, e2) }
+  | e1 = expression EXP   e2 = expression { Exp (e1, e2) }
   | LPAREN e = expression RPAREN          { e }
 ;
