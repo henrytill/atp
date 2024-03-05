@@ -62,6 +62,20 @@ let test_parens_right () =
   let actual = Intro.parse {| 1 * (2 + 3) |} in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_simplify_mul () =
+  let open Syntax in
+  let expected = Some (Const 12) in
+  let actual = Option.map Intro.simplify (Intro.parse {| 3 * 4 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_example () =
+  let open Syntax in
+  let expected = Const 15 in
+  let actual =
+    Intro.simplify (Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12))
+  in
+  Alcotest.(check intro_testable) "same expression" expected actual
+
 let intro_tests =
   [
     ( "test_parse",
@@ -76,6 +90,11 @@ let intro_tests =
         Alcotest.test_case "Parse with correct precedence (l)" `Quick test_precedence_left;
         Alcotest.test_case "Parse parens (l)" `Quick test_parens_left;
         Alcotest.test_case "Parse parens (r)" `Quick test_parens_right;
+      ] );
+    ( "test_simplify",
+      [
+        Alcotest.test_case "Simplify mul expression" `Quick test_simplify_mul;
+        Alcotest.test_case "Simplify example expression" `Quick test_simplify_example;
       ] );
   ]
 
