@@ -13,6 +13,7 @@ rule token = parse
   | int     { NUMERAL (int_of_string (Lexing.lexeme lexbuf)) }
   | id      { VARIABLE (Lexing.lexeme lexbuf) }
   | '+'     { PLUS }
+  | '-'     { MINUS }
   | '*'     { TIMES }
   | '^'     { EXP }
   | '('     { LPAREN }
