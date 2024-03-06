@@ -32,6 +32,12 @@ let test_parse_exp () =
   let actual = Intro.parse {| 2 ^ 3 |} in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_parse_neg () =
+  let open Syntax in
+  let expected = Some (Sub (Var "x", Neg (Neg (Var "x")))) in
+  let actual = Intro.parse {| x - - - x|} in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
 let test_parse_compound1 () =
   let open Syntax in
   let expected = Some (Add (Mul (Const 2, Var "x"), Var "y")) in
@@ -182,6 +188,12 @@ let test_simplify_exp_x1 () =
   let actual = Option.map Intro.simplify (Intro.parse {| x ^ 1 |}) in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_simplify_neg () =
+  let open Syntax in
+  let expected = Some (Const 0) in
+  let actual = Option.map Intro.simplify (Intro.parse {| x - - - x|}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
 let test_simplify_example () =
   let open Syntax in
   let expected = Const 15 in
@@ -199,6 +211,7 @@ let intro_tests =
         Alcotest.test_case "Parse add" `Quick test_parse_add;
         Alcotest.test_case "Parse mul" `Quick test_parse_mul;
         Alcotest.test_case "Parse exp" `Quick test_parse_exp;
+        Alcotest.test_case "Parse neg" `Quick test_parse_neg;
         Alcotest.test_case "Parse compound (1)" `Quick test_parse_compound1;
         Alcotest.test_case "Parse compound (2)" `Quick test_parse_compound2;
         Alcotest.test_case "Parse with correct precedence (r)" `Quick test_precedence_right;
@@ -227,6 +240,7 @@ let intro_tests =
         Alcotest.test_case "Simplify x ^ 0" `Quick test_simplify_exp_x0;
         Alcotest.test_case "Simplify 1 ^ x" `Quick test_simplify_exp_1x;
         Alcotest.test_case "Simplify x ^ 1" `Quick test_simplify_exp_x1;
+        Alcotest.test_case "Simplify neg" `Quick test_simplify_neg;
         Alcotest.test_case "Simplify example" `Quick test_simplify_example;
       ] );
   ]

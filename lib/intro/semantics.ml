@@ -23,6 +23,9 @@ let simplify1 : Syntax.t -> Syntax.t = function
   | Exp (Const 1, _) -> Const 1
   | Exp (x, Const 1) -> x
   | Exp (Const m, Const n) -> Const (pow m n)
+  | Exp (Const _, Neg (Const _)) -> raise (Invalid_argument "cannot raise to a negative power")
+  | Neg (Neg m) -> m
+  | Neg (Const m) -> Const (-m)
   | expr -> expr
 
 let rec simplify : Syntax.t -> Syntax.t = function

@@ -9,6 +9,7 @@
 %token MINUS
 %token TIMES
 %token EXP
+%token UMINUS
 %token LPAREN
 %token RPAREN
 %token EOF
@@ -17,6 +18,7 @@
 %left PLUS MINUS
 %left TIMES
 %right EXP
+%nonassoc UMINUS
 
 /* Top level rule */
 %start toplevel
@@ -38,5 +40,6 @@ expression:
   | e1 = expression TIMES e2 = expression { Mul (e1, e2) }
   | e1 = expression PLUS  e2 = expression { Add (e1, e2) }
   | e1 = expression MINUS e2 = expression { Sub (e1, e2) }
+  | MINUS e = expression %prec UMINUS     { Neg e }
   | LPAREN e = expression RPAREN          { e }
 ;
