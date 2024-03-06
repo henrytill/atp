@@ -18,7 +18,7 @@ let rec pp fmt x =
 
 let rec equal x y =
   match (x, y) with
-  | Var a, Var b -> a = b
+  | Var a, Var b -> String.equal a b
   | Const a, Const b -> a = b
   | Add (a1, a2), Add (b1, b2) -> equal a1 b1 && equal a2 b2
   | Sub (a1, a2), Sub (b1, b2) -> equal a1 b1 && equal a2 b2
