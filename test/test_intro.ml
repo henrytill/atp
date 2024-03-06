@@ -56,6 +56,19 @@ let test_precedence_left () =
   let actual = Intro.parse {| 1 * 2 + 3 |} in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_precedence_add () =
+  let open Syntax in
+  let expected = Some (Add (Add (Var "x", Var "y"), Var "z")) in
+  let actual = Intro.parse {| x + y + z |} in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+
+let test_precedence_mul () =
+  let open Syntax in
+  let expected = Some (Mul (Mul (Var "x", Var "y"), Var "z")) in
+  let actual = Intro.parse {| x * y * z |} in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
 let test_precedence_exp () =
   let open Syntax in
   let expected = Some (Exp (Var "x", Exp (Var "y", Var "z"))) in
@@ -98,24 +111,26 @@ let intro_tests =
   [
     ( "test_parse",
       [
-        Alcotest.test_case "Parse variable expression" `Quick test_parse_var;
-        Alcotest.test_case "Parse constant expression" `Quick test_parse_const;
-        Alcotest.test_case "Parse add expression" `Quick test_parse_add;
-        Alcotest.test_case "Parse mul expression" `Quick test_parse_mul;
-        Alcotest.test_case "Parse exp expression" `Quick test_parse_exp;
-        Alcotest.test_case "Parse compound expression (1)" `Quick test_parse_compound1;
-        Alcotest.test_case "Parse compound expression (2)" `Quick test_parse_compound2;
+        Alcotest.test_case "Parse variable" `Quick test_parse_var;
+        Alcotest.test_case "Parse constant" `Quick test_parse_const;
+        Alcotest.test_case "Parse add" `Quick test_parse_add;
+        Alcotest.test_case "Parse mul" `Quick test_parse_mul;
+        Alcotest.test_case "Parse exp" `Quick test_parse_exp;
+        Alcotest.test_case "Parse compound (1)" `Quick test_parse_compound1;
+        Alcotest.test_case "Parse compound (2)" `Quick test_parse_compound2;
         Alcotest.test_case "Parse with correct precedence (r)" `Quick test_precedence_right;
         Alcotest.test_case "Parse with correct precedence (l)" `Quick test_precedence_left;
+        Alcotest.test_case "Parse with correct add precedence" `Quick test_precedence_add;
+        Alcotest.test_case "Parse with correct mul precedence" `Quick test_precedence_mul;
         Alcotest.test_case "Parse with correct exp precedence" `Quick test_precedence_exp;
         Alcotest.test_case "Parse parens (l)" `Quick test_parens_left;
         Alcotest.test_case "Parse parens (r)" `Quick test_parens_right;
       ] );
     ( "test_simplify",
       [
-        Alcotest.test_case "Simplify mul expression" `Quick test_simplify_mul;
-        Alcotest.test_case "Simplify exp expression" `Quick test_simplify_exp;
-        Alcotest.test_case "Simplify example expression" `Quick test_simplify_example;
+        Alcotest.test_case "Simplify mul" `Quick test_simplify_mul;
+        Alcotest.test_case "Simplify exp" `Quick test_simplify_exp;
+        Alcotest.test_case "Simplify example" `Quick test_simplify_example;
       ] );
   ]
 
