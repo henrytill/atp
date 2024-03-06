@@ -34,9 +34,9 @@ toplevel:
 expression:
   | x = VARIABLE                          { Var x }
   | n = NUMERAL                           { Const n }
+  | e1 = expression EXP   e2 = expression { Exp (e1, e2) }
   | e1 = expression TIMES e2 = expression { Mul (e1, e2) }
   | e1 = expression PLUS  e2 = expression { Add (e1, e2) }
   | e1 = expression MINUS e2 = expression { Sub (e1, e2) }
-  | e1 = expression EXP   e2 = expression { Exp (e1, e2) }
   | LPAREN e = expression RPAREN          { e }
 ;
