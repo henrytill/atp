@@ -9,16 +9,16 @@ let rec pow a = function
 let simplify1 : Syntax.t -> Syntax.t = function
   | Add (Const 0, x) -> x
   | Add (x, Const 0) -> x
+  | Add (Const m, Const n) -> Const (m + n)
   | Mul (Const 0, _) -> Const 0
   | Mul (_, Const 0) -> Const 0
-  | Exp (Const 0, _) -> Const 0
-  | Exp (_, Const 0) -> Const 1
   | Mul (Const 1, x) -> x
   | Mul (x, Const 1) -> x
+  | Mul (Const m, Const n) -> Const (m * n)
+  | Exp (Const 0, _) -> Const 0
+  | Exp (_, Const 0) -> Const 1
   | Exp (Const 1, _) -> Const 1
   | Exp (x, Const 1) -> x
-  | Add (Const m, Const n) -> Const (m + n)
-  | Mul (Const m, Const n) -> Const (m * n)
   | Exp (Const m, Const n) -> Const (pow m n)
   | expr -> expr
 
