@@ -92,19 +92,31 @@ let test_parens_right () =
   let actual = Intro.parse {| 1 * (2 + 3) |} in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_simplify_add_0x () =
+  let open Syntax in
+  let expected = Some (Var "x") in
+  let actual = Option.map Intro.simplify (Intro.parse {| 0 + x |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_add_x0 () =
+  let open Syntax in
+  let expected = Some (Var "x") in
+  let actual = Option.map Intro.simplify (Intro.parse {| x + 0 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
 let test_simplify_sub () =
   let open Syntax in
   let expected = Some (Const 1) in
   let actual = Option.map Intro.simplify (Intro.parse {| 3 - 2 |}) in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
-let test_simplify_sub_zero () =
+let test_simplify_sub_x0 () =
   let open Syntax in
   let expected = Some (Var "x") in
   let actual = Option.map Intro.simplify (Intro.parse {| x - 0 |}) in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
-let test_simplify_sub_same () =
+let test_simplify_sub_xx () =
   let open Syntax in
   let expected = Some (Const 0) in
   let actual = Option.map Intro.simplify (Intro.parse {| x - x |}) in
@@ -116,10 +128,58 @@ let test_simplify_mul () =
   let actual = Option.map Intro.simplify (Intro.parse {| 3 * 4 |}) in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
+let test_simplify_mul_0x () =
+  let open Syntax in
+  let expected = Some (Const 0) in
+  let actual = Option.map Intro.simplify (Intro.parse {| 0 * x |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_mul_x0 () =
+  let open Syntax in
+  let expected = Some (Const 0) in
+  let actual = Option.map Intro.simplify (Intro.parse {| x * 0 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_mul_1x () =
+  let open Syntax in
+  let expected = Some (Var "x") in
+  let actual = Option.map Intro.simplify (Intro.parse {| 1 * x |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_mul_x1 () =
+  let open Syntax in
+  let expected = Some (Var "x") in
+  let actual = Option.map Intro.simplify (Intro.parse {| x * 1 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
 let test_simplify_exp () =
   let open Syntax in
   let expected = Some (Const 8) in
   let actual = Option.map Intro.simplify (Intro.parse {| 2 ^ 3 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_exp_0x () =
+  let open Syntax in
+  let expected = Some (Const 0) in
+  let actual = Option.map Intro.simplify (Intro.parse {| 0 ^ x |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_exp_x0 () =
+  let open Syntax in
+  let expected = Some (Const 1) in
+  let actual = Option.map Intro.simplify (Intro.parse {| x ^ 0 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_exp_1x () =
+  let open Syntax in
+  let expected = Some (Const 1) in
+  let actual = Option.map Intro.simplify (Intro.parse {| 1 ^ x |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
+
+let test_simplify_exp_x1 () =
+  let open Syntax in
+  let expected = Some (Var "x") in
+  let actual = Option.map Intro.simplify (Intro.parse {| x ^ 1 |}) in
   Alcotest.(check (option intro_testable)) "same expression" expected actual
 
 let test_simplify_example () =
@@ -152,11 +212,21 @@ let intro_tests =
       ] );
     ( "test_simplify",
       [
+        Alcotest.test_case "Simplify 0 + x" `Quick test_simplify_add_0x;
+        Alcotest.test_case "Simplify x + 0" `Quick test_simplify_add_x0;
         Alcotest.test_case "Simplify sub" `Quick test_simplify_sub;
-        Alcotest.test_case "Simplify sub with zero" `Quick test_simplify_sub_zero;
-        Alcotest.test_case "Simplify sub with same operands" `Quick test_simplify_sub_same;
+        Alcotest.test_case "Simplify x - 0" `Quick test_simplify_sub_x0;
+        Alcotest.test_case "Simplify x - x" `Quick test_simplify_sub_xx;
         Alcotest.test_case "Simplify mul" `Quick test_simplify_mul;
+        Alcotest.test_case "Simplify 0 * x" `Quick test_simplify_mul_0x;
+        Alcotest.test_case "Simplify x * 0" `Quick test_simplify_mul_x0;
+        Alcotest.test_case "Simplify 1 * x" `Quick test_simplify_mul_1x;
+        Alcotest.test_case "Simplify x * 1" `Quick test_simplify_mul_x1;
         Alcotest.test_case "Simplify exp" `Quick test_simplify_exp;
+        Alcotest.test_case "Simplify 0 ^ x" `Quick test_simplify_exp_0x;
+        Alcotest.test_case "Simplify x ^ 0" `Quick test_simplify_exp_x0;
+        Alcotest.test_case "Simplify 1 ^ x" `Quick test_simplify_exp_1x;
+        Alcotest.test_case "Simplify x ^ 1" `Quick test_simplify_exp_x1;
         Alcotest.test_case "Simplify example" `Quick test_simplify_example;
       ] );
   ]
