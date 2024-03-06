@@ -29,8 +29,8 @@ let test_parse_mul () =
 let test_parse_exp () =
   let open Syntax in
   let expected = Some (Exp (Const 2, Const 3)) in
-  let acutal = Intro.parse {| 2 ^ 3 |} in
-  Alcotest.(check (option intro_testable)) "same expression" expected acutal
+  let actual = Intro.parse {| 2 ^ 3 |} in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
 
 let test_parse_compound1 () =
   let open Syntax in
