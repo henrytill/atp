@@ -27,6 +27,7 @@ let simplify1 : Syntax.t -> Syntax.t = function
 
 let rec simplify : Syntax.t -> Syntax.t = function
   | Add (e1, e2) -> simplify1 (Add (simplify e1, simplify e2))
+  | Sub (e1, e2) -> simplify1 (Sub (simplify e1, simplify e2))
   | Mul (e1, e2) -> simplify1 (Mul (simplify e1, simplify e2))
   | Exp (e1, e2) -> simplify1 (Exp (simplify e1, simplify e2))
   | expr -> simplify1 expr
