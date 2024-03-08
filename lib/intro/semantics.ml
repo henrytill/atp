@@ -1,4 +1,4 @@
-let rec pow a = function
+let rec pow (a : int) : int -> int = function
   | 0 -> 1
   | 1 -> a
   | n ->
