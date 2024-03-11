@@ -2,26 +2,26 @@
 
 Test parsing
 
-  $ echo "a" | atp intro -dump-ast
+  $ atp intro -dump-ast "a"
   Var "a"
 
-  $ echo "1 + a" | atp intro -dump-ast
+  $ atp intro -dump-ast "1 + a"
   Add (Const 1, Var "a")
 
-  $ echo "(0 * x + 1) * 3 + 12" | atp intro -dump-ast
+  $ atp intro -dump-ast "(0 * x + 1) * 3 + 12"
   Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12)
 
 Test simplification
 
-  $ echo "a" | atp intro
+  $ atp intro "a"
   a
   a
 
-  $ echo "1 + a" | atp intro
+  $ atp intro "1 + a"
   (1 + a)
   (1 + a)
 
-  $ echo "(0 * x + 1) * 3 + 12" | atp intro
+  $ atp intro "(0 * x + 1) * 3 + 12"
   ((((0 * x) + 1) * 3) + 12)
   15
 
