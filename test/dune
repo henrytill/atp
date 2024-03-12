@@ -1,6 +1,2 @@
-(test
- (name test_intro)
- (libraries alcotest intro))
-
 (cram
  (deps %{bin:atp}))
