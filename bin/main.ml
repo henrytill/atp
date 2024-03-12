@@ -1,7 +1,3 @@
-let speclist = ref []
-let main = ref Fun.id
-let anon_fun = ref ignore
-
 module type COMMAND = sig
   val speclist : (string * Arg.spec * string) list
   val anon_fun : string -> unit
@@ -84,6 +80,10 @@ module Intro_command = struct
     let f = if has_anon_args then run_args else run_stdin in
     f ()
 end
+
+let speclist = ref []
+let main = ref Fun.id
+let anon_fun = ref ignore
 
 let select arg =
   let switch (module Command : COMMAND) =
