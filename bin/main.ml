@@ -10,29 +10,25 @@ module Intro_command = struct
   let anon_args = ref []
 
   let print_ast formatter expr =
-    let open Intro in
-    Syntax.pp_ast formatter expr;
+    Intro.Syntax.pp_ast formatter expr;
     Format.pp_print_newline formatter ()
 
   let print_expr formatter expr =
-    let open Intro in
-    Syntax.pp formatter expr;
+    Intro.Syntax.pp formatter expr;
     Format.pp_print_newline formatter ()
 
   let print_exn formatter exn =
-    let err_msg = Printexc.to_string exn in
-    Format.pp_print_string formatter err_msg;
+    Format.pp_print_string formatter (Printexc.to_string exn);
     Format.pp_print_newline formatter ()
 
   let read_eval_print lexbuf formatter =
-    let open Intro in
-    match parse lexbuf with
+    match Intro.parse lexbuf with
     | Some expr when !dump_ast ->
         print_ast formatter expr;
         true
     | Some expr ->
         print_expr formatter expr;
-        print_expr formatter (simplify expr);
+        print_expr formatter (Intro.simplify expr);
         true
     | None -> false
 
@@ -57,12 +53,12 @@ module Intro_command = struct
       exit 1
 
   let run_stdin () =
-    let continue = ref true in
     let in_channel = Stdlib.stdin in
     let out_channel = Stdlib.stdout in
     let err_channel = Stdlib.stderr in
     let out_formatter = Format.formatter_of_out_channel out_channel in
     let err_formatter = Format.formatter_of_out_channel err_channel in
+    let continue = ref true in
     let lexbuf = Lexing.from_channel in_channel in
     try
       while !continue do
