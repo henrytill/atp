@@ -18,8 +18,8 @@ let simplify1 : Syntax.t -> Syntax.t = function
   | Mul (Const 1, x) -> x
   | Mul (x, Const 1) -> x
   | Mul (Const m, Const n) -> Const (m * n)
-  | Exp (Const 0, _) -> Const 0
   | Exp (_, Const 0) -> Const 1
+  | Exp (Const 0, _) -> Const 0
   | Exp (Const 1, _) -> Const 1
   | Exp (x, Const 1) -> x
   | Exp (Const m, Const n) -> Const (pow m n)

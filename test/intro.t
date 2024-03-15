@@ -106,6 +106,10 @@ Test simplification
   (2 ^ 3)
   8
 
+  $ atp intro "0 ^ 0"
+  (0 ^ 0)
+  1
+
   $ atp intro "0 ^ x"
   (0 ^ x)
   0
