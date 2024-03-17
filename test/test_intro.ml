@@ -203,48 +203,49 @@ let test_simplify_example () =
   Alcotest.(check intro_testable) "same expression" expected actual
 
 let intro_tests =
+  let open Alcotest in
   [
     ( "test_parse",
       [
-        Alcotest.test_case "Parse variable" `Quick test_parse_var;
-        Alcotest.test_case "Parse constant" `Quick test_parse_const;
-        Alcotest.test_case "Parse add" `Quick test_parse_add;
-        Alcotest.test_case "Parse mul" `Quick test_parse_mul;
-        Alcotest.test_case "Parse exp" `Quick test_parse_exp;
-        Alcotest.test_case "Parse neg" `Quick test_parse_neg;
-        Alcotest.test_case "Parse compound (1)" `Quick test_parse_compound1;
-        Alcotest.test_case "Parse compound (2)" `Quick test_parse_compound2;
+        test_case "Parse variable" `Quick test_parse_var;
+        test_case "Parse constant" `Quick test_parse_const;
+        test_case "Parse add" `Quick test_parse_add;
+        test_case "Parse mul" `Quick test_parse_mul;
+        test_case "Parse exp" `Quick test_parse_exp;
+        test_case "Parse neg" `Quick test_parse_neg;
+        test_case "Parse compound (1)" `Quick test_parse_compound1;
+        test_case "Parse compound (2)" `Quick test_parse_compound2;
       ] );
     ( "test_precedence",
       [
-        Alcotest.test_case "Parse with correct precedence (r)" `Quick test_precedence_right;
-        Alcotest.test_case "Parse with correct precedence (l)" `Quick test_precedence_left;
-        Alcotest.test_case "Parse with correct add precedence" `Quick test_precedence_add;
-        Alcotest.test_case "Parse with correct sub precedence" `Quick test_precedence_sub;
-        Alcotest.test_case "Parse with correct mul precedence" `Quick test_precedence_mul;
-        Alcotest.test_case "Parse with correct exp precedence" `Quick test_precedence_exp;
-        Alcotest.test_case "Parse parens (l)" `Quick test_parens_left;
-        Alcotest.test_case "Parse parens (r)" `Quick test_parens_right;
+        test_case "Parse with correct precedence (r)" `Quick test_precedence_right;
+        test_case "Parse with correct precedence (l)" `Quick test_precedence_left;
+        test_case "Parse with correct add precedence" `Quick test_precedence_add;
+        test_case "Parse with correct sub precedence" `Quick test_precedence_sub;
+        test_case "Parse with correct mul precedence" `Quick test_precedence_mul;
+        test_case "Parse with correct exp precedence" `Quick test_precedence_exp;
+        test_case "Parse parens (l)" `Quick test_parens_left;
+        test_case "Parse parens (r)" `Quick test_parens_right;
       ] );
     ( "test_simplify",
       [
-        Alcotest.test_case "Simplify 0 + x" `Quick test_simplify_add_0x;
-        Alcotest.test_case "Simplify x + 0" `Quick test_simplify_add_x0;
-        Alcotest.test_case "Simplify sub" `Quick test_simplify_sub;
-        Alcotest.test_case "Simplify x - 0" `Quick test_simplify_sub_x0;
-        Alcotest.test_case "Simplify x - x" `Quick test_simplify_sub_xx;
-        Alcotest.test_case "Simplify mul" `Quick test_simplify_mul;
-        Alcotest.test_case "Simplify 0 * x" `Quick test_simplify_mul_0x;
-        Alcotest.test_case "Simplify x * 0" `Quick test_simplify_mul_x0;
-        Alcotest.test_case "Simplify 1 * x" `Quick test_simplify_mul_1x;
-        Alcotest.test_case "Simplify x * 1" `Quick test_simplify_mul_x1;
-        Alcotest.test_case "Simplify exp" `Quick test_simplify_exp;
-        Alcotest.test_case "Simplify 0 ^ x" `Quick test_simplify_exp_0x;
-        Alcotest.test_case "Simplify x ^ 0" `Quick test_simplify_exp_x0;
-        Alcotest.test_case "Simplify 1 ^ x" `Quick test_simplify_exp_1x;
-        Alcotest.test_case "Simplify x ^ 1" `Quick test_simplify_exp_x1;
-        Alcotest.test_case "Simplify neg" `Quick test_simplify_neg;
-        Alcotest.test_case "Simplify example" `Quick test_simplify_example;
+        test_case "Simplify 0 + x" `Quick test_simplify_add_0x;
+        test_case "Simplify x + 0" `Quick test_simplify_add_x0;
+        test_case "Simplify sub" `Quick test_simplify_sub;
+        test_case "Simplify x - 0" `Quick test_simplify_sub_x0;
+        test_case "Simplify x - x" `Quick test_simplify_sub_xx;
+        test_case "Simplify mul" `Quick test_simplify_mul;
+        test_case "Simplify 0 * x" `Quick test_simplify_mul_0x;
+        test_case "Simplify x * 0" `Quick test_simplify_mul_x0;
+        test_case "Simplify 1 * x" `Quick test_simplify_mul_1x;
+        test_case "Simplify x * 1" `Quick test_simplify_mul_x1;
+        test_case "Simplify exp" `Quick test_simplify_exp;
+        test_case "Simplify 0 ^ x" `Quick test_simplify_exp_0x;
+        test_case "Simplify x ^ 0" `Quick test_simplify_exp_x0;
+        test_case "Simplify 1 ^ x" `Quick test_simplify_exp_1x;
+        test_case "Simplify x ^ 1" `Quick test_simplify_exp_x1;
+        test_case "Simplify neg" `Quick test_simplify_neg;
+        test_case "Simplify example" `Quick test_simplify_example;
       ] );
   ]
 
