@@ -196,11 +196,9 @@ let test_simplify_neg () =
 
 let test_simplify_example () =
   let open Syntax in
-  let expected = Const 15 in
-  let actual =
-    Intro.simplify (Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12))
-  in
-  Alcotest.(check intro_testable) "same expression" expected actual
+  let expected = Some (Const 15) in
+  let actual = Option.map Intro.simplify (Intro.parse_string {| (0 * x + 1) * 3 + 12 |}) in
+  Alcotest.(check (option intro_testable)) "same expression" expected actual
 
 let intro_tests =
   let open Alcotest in
