@@ -214,6 +214,9 @@ let intro_tests =
         Alcotest.test_case "Parse neg" `Quick test_parse_neg;
         Alcotest.test_case "Parse compound (1)" `Quick test_parse_compound1;
         Alcotest.test_case "Parse compound (2)" `Quick test_parse_compound2;
+      ] );
+    ( "test_precedence",
+      [
         Alcotest.test_case "Parse with correct precedence (r)" `Quick test_precedence_right;
         Alcotest.test_case "Parse with correct precedence (l)" `Quick test_precedence_left;
         Alcotest.test_case "Parse with correct add precedence" `Quick test_precedence_add;
