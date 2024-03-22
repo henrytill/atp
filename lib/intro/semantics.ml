@@ -1,7 +1,9 @@
+let err_raise_negative = "cannot raise to a negative power"
+
 let rec pow (a : int) : int -> int = function
   | 0 -> 1
   | 1 -> a
-  | n when n < 0 -> raise (Invalid_argument "n must be >= 0")
+  | n when n < 0 -> raise (Invalid_argument err_raise_negative)
   | n ->
       let b = pow a (n / 2) in
       b * b * if n mod 2 = 0 then 1 else a
@@ -23,7 +25,7 @@ let simplify1 : Syntax.t -> Syntax.t = function
   | Exp (Const 1, _) -> Const 1
   | Exp (x, Const 1) -> x
   | Exp (Const m, Const n) -> Const (pow m n)
-  | Exp (Const _, Neg (Const _)) -> raise (Invalid_argument "cannot raise to a negative power")
+  | Exp (Const _, Neg (Const _)) -> raise (Invalid_argument err_raise_negative)
   | Neg (Neg m) -> m
   | Neg (Const m) -> Const (-m)
   | expr -> expr
