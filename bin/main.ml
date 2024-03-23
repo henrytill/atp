@@ -35,10 +35,8 @@ module Intro_command = struct
   let anon_fun arg = anon_args := arg :: !anon_args
 
   let run_args () =
-    let out_channel = Stdlib.stdout in
-    let err_channel = Stdlib.stderr in
-    let out_formatter = Format.formatter_of_out_channel out_channel in
-    let err_formatter = Format.formatter_of_out_channel err_channel in
+    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
+    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
     try
       List.iter
         (fun a ->
@@ -53,13 +51,10 @@ module Intro_command = struct
       exit 1
 
   let run_stdin () =
-    let in_channel = Stdlib.stdin in
-    let out_channel = Stdlib.stdout in
-    let err_channel = Stdlib.stderr in
-    let out_formatter = Format.formatter_of_out_channel out_channel in
-    let err_formatter = Format.formatter_of_out_channel err_channel in
+    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
+    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
     let continue = ref true in
-    let lexbuf = Lexing.from_channel in_channel in
+    let lexbuf = Lexing.from_channel Stdlib.stdin in
     try
       while !continue do
         continue := read_eval_print lexbuf out_formatter;
