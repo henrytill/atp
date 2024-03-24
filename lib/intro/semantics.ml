@@ -30,7 +30,7 @@ let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
   | Exp (Const _, Neg (Const _)) -> raise (Invalid_argument err_raise_negative)
   | Neg (Neg m) -> m
   | Neg (Const m) -> Const (-m)
-  | expr -> expr
+  | _ -> expr
 
 let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
   let count = ref 0 in
@@ -41,9 +41,9 @@ let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
     | Sub (e1, e2) -> simplify1 count (Sub (go e1, go e2))
     | Mul (e1, e2) -> simplify1 count (Mul (go e1, go e2))
     | Exp (e1, e2) -> simplify1 count (Exp (go e1, go e2))
-    | expr -> simplify1 count expr
+    | _ -> simplify1 count expr
   in
-  let result = go expr in
-  (result, !count)
+  let ret = go expr in
+  (ret, !count)
 
 let simplify expr = fst (simplify_with_count expr)
