@@ -6,7 +6,14 @@ end
 
 module Intro_command = struct
   let dump_ast = ref false
-  let speclist = [ ("-dump-ast", Arg.Set dump_ast, "Dump AST") ]
+  let show_count = ref false
+
+  let speclist =
+    [
+      ("-dump-ast", Arg.Set dump_ast, "Dump AST");
+      ("-count", Arg.Set show_count, "Show number of simplification steps");
+    ]
+
   let anon_args = ref []
 
   let print_ast formatter expr =
@@ -16,6 +23,12 @@ module Intro_command = struct
   let print_expr formatter expr =
     Intro.Syntax.pp formatter expr;
     Format.pp_print_newline formatter ()
+
+  let maybe_print_count formatter count =
+    if !show_count then begin
+      Format.fprintf formatter "Simplification steps: %a" Format.pp_print_int count;
+      Format.pp_print_newline formatter ()
+    end
 
   let print_exn formatter exn =
     Format.pp_print_string formatter (Printexc.to_string exn);
@@ -27,8 +40,10 @@ module Intro_command = struct
         print_ast formatter expr;
         true
     | Some expr ->
+        let simplified, count = Intro.simplify_with_count expr in
         print_expr formatter expr;
-        print_expr formatter (Intro.simplify expr);
+        print_expr formatter simplified;
+        maybe_print_count formatter count;
         true
     | None -> false
 

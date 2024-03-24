@@ -30,9 +30,20 @@ let simplify1 : Syntax.t -> Syntax.t = function
   | Neg (Const m) -> Const (-m)
   | expr -> expr
 
-let rec simplify : Syntax.t -> Syntax.t = function
-  | Add (e1, e2) -> simplify1 (Add (simplify e1, simplify e2))
-  | Sub (e1, e2) -> simplify1 (Sub (simplify e1, simplify e2))
-  | Mul (e1, e2) -> simplify1 (Mul (simplify e1, simplify e2))
-  | Exp (e1, e2) -> simplify1 (Exp (simplify e1, simplify e2))
-  | expr -> simplify1 expr
+let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
+  let i = ref 0 in
+  let rec go (expr : Syntax.t) : Syntax.t =
+    incr i;
+    match expr with
+    | Add (e1, e2) -> simplify1 (Add (go e1, go e2))
+    | Sub (e1, e2) -> simplify1 (Sub (go e1, go e2))
+    | Mul (e1, e2) -> simplify1 (Mul (go e1, go e2))
+    | Exp (e1, e2) -> simplify1 (Exp (go e1, go e2))
+    | expr -> simplify1 expr
+  in
+  let result = go expr in
+  (* include call to simplify1 in final count *)
+  let count = succ !i in
+  (result, count)
+
+let simplify expr = fst (simplify_with_count expr)
