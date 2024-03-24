@@ -149,14 +149,14 @@ Count number of simplification steps
   $ atp intro -count "a"
   a
   a
-  Simplification steps: 2
+  Steps: 2
 
   $ atp intro -count "1 + 1"
   (1 + 1)
   2
-  Simplification steps: 6
+  Steps: 6
 
   $ atp intro -count "(1 + 2) * (3 + 4)"
   ((1 + 2) * (3 + 4))
   21
-  Simplification steps: 14
+  Steps: 14

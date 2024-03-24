@@ -26,7 +26,7 @@ module Intro_command = struct
 
   let maybe_print_count formatter count =
     if !show_count then begin
-      Format.fprintf formatter "Simplification steps: %a" Format.pp_print_int count;
+      Format.fprintf formatter "Steps: %a" Format.pp_print_int count;
       Format.pp_print_newline formatter ()
     end
 
