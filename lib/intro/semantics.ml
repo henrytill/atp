@@ -8,7 +8,9 @@ let rec pow (a : int) : int -> int = function
       let b = pow a (n / 2) in
       b * b * if n mod 2 = 0 then 1 else a
 
-let simplify1 : Syntax.t -> Syntax.t = function
+let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
+  incr count;
+  match expr with
   | Add (Const 0, x) -> x
   | Add (x, Const 0) -> x
   | Add (Const m, Const n) -> Const (m + n)
@@ -31,19 +33,17 @@ let simplify1 : Syntax.t -> Syntax.t = function
   | expr -> expr
 
 let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
-  let i = ref 0 in
+  let count = ref 0 in
   let rec go (expr : Syntax.t) : Syntax.t =
-    incr i;
+    incr count;
     match expr with
-    | Add (e1, e2) -> simplify1 (Add (go e1, go e2))
-    | Sub (e1, e2) -> simplify1 (Sub (go e1, go e2))
-    | Mul (e1, e2) -> simplify1 (Mul (go e1, go e2))
-    | Exp (e1, e2) -> simplify1 (Exp (go e1, go e2))
-    | expr -> simplify1 expr
+    | Add (e1, e2) -> simplify1 count (Add (go e1, go e2))
+    | Sub (e1, e2) -> simplify1 count (Sub (go e1, go e2))
+    | Mul (e1, e2) -> simplify1 count (Mul (go e1, go e2))
+    | Exp (e1, e2) -> simplify1 count (Exp (go e1, go e2))
+    | expr -> simplify1 count expr
   in
   let result = go expr in
-  (* include call to simplify1 in final count *)
-  let count = succ !i in
-  (result, count)
+  (result, !count)
 
 let simplify expr = fst (simplify_with_count expr)
