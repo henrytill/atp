@@ -34,9 +34,18 @@ let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
   let rec go (expr : Syntax.t) : Syntax.t =
     incr count;
     match expr with
+    | Add (Const 0, e) | Add (e, Const 0) -> simplify1 count (go e)
     | Add (e1, e2) -> simplify1 count (Add (go e1, go e2))
+    | Sub (e, Const 0) -> simplify1 count (go e)
+    | Sub (e1, e2) when Syntax.equal e1 e2 -> Const 0
     | Sub (e1, e2) -> simplify1 count (Sub (go e1, go e2))
+    | Mul (Const 0, _) | Mul (_, Const 0) -> Const 0
+    | Mul (Const 1, e) | Mul (e, Const 1) -> simplify1 count (go e)
     | Mul (e1, e2) -> simplify1 count (Mul (go e1, go e2))
+    | Exp (_, Const 0) -> Const 1
+    | Exp (Const 0, _) -> Const 0
+    | Exp (Const 1, _) -> Const 1
+    | Exp (e, Const 1) -> simplify1 count (go e)
     | Exp (e1, e2) -> simplify1 count (Exp (go e1, go e2))
     | _ -> simplify1 count expr
   in
