@@ -136,7 +136,7 @@ Test simplification
 
   $ atp intro "(- - (1 - 1))"
   (- (- (1 - 1)))
-  (1 - 1)
+  0
 
 Misc
 
@@ -232,5 +232,5 @@ Count number of simplification steps
 
   $ atp intro -count "(- - (1 - 1))"
   (- (- (1 - 1)))
-  (1 - 1)
-  Steps: 2
+  0
+  Steps: 5
