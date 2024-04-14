@@ -233,4 +233,4 @@ Count number of simplification steps
   $ atp intro -count "(- - (1 - 1))"
   (- (- (1 - 1)))
   0
-  Steps: 5
+  Steps: 3
