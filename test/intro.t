@@ -134,6 +134,10 @@ Test simplification
   ((((0 * x) + 1) * 3) + 12)
   15
 
+  $ atp intro "(- - (1 - 1))"
+  (- (- (1 - 1)))
+  (1 - 1)
+
 Misc
 
   $ cat >test.txt <<EOF
@@ -225,3 +229,8 @@ Count number of simplification steps
   (0 + (0 + (1 - 1)))
   0
   Steps: 5
+
+  $ atp intro -count "(- - (1 - 1))"
+  (- (- (1 - 1)))
+  (1 - 1)
+  Steps: 2
