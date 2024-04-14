@@ -11,16 +11,13 @@ let rec pow (a : int) : int -> int = function
 let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
   incr count;
   match expr with
-  | Add (Const 0, x) -> x
-  | Add (x, Const 0) -> x
+  | Add (Const 0, x) | Add (x, Const 0) -> x
   | Add (Const m, Const n) -> Const (m + n)
   | Sub (x, Const 0) -> x
   | Sub (x, y) when Syntax.equal x y -> Const 0
   | Sub (Const m, Const n) -> Const (m - n)
-  | Mul (Const 0, _) -> Const 0
-  | Mul (_, Const 0) -> Const 0
-  | Mul (Const 1, x) -> x
-  | Mul (x, Const 1) -> x
+  | Mul (Const 0, _) | Mul (_, Const 0) -> Const 0
+  | Mul (Const 1, x) | Mul (x, Const 1) -> x
   | Mul (Const m, Const n) -> Const (m * n)
   | Exp (_, Const 0) -> Const 1
   | Exp (Const 0, _) -> Const 0
