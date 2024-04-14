@@ -23,7 +23,7 @@ let rec pp fmt x =
   match x with
   | Var a -> fprintf fmt "@[%s@]" a
   | Const a -> fprintf fmt "@[%d@]" a
-  | Neg a -> fprintf fmt "@[- %a@]" pp a
+  | Neg a -> fprintf fmt "@[(- %a)@]" pp a
   | Add (a, b) -> fprintf fmt "@[(%a + %a)@]" pp a pp b
   | Sub (a, b) -> fprintf fmt "@[(%a - %a)@]" pp a pp b
   | Mul (a, b) -> fprintf fmt "@[(%a * %a)@]" pp a pp b

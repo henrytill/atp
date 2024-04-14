@@ -127,7 +127,7 @@ Test simplification
   x
 
   $ atp intro "x - - - x"
-  (x - - - x)
+  (x - (- (- x)))
   0
 
   $ atp intro "(0 * x + 1) * 3 + 12"
