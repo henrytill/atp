@@ -17,34 +17,45 @@ common warnings
     ghc-options: -Wall
 
 library
-    import:           warnings
-    exposed-modules:  MyLib
+    import:              warnings
+    exposed-modules:     Math.ATP.Intro.Lexer
+                         Math.ATP.Intro.Parser
+                         Math.ATP.Intro.Quote
+                         Math.ATP.Intro.Semantics
+                         Math.ATP.Intro.Syntax
     -- other-modules:
     -- other-extensions:
-    build-depends:    base ^>=4.17.2.1
-    hs-source-dirs:   src
-    default-language: Haskell98
+    build-depends:       base             >=4.17 && <5,
+                         array            >=0.5  && <0.6,
+                         syb              >=0.7  && <0.8,
+                         template-haskell >=2.12 && <2.22
+    build-tool-depends:  alex:alex        >=3.2,
+                         happy:happy      >=1.19
+    hs-source-dirs:      src
+    default-language:    Haskell98
+    default-extensions:  ImportQualifiedPost
 
 executable atp
-    import:           warnings
-    main-is:          Main.hs
+    import:              warnings
+    main-is:             Main.hs
     -- other-modules:
     -- other-extensions:
-    build-depends:
-        base ^>=4.17.2.1,
-        atp
-
-    hs-source-dirs:   exe
-    default-language: Haskell98
+    build-depends:       base >=4.17 && <5,
+                         atp
+    hs-source-dirs:      exe
+    default-language:    Haskell98
+    default-extensions:  ImportQualifiedPost
 
 test-suite atp-test
-    import:           warnings
-    default-language: Haskell98
-    -- other-modules:
+    import:              warnings
+    main-is:             Main.hs
+    type:                exitcode-stdio-1.0
+    other-modules:       Math.ATP.Intro.Quote.Tests
     -- other-extensions:
-    type:             exitcode-stdio-1.0
-    hs-source-dirs:   test
-    main-is:          Main.hs
-    build-depends:
-        base ^>=4.17.2.1,
-        atp
+    build-depends:       base        >=4.17 && <5,
+                         tasty       >=1.0  && <1.4,
+                         tasty-hunit >=0.10 && <0.11,
+                         atp
+    hs-source-dirs:      test
+    default-language:    Haskell98
+    default-extensions:  ImportQualifiedPost
