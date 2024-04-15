@@ -153,32 +153,32 @@ Count number of simplification steps
   $ atp intro -count "a"
   a
   a
-  Steps: 2
+  Steps: 1
 
   $ atp intro -count "1 + 1"
   (1 + 1)
   2
-  Steps: 6
+  Steps: 4
 
   $ atp intro -count "(1 + 2) * (3 + 4)"
   ((1 + 2) * (3 + 4))
   21
-  Steps: 14
+  Steps: 10
 
   $ atp intro -count "0 + x"
   (0 + x)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "x + 0"
   (x + 0)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "x - 0"
   (x - 0)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "x - x"
   (x - x)
@@ -198,12 +198,12 @@ Count number of simplification steps
   $ atp intro -count "x * 1"
   (x * 1)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "1 * x"
   (1 * x)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "x ^ 0"
   (x ^ 0)
@@ -223,7 +223,7 @@ Count number of simplification steps
   $ atp intro -count "x ^ 1"
   (x ^ 1)
   x
-  Steps: 4
+  Steps: 3
 
   $ atp intro -count "0 + (0 + (1 - 1))"
   (0 + (0 + (1 - 1)))

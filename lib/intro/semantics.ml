@@ -49,7 +49,7 @@ let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
     | Exp (e1, e2) -> simplify1 count (Exp (go e1, go e2))
     | Neg (Neg e) -> simplify1 count (go e)
     | Neg e -> simplify1 count (Neg (go e))
-    | _ -> simplify1 count expr
+    | Const _ | Var _ -> expr
   in
   let ret = go expr in
   (ret, !count)
