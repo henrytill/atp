@@ -17,66 +17,67 @@ pow m n
   where
     x = pow m (n `div` 2)
 
-simplify1 :: Expression -> Expression
-simplify1 (Add (Const 0) e) = e
-simplify1 (Add e (Const 0)) = e
-simplify1 (Add (Const m) (Const n)) = Const (m + n)
-simplify1 (Sub e (Const 0)) = e
-simplify1 (Sub e1 e2) | e1 == e2 = Const 0
-simplify1 (Sub (Const m) (Const n)) = Const (m - n)
-simplify1 (Mul (Const 0) _) = Const 0
-simplify1 (Mul _ (Const 0)) = Const 0
-simplify1 (Mul (Const 1) e) = e
-simplify1 (Mul e (Const 1)) = e
-simplify1 (Mul (Const m) (Const n)) = Const (m * n)
-simplify1 (Exp _ (Const 0)) = Const 1
-simplify1 (Exp (Const 0) _) = Const 0
-simplify1 (Exp (Const 1) _) = Const 1
-simplify1 (Exp e (Const 1)) = e
-simplify1 (Exp (Const m) (Const n)) = Const (pow m n)
-simplify1 (Exp (Const _) (Neg (Const _))) = error errRaiseNegative
-simplify1 (Neg (Neg e)) = e
-simplify1 (Neg (Const m)) = Const (-m)
-simplify1 e = e
+simpl1 :: Expression -> Expression
+simpl1 (Add (Const 0) x) = x
+simpl1 (Add x (Const 0)) = x
+simpl1 (Add (Const m) (Const n)) = Const (m + n)
+simpl1 (Sub x (Const 0)) = x
+simpl1 (Sub x y) | x == y = Const 0
+simpl1 (Sub (Const m) (Const n)) = Const (m - n)
+simpl1 (Mul (Const 0) _) = Const 0
+simpl1 (Mul _ (Const 0)) = Const 0
+simpl1 (Mul (Const 1) x) = x
+simpl1 (Mul x (Const 1)) = x
+simpl1 (Mul (Const m) (Const n)) = Const (m * n)
+simpl1 (Exp _ (Const 0)) = Const 1
+simpl1 (Exp (Const 0) _) = Const 0
+simpl1 (Exp (Const 1) _) = Const 1
+simpl1 (Exp x (Const 1)) = x
+simpl1 (Exp _ (Neg (Const _))) = error errRaiseNegative
+simpl1 (Exp (Const m) (Const n)) = Const (pow m n)
+simpl1 (Neg (Neg x)) = x
+simpl1 (Neg (Const m)) = Const (-m)
+simpl1 x = x
 
 incr :: STRef s Int -> ST s ()
 incr = flip modifySTRef succ
 
-simplify1WithCount :: STRef s Int -> Expression -> ST s Expression
-simplify1WithCount ref expr = incr ref >> return (simplify1 expr)
+simplify1 :: STRef s Int -> Expression -> ST s Expression
+simplify1 ref expr = incr ref >> return (simpl1 expr)
 
 simpl :: STRef s Int -> Expression -> ST s Expression
 simpl ref expr = do
   incr ref
   case expr of
-    (Add (Const 0) e) -> single e
-    (Add e (Const 0)) -> single e
-    (Add e1 e2) -> add e1 e2
-    (Sub e (Const 0)) -> single e
-    (Sub e1 e2) | e1 == e2 -> zero
-    (Sub e1 e2) -> sub e1 e2
+    (Add (Const 0) x) -> single x
+    (Add x (Const 0)) -> single x
+    (Add x y) -> add x y
+    (Sub x (Const 0)) -> single x
+    (Sub x y) | x == y -> zero
+    (Sub x y) -> sub x y
     (Mul (Const 0) _) -> zero
     (Mul _ (Const 0)) -> zero
-    (Mul (Const 1) e) -> single e
-    (Mul e (Const 1)) -> single e
-    (Mul e1 e2) -> mul e1 e2
-    (Exp (Const 0) _) -> zero
+    (Mul (Const 1) x) -> single x
+    (Mul x (Const 1)) -> single x
+    (Mul x y) -> mul x y
     (Exp _ (Const 0)) -> one
+    (Exp (Const 0) _) -> zero
     (Exp (Const 1) _) -> one
-    (Exp e (Const 1)) -> single e
-    (Exp e1 e2) -> exp e1 e2
-    (Neg (Neg e)) -> single e
-    (Neg e) -> neg e
+    (Exp x (Const 1)) -> single x
+    (Exp _ (Neg (Const _))) -> error errRaiseNegative
+    (Exp x y) -> exp x y
+    (Neg (Neg x)) -> single x
+    (Neg x) -> neg x
     (Const m) -> constant m
     (Var a) -> return (Var a)
     (MetaVar _) -> undefined
   where
-    binary f x y = simplify1WithCount ref =<< f <$> simpl ref x <*> simpl ref y
+    binary f x y = simplify1 ref =<< f <$> simpl ref x <*> simpl ref y
     add = binary Add
     sub = binary Sub
     mul = binary Mul
     exp = binary Exp
-    unary f x = simplify1WithCount ref =<< f <$> simpl ref x
+    unary f x = simplify1 ref =<< f <$> simpl ref x
     neg = unary Neg
     single = unary id
     constant = return . Const

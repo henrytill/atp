@@ -24,6 +24,7 @@ tests =
       testCase "x * 1" $ do simplifyWithCount [intro| x * 1 |] @?= (Var "x", 3),
       testCase "0 ^ x" $ do simplifyWithCount [intro| 0 ^ x |] @?= (Const 0, 1),
       testCase "x ^ 0" $ do simplifyWithCount [intro| x ^ 0 |] @?= (Const 1, 1),
+      testCase "0 ^ 0" $ do simplifyWithCount [intro| 0 ^ 0 |] @?= (Const 1, 1),
       testCase "1 ^ x" $ do simplifyWithCount [intro| 1 ^ x |] @?= (Const 1, 1),
       testCase "x ^ 1" $ do simplifyWithCount [intro| x ^ 1 |] @?= (Var "x", 3),
       testCase "x - - - x" $ do simplifyWithCount [intro| x - - - x |] @?= (Const 0, 6),
