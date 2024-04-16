@@ -45,6 +45,38 @@ parseMeta = testCase "$m - 1" $ do
   where
     m = Const 1
 
+parsePrecRight :: TestTree
+parsePrecRight = testCase "1 + 2 * 3" $ do
+  [intro| 1 + 2 * 3 |] @?= Add (Const 1) (Mul (Const 2) (Const 3))
+
+parsePrecLeft :: TestTree
+parsePrecLeft = testCase "1 * 2 + 3" $ do
+  [intro| 1 * 2 + 3 |] @?= Add (Mul (Const 1) (Const 2)) (Const 3)
+
+parsePrecAdd :: TestTree
+parsePrecAdd = testCase "x + y + z" $ do
+  [intro| x + y + z |] @?= Add (Add (Var "x") (Var "y")) (Var "z")
+
+parsePrecSub :: TestTree
+parsePrecSub = testCase "x - y - z" $ do
+  [intro| x - y - z |] @?= Sub (Sub (Var "x") (Var "y")) (Var "z")
+
+parsePrecMul :: TestTree
+parsePrecMul = testCase "x * y * z" $ do
+  [intro| x * y * z |] @?= Mul (Mul (Var "x") (Var "y")) (Var "z")
+
+parsePrecExp :: TestTree
+parsePrecExp = testCase "x ^ y ^ z" $ do
+  [intro| x ^ y ^ z |] @?= Exp (Var "x") (Exp (Var "y") (Var "z"))
+
+parsePrecParensLeft :: TestTree
+parsePrecParensLeft = testCase "(1 + 2) * 3" $ do
+  [intro| (1 + 2) * 3 |] @?= Mul (Add (Const 1) (Const 2)) (Const 3)
+
+parsePrecParensRight :: TestTree
+parsePrecParensRight = testCase "1 + (2 * 3)" $ do
+  [intro| 1 + (2 * 3) |] @?= Add (Const 1) (Mul (Const 2) (Const 3))
+
 tests :: TestTree
 tests =
   testGroup
@@ -57,5 +89,13 @@ tests =
       parseSubNeg,
       parseMulAdd,
       parseExample,
-      parseMeta
+      parseMeta,
+      parsePrecRight,
+      parsePrecLeft,
+      parsePrecAdd,
+      parsePrecSub,
+      parsePrecMul,
+      parsePrecExp,
+      parsePrecParensLeft,
+      parsePrecParensRight
     ]
