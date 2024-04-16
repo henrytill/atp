@@ -84,7 +84,7 @@ parseMeta =
 tests :: TestTree
 tests =
   testGroup
-    "Intro"
+    "Quote"
     [ parseVar,
       parseConst,
       parseAdd,

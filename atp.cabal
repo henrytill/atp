@@ -51,6 +51,8 @@ test-suite atp-test
     main-is:             Main.hs
     type:                exitcode-stdio-1.0
     other-modules:       Math.ATP.Intro.Quote.Tests
+                         Math.ATP.Intro.Semantics.Tests
+                         Math.ATP.Intro.Tests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          tasty       >=1.0  && <1.4,

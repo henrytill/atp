@@ -3,6 +3,7 @@ module Math.ATP.Intro.Semantics (simplify, simplifyWithCount) where
 import Control.Monad.ST
 import Data.STRef
 import Math.ATP.Intro.Syntax
+import Prelude hiding (exp)
 
 errRaiseNegative :: String
 errRaiseNegative = "cannot raise to a negative power"
@@ -39,30 +40,55 @@ simplify1 (Neg (Const m)) = Const (-m)
 simplify1 e = e
 
 incr :: STRef s Int -> ST s ()
-incr ref = modifySTRef ref succ
+incr = flip modifySTRef succ
 
 simplify1WithCount :: STRef s Int -> Expression -> ST s Expression
 simplify1WithCount ref expr = incr ref >> return (simplify1 expr)
 
+simpl :: STRef s Int -> Expression -> ST s Expression
+simpl ref expr = do
+  incr ref
+  case expr of
+    (Add (Const 0) e) -> single e
+    (Add e (Const 0)) -> single e
+    (Add e1 e2) -> add e1 e2
+    (Sub e (Const 0)) -> single e
+    (Sub e1 e2) | e1 == e2 -> zero
+    (Sub e1 e2) -> sub e1 e2
+    (Mul (Const 0) _) -> zero
+    (Mul _ (Const 0)) -> zero
+    (Mul (Const 1) e) -> single e
+    (Mul e (Const 1)) -> single e
+    (Mul e1 e2) -> mul e1 e2
+    (Exp (Const 0) _) -> zero
+    (Exp _ (Const 0)) -> one
+    (Exp (Const 1) _) -> one
+    (Exp e (Const 1)) -> single e
+    (Exp e1 e2) -> exp e1 e2
+    (Neg (Neg e)) -> single e
+    (Neg e) -> neg e
+    (Const m) -> constant m
+    (Var a) -> return (Var a)
+    (MetaVar _) -> undefined
+  where
+    binary f x y = simplify1WithCount ref =<< f <$> simpl ref x <*> simpl ref y
+    add = binary Add
+    sub = binary Sub
+    mul = binary Mul
+    exp = binary Exp
+    unary f x = simplify1WithCount ref =<< f <$> simpl ref x
+    neg = unary Neg
+    single = unary id
+    constant = return . Const
+    zero = constant 0
+    one = constant 1
+
 simplifyWithCount :: Expression -> (Expression, Int)
 simplifyWithCount expr = runST $ do
   ref <- newSTRef 0
-  ret <- go ref expr
+  ret <- simpl ref expr
   count <- readSTRef ref
   return (ret, count)
-  where
-    go :: STRef s Int -> Expression -> ST s Expression
-    go ref expr' = do
-      incr ref
-      case expr' of
-        (Add e1 e2) -> Add <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
-        (Sub e1 e2) -> Sub <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
-        (Mul e1 e2) -> Mul <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
-        (Exp e1 e2) -> Exp <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
-        (Neg e) -> Neg <$> go ref e >>= simplify1WithCount ref
-        (Const m) -> return $ Const m
-        (Var a) -> return $ Var a
-        (MetaVar _) -> undefined
 
 simplify :: Expression -> Expression
 simplify = fst . simplifyWithCount

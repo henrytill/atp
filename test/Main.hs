@@ -1,13 +1,13 @@
 module Main (main) where
 
-import Math.ATP.Intro.Quote.Tests qualified as Quote
+import Math.ATP.Intro.Tests qualified as Intro
 import Test.Tasty
 
 unitTests :: TestTree
 unitTests =
   testGroup
-    "Unit tests"
-    [Quote.tests]
+    "Tests"
+    [Intro.tests]
 
 main :: IO ()
 main = defaultMain unitTests
