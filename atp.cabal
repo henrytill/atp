@@ -55,7 +55,7 @@ test-suite atp-test
                          Math.ATP.Intro.Tests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
-                         tasty       >=1.0  && <1.4,
+                         tasty       >=1.0  && <1.6,
                          tasty-hunit >=0.10 && <0.11,
                          atp
     hs-source-dirs:      test
