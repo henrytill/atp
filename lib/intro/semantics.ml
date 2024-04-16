@@ -8,7 +8,9 @@ let rec pow (a : int) : int -> int = function
       let b = pow a (n / 2) in
       b * b * if n mod 2 = 0 then 1 else a
 
-let simpl1 : Syntax.t -> Syntax.t = function
+let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
+  incr count;
+  match expr with
   | Add (Const 0, x) | Add (x, Const 0) -> x
   | Add (Const m, Const n) -> Const (m + n)
   | Sub (x, Const 0) -> x
@@ -25,11 +27,7 @@ let simpl1 : Syntax.t -> Syntax.t = function
   | Exp (Const m, Const n) -> Const (pow m n)
   | Neg (Neg x) -> x
   | Neg (Const m) -> Const (-m)
-  | x -> x
-
-let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
-  incr count;
-  simpl1 expr
+  | _ -> expr
 
 let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
   let count = ref 0 in
