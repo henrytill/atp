@@ -1,5 +1,7 @@
-module Math.ATP.Intro.Semantics (simplify) where
+module Math.ATP.Intro.Semantics (simplify, simplifyWithCount) where
 
+import Control.Monad.ST
+import Data.STRef
 import Math.ATP.Intro.Syntax
 
 errRaiseNegative :: String
@@ -36,12 +38,31 @@ simplify1 (Neg (Neg e)) = e
 simplify1 (Neg (Const m)) = Const (-m)
 simplify1 e = e
 
+incr :: STRef s Int -> ST s ()
+incr ref = modifySTRef ref succ
+
+simplify1WithCount :: STRef s Int -> Expression -> ST s Expression
+simplify1WithCount ref expr = incr ref >> return (simplify1 expr)
+
+simplifyWithCount :: Expression -> (Expression, Int)
+simplifyWithCount expr = runST $ do
+  ref <- newSTRef 0
+  ret <- go ref expr
+  count <- readSTRef ref
+  return (ret, count)
+  where
+    go :: STRef s Int -> Expression -> ST s Expression
+    go ref expr' = do
+      incr ref
+      case expr' of
+        (Add e1 e2) -> Add <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
+        (Sub e1 e2) -> Sub <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
+        (Mul e1 e2) -> Mul <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
+        (Exp e1 e2) -> Exp <$> go ref e1 <*> go ref e2 >>= simplify1WithCount ref
+        (Neg e) -> Neg <$> go ref e >>= simplify1WithCount ref
+        (Const m) -> return $ Const m
+        (Var a) -> return $ Var a
+        (MetaVar _) -> undefined
+
 simplify :: Expression -> Expression
-simplify (Add e1 e2) = simplify1 (Add (simplify e1) (simplify e2))
-simplify (Sub e1 e2) = simplify1 (Sub (simplify e1) (simplify e2))
-simplify (Mul e1 e2) = simplify1 (Mul (simplify e1) (simplify e2))
-simplify (Exp e1 e2) = simplify1 (Exp (simplify e1) (simplify e2))
-simplify (Neg e) = simplify1 (Neg (simplify e))
-simplify (Const m) = Const m
-simplify (Var a) = Var a
-simplify (MetaVar _) = undefined
+simplify = fst . simplifyWithCount
