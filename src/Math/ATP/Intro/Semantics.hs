@@ -1,6 +1,7 @@
 module Math.ATP.Intro.Semantics (simplify, simplifyWithCount) where
 
 import Control.Monad.ST
+import Data.Functor (($>))
 import Data.STRef
 import Math.ATP.Intro.Syntax
 import Prelude hiding (exp)
@@ -43,7 +44,7 @@ incr :: STRef s Int -> ST s ()
 incr = flip modifySTRef succ
 
 simplify1 :: STRef s Int -> Expression -> ST s Expression
-simplify1 ref expr = incr ref >> return (simpl1 expr)
+simplify1 ref expr = incr ref $> simpl1 expr
 
 simpl :: STRef s Int -> Expression -> ST s Expression
 simpl ref expr = do
