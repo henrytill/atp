@@ -54,16 +54,16 @@ simpl ref expr = do
     (Add x (Const 0)) -> single x
     (Add x y) -> add x y
     (Sub x (Const 0)) -> single x
-    (Sub x y) | x == y -> zero
+    (Sub x y) | x == y -> constant 0
     (Sub x y) -> sub x y
-    (Mul (Const 0) _) -> zero
-    (Mul _ (Const 0)) -> zero
+    (Mul (Const 0) _) -> constant 0
+    (Mul _ (Const 0)) -> constant 0
     (Mul (Const 1) x) -> single x
     (Mul x (Const 1)) -> single x
     (Mul x y) -> mul x y
-    (Exp _ (Const 0)) -> one
-    (Exp (Const 0) _) -> zero
-    (Exp (Const 1) _) -> one
+    (Exp _ (Const 0)) -> constant 1
+    (Exp (Const 0) _) -> constant 0
+    (Exp (Const 1) _) -> constant 1
     (Exp x (Const 1)) -> single x
     (Exp _ (Neg (Const _))) -> error errRaiseNegative
     (Exp x y) -> exp x y
@@ -82,8 +82,6 @@ simpl ref expr = do
     neg = unary Neg
     single = unary id
     constant = return . Const
-    zero = constant 0
-    one = constant 1
 
 simplifyWithCount :: Expression -> (Expression, Int)
 simplifyWithCount expr = runST $ do
