@@ -77,7 +77,7 @@ simpl ref expr = do
     sub = binary Sub
     mul = binary Mul
     exp = binary Exp
-    unary f x = simplify1 ref =<< f <$> simpl ref x
+    unary f x = simplify1 ref . f =<< simpl ref x
     neg = unary Neg
     single = unary id
     constant = return . Const
