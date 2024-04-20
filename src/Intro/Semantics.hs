@@ -54,8 +54,9 @@ simpl ref expr = do
     Add x (Const 0) -> simply x
     Add x y -> add x y
     Sub x (Const 0) -> simply x
-    Sub x y | x == y -> constant 0
-    Sub x y -> sub x y
+    Sub x y
+      | x == y -> constant 0
+      | otherwise -> sub x y
     Mul (Const 0) _ -> constant 0
     Mul _ (Const 0) -> constant 0
     Mul (Const 1) x -> simply x
