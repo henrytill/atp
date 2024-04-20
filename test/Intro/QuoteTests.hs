@@ -1,9 +1,9 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Math.ATP.Intro.Quote.Tests where
+module Intro.QuoteTests where
 
-import Math.ATP.Intro.Quote (intro)
-import Math.ATP.Intro.Syntax
+import Intro.Quote (intro)
+import Intro.Syntax
 import Test.Tasty
 import Test.Tasty.HUnit
 

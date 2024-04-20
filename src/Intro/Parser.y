@@ -1,9 +1,9 @@
 -- -*- mode: prog; tab-width: 2; -*-
 {
-module Math.ATP.Intro.Parser where
+module Intro.Parser where
 
-import Math.ATP.Intro.Lexer
-import Math.ATP.Intro.Syntax
+import Intro.Lexer
+import Intro.Syntax
 }
 
 %name calc

@@ -1,12 +1,12 @@
-module Math.ATP.Intro.Quote (intro) where
+module Intro.Quote (intro) where
 
 import Data.Generics.Aliases (extQ)
 import Language.Haskell.TH qualified as TH
 import Language.Haskell.TH.Quote (QuasiQuoter (..))
 import Language.Haskell.TH.Syntax (dataToExpQ, dataToPatQ)
-import Math.ATP.Intro.Lexer (AlexPosn (..), lex)
-import Math.ATP.Intro.Parser (calc)
-import Math.ATP.Intro.Syntax (Expression (..))
+import Intro.Lexer (AlexPosn (..), lex)
+import Intro.Parser (calc)
+import Intro.Syntax (Expression (..))
 import Prelude hiding (lex)
 
 getSourcePos :: TH.Q AlexPosn

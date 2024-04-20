@@ -18,11 +18,11 @@ common warnings
 
 library
     import:              warnings
-    exposed-modules:     Math.ATP.Intro.Lexer
-                         Math.ATP.Intro.Parser
-                         Math.ATP.Intro.Quote
-                         Math.ATP.Intro.Semantics
-                         Math.ATP.Intro.Syntax
+    exposed-modules:     Intro.Lexer
+                         Intro.Parser
+                         Intro.Quote
+                         Intro.Semantics
+                         Intro.Syntax
     -- other-modules:
     -- other-extensions:
     build-depends:       base             >=4.17 && <5,
@@ -50,9 +50,9 @@ test-suite atp-test
     import:              warnings
     main-is:             Main.hs
     type:                exitcode-stdio-1.0
-    other-modules:       Math.ATP.Intro.Quote.Tests
-                         Math.ATP.Intro.Semantics.Tests
-                         Math.ATP.Intro.Tests
+    other-modules:       Intro
+                         Intro.QuoteTests
+                         Intro.SemanticsTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          tasty       >=1.0  && <1.6,

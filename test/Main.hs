@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Math.ATP.Intro.Tests qualified as Intro
+import Intro qualified
 import Test.Tasty
 
 unitTests :: TestTree

@@ -1,10 +1,10 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Math.ATP.Intro.Semantics.Tests where
+module Intro.SemanticsTests where
 
-import Math.ATP.Intro.Quote (intro)
-import Math.ATP.Intro.Semantics
-import Math.ATP.Intro.Syntax
+import Intro.Quote (intro)
+import Intro.Semantics
+import Intro.Syntax
 import Test.Tasty
 import Test.Tasty.HUnit
 

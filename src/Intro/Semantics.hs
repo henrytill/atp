@@ -1,9 +1,9 @@
-module Math.ATP.Intro.Semantics (simplify, simplifyWithCount) where
+module Intro.Semantics (simplify, simplifyWithCount) where
 
 import Control.Monad.ST
 import Data.Functor (($>))
 import Data.STRef
-import Math.ATP.Intro.Syntax
+import Intro.Syntax
 import Prelude hiding (exp)
 
 errRaiseNegative :: String

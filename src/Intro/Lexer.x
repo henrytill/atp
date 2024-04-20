@@ -1,6 +1,6 @@
 -- -*- mode: prog; tab-width: 2; -*-
 {
-module Math.ATP.Intro.Lexer where
+module Intro.Lexer where
 }
 
 %wrapper "posn"

@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
-module Math.ATP.Intro.Syntax where
+module Intro.Syntax where
 
 import Data.Data
 
