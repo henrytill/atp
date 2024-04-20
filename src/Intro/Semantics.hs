@@ -50,28 +50,28 @@ simpl :: STRef s Int -> Expression -> ST s Expression
 simpl ref expr = do
   incr ref
   case expr of
-    (Add (Const 0) x) -> simply x
-    (Add x (Const 0)) -> simply x
-    (Add x y) -> add x y
-    (Sub x (Const 0)) -> simply x
-    (Sub x y) | x == y -> constant 0
-    (Sub x y) -> sub x y
-    (Mul (Const 0) _) -> constant 0
-    (Mul _ (Const 0)) -> constant 0
-    (Mul (Const 1) x) -> simply x
-    (Mul x (Const 1)) -> simply x
-    (Mul x y) -> mul x y
-    (Exp _ (Const 0)) -> constant 1
-    (Exp (Const 0) _) -> constant 0
-    (Exp (Const 1) _) -> constant 1
-    (Exp x (Const 1)) -> simply x
-    (Exp _ (Neg (Const _))) -> error errRaiseNegative
-    (Exp x y) -> exp x y
-    (Neg (Neg x)) -> simply x
-    (Neg x) -> neg x
-    (Const m) -> constant m
-    (Var a) -> return (Var a)
-    (MetaVar _) -> undefined
+    Add (Const 0) x -> simply x
+    Add x (Const 0) -> simply x
+    Add x y -> add x y
+    Sub x (Const 0) -> simply x
+    Sub x y | x == y -> constant 0
+    Sub x y -> sub x y
+    Mul (Const 0) _ -> constant 0
+    Mul _ (Const 0) -> constant 0
+    Mul (Const 1) x -> simply x
+    Mul x (Const 1) -> simply x
+    Mul x y -> mul x y
+    Exp _ (Const 0) -> constant 1
+    Exp (Const 0) _ -> constant 0
+    Exp (Const 1) _ -> constant 1
+    Exp x (Const 1) -> simply x
+    Exp _ (Neg (Const _)) -> error errRaiseNegative
+    Exp x y -> exp x y
+    Neg (Neg x) -> simply x
+    Neg x -> neg x
+    Const m -> constant m
+    Var a -> return (Var a)
+    MetaVar _ -> undefined
   where
     binary f x y = simplify1 ref =<< f <$> simpl ref x <*> simpl ref y
     add = binary Add
