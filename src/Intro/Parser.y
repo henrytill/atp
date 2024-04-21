@@ -6,7 +6,7 @@ import Intro.Lexer
 import Intro.Syntax
 }
 
-%name calc
+%name parseIntro
 %tokentype { Token }
 %error { parseError }
 
@@ -24,19 +24,19 @@ import Intro.Syntax
 %left '+' '-'
 %left '*'
 %right '^'
-%nonassoc UMINUS
+%left NEG
 
 %%
 
-Exp : var                  { Var $1 }
-    | metavar              { MetaVar $1 }
-    | const                { Const $1 }
-    | Exp '^' Exp          { Exp $1 $3 }
-    | Exp '*' Exp          { Mul $1 $3 }
-    | Exp '+' Exp          { Add $1 $3 }
-    | Exp '-' Exp          { Sub $1 $3 }
-    | '-' Exp %prec UMINUS { Neg $2 }
-    | '(' Exp ')'          { $2 }
+Exp : var               { Var $1 }
+    | metavar           { MetaVar $1 }
+    | const             { Const $1 }
+    | Exp '^' Exp       { Exp $1 $3 }
+    | Exp '*' Exp       { Mul $1 $3 }
+    | Exp '+' Exp       { Add $1 $3 }
+    | Exp '-' Exp       { Sub $1 $3 }
+    | '-' Exp %prec NEG { Neg $2 }
+    | '(' Exp ')'       { $2 }
 
 {
 parseError :: [Token] -> a

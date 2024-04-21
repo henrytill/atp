@@ -2,7 +2,7 @@ module Intro.Quote (intro) where
 
 import Data.Generics.Aliases (extQ)
 import Intro.Lexer (AlexPosn (..), lex)
-import Intro.Parser (calc)
+import Intro.Parser (parseIntro)
 import Intro.Syntax (Expression (..))
 import Language.Haskell.TH qualified as TH
 import Language.Haskell.TH.Quote (QuasiQuoter (..))
@@ -16,7 +16,7 @@ getSourcePos = f <$> TH.location
     f loc = uncurry (AlexPn 0) (TH.loc_start loc)
 
 parseExpression :: AlexPosn -> String -> TH.Q Expression
-parseExpression pos = return . calc . lex pos
+parseExpression pos = return . parseIntro . lex pos
 
 antiExpIntro :: Expression -> Maybe (TH.Q TH.Exp)
 antiExpIntro (MetaVar v) = Just (TH.varE (TH.mkName v))
