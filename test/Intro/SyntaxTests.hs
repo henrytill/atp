@@ -7,6 +7,9 @@ import Intro.Syntax
 import Test.Tasty
 import Test.Tasty.HUnit
 
+pretty :: Expression -> String
+pretty = show . prettyExpression
+
 tests :: TestTree
 tests =
   testGroup
@@ -47,5 +50,4 @@ tests =
         pretty [intro| 1 + (2 * 3) |] @?= "(1 + (2 * 3))"
     ]
   where
-    pretty = show . prettyExpression
     m = Const 1
