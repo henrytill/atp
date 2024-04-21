@@ -3,7 +3,7 @@
 module Prop.Parser where
 
 import Prop.Lexer
-import Prop.Syntax qualified as Syntax
+import Prop.Syntax
 }
 
 %name parseProp
@@ -29,15 +29,15 @@ import Prop.Syntax qualified as Syntax
 
 %%
 
-Formula : atom                  { Syntax.Atom (Syntax.MkProp $1) }
-        | metavar               { Syntax.MetaVar $1 }
-        | false                 { Syntax.False }
-        | true                  { Syntax.True }
-        | Formula and Formula   { Syntax.And $1 $3 }
-        | Formula or Formula    { Syntax.Or $1 $3 }
-        | Formula imp Formula   { Syntax.Imp $1 $3 }
-        | Formula iff Formula   { Syntax.Iff $1 $3 }
-        | '~' Formula %prec NOT { Syntax.Not $2 }
+Formula : atom                  { FmAtom (MkProp $1) }
+        | metavar               { FmMetaVar $1 }
+        | false                 { FmFalse }
+        | true                  { FmTrue }
+        | Formula and Formula   { FmAnd $1 $3 }
+        | Formula or Formula    { FmOr $1 $3 }
+        | Formula imp Formula   { FmImp $1 $3 }
+        | Formula iff Formula   { FmIff $1 $3 }
+        | '~' Formula %prec NOT { FmNot $2 }
         | '(' Formula ')'       { $2 }
 
 {

@@ -19,7 +19,7 @@ parseFormula :: AlexPosn -> String -> TH.Q (Formula Prop)
 parseFormula pos = return . parseProp . lex pos
 
 antiExpProp :: Formula Prop -> Maybe (TH.Q TH.Exp)
-antiExpProp (MetaVar v) = Just (TH.varE (TH.mkName v))
+antiExpProp (FmMetaVar v) = Just (TH.varE (TH.mkName v))
 antiExpProp _ = Nothing
 
 quoteExpProp :: String -> TH.Q TH.Exp
@@ -29,7 +29,7 @@ quoteExpProp str = do
   dataToExpQ (const Nothing `extQ` antiExpProp) expr
 
 antiPatProp :: Formula Prop -> Maybe (TH.Q TH.Pat)
-antiPatProp (MetaVar v) = Just (TH.varP (TH.mkName v))
+antiPatProp (FmMetaVar v) = Just (TH.varP (TH.mkName v))
 antiPatProp _ = Nothing
 
 quotePatProp :: String -> TH.Q TH.Pat
