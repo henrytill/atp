@@ -27,6 +27,7 @@ library
     -- other-extensions:
     build-depends:       base             >=4.17 && <5,
                          array            >=0.5  && <0.6,
+                         pretty           >=1.1  && <1.2,
                          syb              >=0.7  && <0.8,
                          template-haskell >=2.12 && <2.22
     build-tool-depends:  alex:alex        >=3.2,
@@ -53,6 +54,7 @@ test-suite atp-test
     other-modules:       Intro
                          Intro.QuoteTests
                          Intro.SemanticsTests
+                         Intro.SyntaxTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          tasty       >=1.0  && <1.6,
