@@ -1,4 +1,4 @@
--- -*- mode: prog; tab-width: 2; -*-
+-- -*- mode: text; tab-width: 2; -*-
 {
 module Intro.Lexer where
 }
@@ -11,27 +11,27 @@ $alpha = [a-zA-Z]
 tokens :-
 
   $white+                          ;
-  $alpha [$alpha $digit \_ \']*    { \p s -> TokenVar p s }
-  \$ $alpha [$alpha $digit \_ \']* { \p s -> TokenMetaVar p (drop 1 s) }
-  $digit+                          { \p s -> TokenConst p (read s) }
-  \+                               { \p _ -> TokenPlus p }
-  \-                               { \p _ -> TokenMinus p }
-  \*                               { \p _ -> TokenTimes p }
-  \^                               { \p _ -> TokenExp p }
-  \(                               { \p _ -> TokenLParen p }
-  \)                               { \p _ -> TokenRParen p }
+  $alpha [$alpha $digit \_ \']*    { \p s -> TokVar p s }
+  \$ $alpha [$alpha $digit \_ \']* { \p s -> TokMetaVar p (drop 1 s) }
+  $digit+                          { \p s -> TokConst p (read s) }
+  \+                               { \p _ -> TokPlus p }
+  \-                               { \p _ -> TokMinus p }
+  \*                               { \p _ -> TokTimes p }
+  \^                               { \p _ -> TokExp p }
+  \(                               { \p _ -> TokLParen p }
+  \)                               { \p _ -> TokRParen p }
 
 {
 data Token
-  = TokenVar AlexPosn String
-  | TokenMetaVar AlexPosn String
-  | TokenConst AlexPosn Integer
-  | TokenPlus AlexPosn
-  | TokenMinus AlexPosn
-  | TokenTimes AlexPosn
-  | TokenExp AlexPosn
-  | TokenLParen AlexPosn
-  | TokenRParen AlexPosn
+  = TokVar AlexPosn String
+  | TokMetaVar AlexPosn String
+  | TokConst AlexPosn Integer
+  | TokPlus AlexPosn
+  | TokMinus AlexPosn
+  | TokTimes AlexPosn
+  | TokExp AlexPosn
+  | TokLParen AlexPosn
+  | TokRParen AlexPosn
   deriving (Eq, Show)
 
 scanTokens :: AlexPosn -> String -> [Token]

@@ -11,17 +11,17 @@ import Prop.Syntax
 %error { parseError }
 
 %token
-  atom    { TokenAtom _ $$ }
-  metavar { TokenMetaVar _ $$ }
-  false   { TokenFalse _ }
-  true    { TokenTrue _ }
-  '~'     { TokenNot _ }
-  and     { TokenAnd _ }
-  or      { TokenOr _ }
-  imp     { TokenImp _ }
-  iff     { TokenIff _ }
-  '('     { TokenLParen _ }
-  ')'     { TokenRParen _ }
+  atom    { TokAtom _ $$ }
+  metavar { TokMetaVar _ $$ }
+  false   { TokFalse _ }
+  true    { TokTrue _ }
+  '~'     { TokNot _ }
+  and     { TokAnd _ }
+  or      { TokOr _ }
+  imp     { TokImp _ }
+  iff     { TokIff _ }
+  '('     { TokLParen _ }
+  ')'     { TokRParen _ }
 
 
 %left 'and' 'or'

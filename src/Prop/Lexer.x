@@ -1,4 +1,4 @@
--- -*- mode: prog; tab-width: 2; -*-
+-- -*- mode: text; tab-width: 2; -*-
 {
 module Prop.Lexer where
 }
@@ -12,31 +12,31 @@ $alpha = [a-zA-Z]
 tokens :-
 
   $white+                          ;
-  $alpha [$alpha $digit \_ \']*    { \p s -> TokenAtom p s }
-  \$ $alpha [$alpha $digit \_ \']* { \p s -> TokenMetaVar p (drop 1 s) }
-  false                            { \p _ -> TokenFalse p }
-  true                             { \p _ -> TokenTrue p }
-  \~                               { \p _ -> TokenNot p }
-  "/\"                             { \p _ -> TokenAnd p }
-  "\/"                             { \p _ -> TokenOr p }
-  "==>"                            { \p _ -> TokenImp p }
-  "<=>"                            { \p _ -> TokenIff p }
-  \(                               { \p _ -> TokenLParen p }
-  \)                               { \p _ -> TokenRParen p }
+  $alpha [$alpha $digit \_ \']*    { \p s -> TokAtom p s }
+  \$ $alpha [$alpha $digit \_ \']* { \p s -> TokMetaVar p (drop 1 s) }
+  false                            { \p _ -> TokFalse p }
+  true                             { \p _ -> TokTrue p }
+  \~                               { \p _ -> TokNot p }
+  "/\"                             { \p _ -> TokAnd p }
+  "\/"                             { \p _ -> TokOr p }
+  "==>"                            { \p _ -> TokImp p }
+  "<=>"                            { \p _ -> TokIff p }
+  \(                               { \p _ -> TokLParen p }
+  \)                               { \p _ -> TokRParen p }
 
 {
 data Token
-  = TokenAtom AlexPosn String
-  | TokenMetaVar AlexPosn String
-  | TokenFalse AlexPosn
-  | TokenTrue AlexPosn
-  | TokenNot AlexPosn
-  | TokenAnd AlexPosn
-  | TokenOr AlexPosn
-  | TokenImp AlexPosn
-  | TokenIff AlexPosn
-  | TokenLParen AlexPosn
-  | TokenRParen AlexPosn
+  = TokAtom AlexPosn String
+  | TokMetaVar AlexPosn String
+  | TokFalse AlexPosn
+  | TokTrue AlexPosn
+  | TokNot AlexPosn
+  | TokAnd AlexPosn
+  | TokOr AlexPosn
+  | TokImp AlexPosn
+  | TokIff AlexPosn
+  | TokLParen AlexPosn
+  | TokRParen AlexPosn
   deriving (Eq, Show)
 
 scanTokens :: AlexPosn -> String -> [Token]

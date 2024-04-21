@@ -11,15 +11,15 @@ import Intro.Syntax
 %error { parseError }
 
 %token
-  var     { TokenVar _ $$ }
-  metavar { TokenMetaVar _ $$ }
-  const   { TokenConst _ $$ }
-  '+'     { TokenPlus _ }
-  '-'     { TokenMinus _ }
-  '*'     { TokenTimes _ }
-  '^'     { TokenExp _ }
-  '('     { TokenLParen _ }
-  ')'     { TokenRParen _ }
+  var     { TokVar _ $$ }
+  metavar { TokMetaVar _ $$ }
+  const   { TokConst _ $$ }
+  '+'     { TokPlus _ }
+  '-'     { TokMinus _ }
+  '*'     { TokTimes _ }
+  '^'     { TokExp _ }
+  '('     { TokLParen _ }
+  ')'     { TokRParen _ }
 
 %left '+' '-'
 %left '*'
