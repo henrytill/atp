@@ -23,6 +23,10 @@ library
                          Intro.Quote
                          Intro.Semantics
                          Intro.Syntax
+                         Prop.Lexer
+                         Prop.Parser
+                         Prop.Quote
+                         Prop.Syntax
     -- other-modules:
     -- other-extensions:
     build-depends:       base             >=4.17 && <5,
