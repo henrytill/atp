@@ -3,6 +3,8 @@
 module Prop.Syntax where
 
 import Data.Data
+import Text.PrettyPrint
+import Prelude hiding ((<>))
 
 data Formula a
   = FmFalse
@@ -20,3 +22,20 @@ data Formula a
 
 newtype Prop = MkProp {unProp :: String}
   deriving (Show, Eq, Data, Typeable)
+
+prettyFormula :: Formula Prop -> Doc
+prettyFormula expr =
+  case expr of
+    FmFalse -> text "false"
+    FmTrue -> text "true"
+    FmAtom x -> text (unProp x)
+    FmNot x -> parens (char '~' <+> prettyFormula x)
+    FmAnd x y -> binary "/\\" x y
+    FmOr x y -> binary "\\/" x y
+    FmImp x y -> binary "==>" x y
+    FmIff x y -> binary "<=>" x y
+    FmForAll {} -> undefined
+    FmExists {} -> undefined
+    FmMetaVar s -> char '$' <> text s
+  where
+    binary s x y = parens (prettyFormula x <+> text s <+> prettyFormula y)

@@ -59,6 +59,8 @@ test-suite atp-test
                          Intro.QuoteTests
                          Intro.SemanticsTests
                          Intro.SyntaxTests
+                         Prop
+                         Prop.SyntaxTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          tasty       >=1.0  && <1.6,

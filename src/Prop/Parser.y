@@ -23,8 +23,9 @@ import Prop.Syntax
   '('     { TokLParen _ }
   ')'     { TokRParen _ }
 
-
-%left 'and' 'or'
+%right imp iff
+%right or
+%right and
 %left NOT
 
 %%
