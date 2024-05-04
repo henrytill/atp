@@ -74,12 +74,12 @@ simpl ref expr = do
     Var a -> return (Var a)
     MetaVar _ -> undefined
   where
-    binary f x y = simplify1 ref =<< f <$> simpl ref x <*> simpl ref y
+    binary f x y = f <$> simpl ref x <*> simpl ref y >>= simplify1 ref
     add = binary Add
     sub = binary Sub
     mul = binary Mul
     exp = binary Exp
-    unary f x = simplify1 ref . f =<< simpl ref x
+    unary f x = simpl ref x >>= simplify1 ref . f
     neg = unary Neg
     simply = unary id
     constant = return . Const
