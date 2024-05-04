@@ -63,6 +63,7 @@ test-suite atp-test
                          Prop.SyntaxTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
+                         pretty      >=1.1  && <1.2,
                          tasty       >=1.0  && <1.6,
                          tasty-hunit >=0.10 && <0.11,
                          atp
