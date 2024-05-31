@@ -1,6 +1,12 @@
 (test
  (name test_intro)
- (libraries alcotest intro))
+ (libraries alcotest intro)
+ (modules test_intro))
+
+(test
+ (name test_prop_logic)
+ (libraries alcotest prop_logic)
+ (modules test_prop_logic))
 
 (cram
  (deps %{bin:atp}))
