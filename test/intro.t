@@ -3,54 +3,54 @@
 Test parsing
 
   $ atp intro -dump-ast "a"
-  Var "a"
+  (Var "a")
 
   $ atp intro -dump-ast "42"
-  Const 42
+  (Const 42)
 
   $ atp intro -dump-ast "42 + 42"
-  Add (Const 42, Const 42)
+  (Add (Const 42, Const 42))
 
   $ atp intro -dump-ast "42 * 42"
-  Mul (Const 42, Const 42)
+  (Mul (Const 42, Const 42))
 
   $ atp intro -dump-ast "2 ^ 3"
-  Exp (Const 2, Const 3)
+  (Exp (Const 2, Const 3))
 
   $ atp intro -dump-ast "x - - - x"
-  Sub (Var "x", Neg (Neg (Var "x")))
+  (Sub (Var "x", Neg (Neg (Var "x"))))
 
   $ atp intro -dump-ast "2 * x + y"
-  Add (Mul (Const 2, Var "x"), Var "y")
+  (Add (Mul (Const 2, Var "x"), Var "y"))
 
   $ atp intro -dump-ast "(0 * x + 1) * 3 + 12"
-  Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12)
+  (Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12))
 
 Test precedence
 
   $ atp intro -dump-ast "1 + 2 * 3"
-  Add (Const 1, Mul (Const 2, Const 3))
+  (Add (Const 1, Mul (Const 2, Const 3)))
 
   $ atp intro -dump-ast "1 * 2 + 3"
-  Add (Mul (Const 1, Const 2), Const 3)
+  (Add (Mul (Const 1, Const 2), Const 3))
 
   $ atp intro -dump-ast "x + y + z"
-  Add (Add (Var "x", Var "y"), Var "z")
+  (Add (Add (Var "x", Var "y"), Var "z"))
 
   $ atp intro -dump-ast "x - y - z"
-  Sub (Sub (Var "x", Var "y"), Var "z")
+  (Sub (Sub (Var "x", Var "y"), Var "z"))
 
   $ atp intro -dump-ast "x * y * z"
-  Mul (Mul (Var "x", Var "y"), Var "z")
+  (Mul (Mul (Var "x", Var "y"), Var "z"))
 
   $ atp intro -dump-ast "x ^ y ^ z"
-  Exp (Var "x", Exp (Var "y", Var "z"))
+  (Exp (Var "x", Exp (Var "y", Var "z")))
 
   $ atp intro -dump-ast "(1 + 2) * 3"
-  Mul (Add (Const 1, Const 2), Const 3)
+  (Mul (Add (Const 1, Const 2), Const 3))
 
   $ atp intro -dump-ast "1 * (2 + 3)"
-  Mul (Const 1, Add (Const 2, Const 3))
+  (Mul (Const 1, Add (Const 2, Const 3)))
 
 Test simplification
 

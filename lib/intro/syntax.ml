@@ -7,16 +7,20 @@ type t =
   | Mul of t * t
   | Exp of t * t
 
-let rec pp_ast fmt x =
+let pp_ast fmt x =
   let open Format in
-  match x with
-  | Var a -> fprintf fmt "@[Var %S@]" a
-  | Const a -> fprintf fmt "@[Const %d@]" a
-  | Neg a -> fprintf fmt "@[Neg (%a)@]" pp_ast a
-  | Add (a, b) -> fprintf fmt "@[Add (%a, %a)@]" pp_ast a pp_ast b
-  | Sub (a, b) -> fprintf fmt "@[Sub (%a, %a)@]" pp_ast a pp_ast b
-  | Mul (a, b) -> fprintf fmt "@[Mul (%a, %a)@]" pp_ast a pp_ast b
-  | Exp (a, b) -> fprintf fmt "@[Exp (%a, %a)@]" pp_ast a pp_ast b
+  let rec go fmt = function
+    | Var a -> fprintf fmt "@[Var %S@]" a
+    | Const a -> fprintf fmt "@[Const %d@]" a
+    | Neg a -> fprintf fmt "@[Neg (%a)@]" go a
+    | Add (a, b) -> fprintf fmt "@[Add (%a, %a)@]" go a go b
+    | Sub (a, b) -> fprintf fmt "@[Sub (%a, %a)@]" go a go b
+    | Mul (a, b) -> fprintf fmt "@[Mul (%a, %a)@]" go a go b
+    | Exp (a, b) -> fprintf fmt "@[Exp (%a, %a)@]" go a go b
+  in
+  fprintf fmt "@[(";
+  go fmt x;
+  fprintf fmt ")@]"
 
 let rec pp fmt x =
   let open Format in
