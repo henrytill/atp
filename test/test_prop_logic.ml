@@ -44,6 +44,37 @@ module Test_parse = struct
     Alcotest.(check (option syntax)) same_expr expected actual
 end
 
+module Test_pp = struct
+  module Prop = Syntax.Prop
+
+  let roundtrip (s : string) : string option =
+    let to_str fm =
+      Syntax.pp Format.str_formatter fm;
+      Format.flush_str_formatter ()
+    in
+    Option.map to_str (Prop_logic.parse_string s)
+
+  let example () =
+    let actual = Some "((p \\/ q) ==> r)" in
+    let expected = roundtrip {| p \/ q ==> r |} in
+    Alcotest.(check (option string)) same_expr expected actual
+
+  let another_example () =
+    let actual = Some "(p ==> ((q /\\ (~ r)) \\/ s))" in
+    let expected = roundtrip {| p ==> q /\ ~r \/ s |} in
+    Alcotest.(check (option string)) same_expr expected actual
+
+  let right_associative_ands () =
+    let actual = Some "(p /\\ (q /\\ r))" in
+    let expected = roundtrip {| p /\ q /\ r |} in
+    Alcotest.(check (option string)) same_expr expected actual
+
+  let right_associative_imps () =
+    let actual = Some "(p ==> (q ==> r))" in
+    let expected = roundtrip {| p ==> q ==> r |} in
+    Alcotest.(check (option string)) same_expr expected actual
+end
+
 let prop_logic_tests =
   let open Alcotest in
   [
@@ -54,6 +85,13 @@ let prop_logic_tests =
         test_case "Parse another example" `Quick Test_parse.another_example;
         test_case "Print right-associative ands" `Quick Test_parse.right_associative_ands;
         test_case "Print right-associative imps" `Quick Test_parse.right_associative_imps;
+      ] );
+    ( "Test_pp",
+      [
+        test_case "Parse and print example" `Quick Test_pp.example;
+        test_case "Parse and print another example" `Quick Test_pp.another_example;
+        test_case "Parse and print right-associative ands" `Quick Test_pp.right_associative_ands;
+        test_case "Parse and print right-associative imps" `Quick Test_pp.right_associative_imps;
       ] );
   ]
 

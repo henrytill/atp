@@ -20,10 +20,12 @@ module Formula : sig
     | Exists of string * 'a t
 
   val pp_ast : (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
+  val pp : (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
   val equal : ('a -> 'b -> bool) -> 'a t -> 'b t -> bool
 end
 
 type t = Prop.t Formula.t
 
 val pp_ast : Format.formatter -> t -> unit
+val pp : Format.formatter -> t -> unit
 val equal : t -> t -> bool

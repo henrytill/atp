@@ -3,6 +3,7 @@ module Prop = struct
 
   let make s = s
   let pp_ast fmt = Format.fprintf fmt "@[%S@]"
+  let pp fmt = Format.fprintf fmt "@[%s@]"
   let equal = String.equal
 end
 
@@ -37,6 +38,21 @@ module Formula = struct
     go fmt fm;
     fprintf fmt ")@]"
 
+  let pp atom_pp fmt fm =
+    let open Format in
+    let rec go fmt = function
+      | Atom a -> atom_pp fmt a
+      | False -> fprintf fmt "@[false@]"
+      | True -> fprintf fmt "@[true@]"
+      | Not p -> fprintf fmt "@[(~ %a)@]" go p
+      | And (p, q) -> fprintf fmt "@[(%a /\\ %a)@]" go p go q
+      | Or (p, q) -> fprintf fmt "@[(%a \\/ %a)@]" go p go q
+      | Imp (p, q) -> fprintf fmt "@[(%a ==> %a)@]" go p go q
+      | Iff (p, q) -> fprintf fmt "@[(%a <=> %a)@]" go p go q
+      | Forall _ | Exists _ -> failwith "unimplemented"
+    in
+    go fmt fm
+
   let rec equal atom_equal fm1 fm2 =
     match (fm1, fm2) with
     | Atom a, Atom b -> atom_equal a b
@@ -55,4 +71,5 @@ end
 type t = Prop.t Formula.t
 
 let pp_ast = Formula.pp_ast Prop.pp_ast
+let pp = Formula.pp Prop.pp
 let equal = Formula.equal Prop.equal
