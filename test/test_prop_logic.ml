@@ -45,8 +45,6 @@ module Test_parse = struct
 end
 
 module Test_pp = struct
-  module Prop = Syntax.Prop
-
   let roundtrip (s : string) : string option =
     let to_str fm =
       Syntax.pp Format.str_formatter fm;
