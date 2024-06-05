@@ -80,9 +80,7 @@ module Command_intro = struct
   let main () =
     let has_anon_args = List.length !anon_args > 0 in
     let f = if has_anon_args then run_args else run_stdin in
-    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
-    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
-    f out_formatter err_formatter
+    f Format.std_formatter Format.err_formatter
 end
 
 let speclist = ref []
