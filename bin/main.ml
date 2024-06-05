@@ -49,9 +49,7 @@ module Command_intro = struct
 
   let anon_fun arg = anon_args := arg :: !anon_args
 
-  let run_args () =
-    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
-    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
+  let run_args out_formatter err_formatter =
     try
       List.iter
         (fun a ->
@@ -65,9 +63,7 @@ module Command_intro = struct
       Format.pp_print_flush err_formatter ();
       exit 1
 
-  let run_stdin () =
-    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
-    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
+  let run_stdin out_formatter err_formatter =
     let continue = ref true in
     let lexbuf = Lexing.from_channel Stdlib.stdin in
     try
@@ -84,7 +80,9 @@ module Command_intro = struct
   let main () =
     let has_anon_args = List.length !anon_args > 0 in
     let f = if has_anon_args then run_args else run_stdin in
-    f ()
+    let out_formatter = Format.formatter_of_out_channel Stdlib.stdout in
+    let err_formatter = Format.formatter_of_out_channel Stdlib.stderr in
+    f out_formatter err_formatter
 end
 
 let speclist = ref []
