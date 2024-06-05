@@ -4,7 +4,7 @@ module type COMMAND = sig
   val main : unit -> unit
 end
 
-module Intro_command = struct
+module Command_intro = struct
   let dump_ast = ref false
   let show_count = ref false
 
@@ -98,7 +98,7 @@ let select arg =
     main := Command.main
   in
   match arg with
-  | "intro" -> switch (module Intro_command)
+  | "intro" -> switch (module Command_intro)
   | _ -> raise (Arg.Bad ("Unknown command: " ^ arg))
 
 let dispatch arg = !anon_fun arg
