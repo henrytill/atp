@@ -88,10 +88,10 @@ module Command_intro = struct
 end
 
 let speclist = ref []
-let main = ref Fun.id
 let anon_fun = ref ignore
+let main = ref Fun.id
 
-let select arg =
+let select (arg : string) =
   let switch (module Command : COMMAND) =
     speclist := Arg.align (Command.speclist @ !speclist);
     anon_fun := Command.anon_fun;
