@@ -46,11 +46,11 @@ end
 
 module Test_pp = struct
   let roundtrip (s : string) : string option =
-    let to_str fm =
+    let to_string fm =
       Syntax.pp Format.str_formatter fm;
       Format.flush_str_formatter ()
     in
-    Option.map to_str (Prop_logic.parse_string s)
+    Option.map to_string (Prop_logic.parse_string s)
 
   let example () =
     let actual = Some "((p \\/ q) ==> r)" in
