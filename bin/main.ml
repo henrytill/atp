@@ -88,12 +88,12 @@ module Command_prop_logic = struct
   let speclist = [ ("-dump-ast", Arg.Set dump_ast, "Dump AST") ]
   let anon_args = ref []
 
-  let print_ast formatter expr =
-    Prop_logic.Syntax.pp_ast formatter expr;
+  let print_ast formatter fm =
+    Prop_logic.Syntax.pp_ast formatter fm;
     Format.pp_print_newline formatter ()
 
-  let print_expr formatter expr =
-    Prop_logic.Syntax.pp formatter expr;
+  let print_formula formatter fm =
+    Prop_logic.Syntax.pp formatter fm;
     Format.pp_print_newline formatter ()
 
   let print_exn formatter exn =
@@ -102,11 +102,11 @@ module Command_prop_logic = struct
 
   let read_eval_print lexbuf formatter =
     match Prop_logic.parse lexbuf with
-    | Some expr when !dump_ast ->
-        print_ast formatter expr;
+    | Some fm when !dump_ast ->
+        print_ast formatter fm;
         true
-    | Some expr ->
-        print_expr formatter expr;
+    | Some fm ->
+        print_formula formatter fm;
         true
     | None -> false
 
