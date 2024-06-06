@@ -1,4 +1,4 @@
 (executable
  (public_name atp)
  (name main)
- (libraries intro))
+ (libraries intro prop_logic))

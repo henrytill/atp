@@ -83,6 +83,69 @@ module Command_intro = struct
     f Format.std_formatter Format.err_formatter
 end
 
+module Command_prop_logic = struct
+  let dump_ast = ref false
+  let speclist = [ ("-dump-ast", Arg.Set dump_ast, "Dump AST") ]
+  let anon_args = ref []
+
+  let print_ast formatter expr =
+    Prop_logic.Syntax.pp_ast formatter expr;
+    Format.pp_print_newline formatter ()
+
+  let print_expr formatter expr =
+    Prop_logic.Syntax.pp formatter expr;
+    Format.pp_print_newline formatter ()
+
+  let print_exn formatter exn =
+    Format.pp_print_string formatter (Printexc.to_string exn);
+    Format.pp_print_newline formatter ()
+
+  let read_eval_print lexbuf formatter =
+    match Prop_logic.parse lexbuf with
+    | Some expr when !dump_ast ->
+        print_ast formatter expr;
+        true
+    | Some expr ->
+        print_expr formatter expr;
+        true
+    | None -> false
+
+  let anon_fun arg = anon_args := arg :: !anon_args
+
+  let run_args out_formatter err_formatter =
+    try
+      List.iter
+        (fun a ->
+          let lexbuf = Lexing.from_string a in
+          ignore (read_eval_print lexbuf out_formatter);
+          Format.pp_print_flush out_formatter ())
+        !anon_args;
+      exit 0
+    with exn ->
+      print_exn err_formatter exn;
+      Format.pp_print_flush err_formatter ();
+      exit 1
+
+  let run_stdin out_formatter err_formatter =
+    let continue = ref true in
+    let lexbuf = Lexing.from_channel Stdlib.stdin in
+    try
+      while !continue do
+        continue := read_eval_print lexbuf out_formatter;
+        Format.pp_print_flush out_formatter ()
+      done;
+      exit 0
+    with exn ->
+      print_exn err_formatter exn;
+      Format.pp_print_flush err_formatter ();
+      exit 1
+
+  let main () =
+    let has_anon_args = List.length !anon_args > 0 in
+    let f = if has_anon_args then run_args else run_stdin in
+    f Format.std_formatter Format.err_formatter
+end
+
 let speclist = ref []
 let anon_fun = ref ignore
 let main = ref Fun.id
@@ -95,6 +158,7 @@ let select (arg : string) =
   in
   match arg with
   | "intro" -> switch (module Command_intro)
+  | "prop-logic" -> switch (module Command_prop_logic)
   | _ -> raise (Arg.Bad ("Unknown command: " ^ arg))
 
 let dispatch arg = !anon_fun arg
