@@ -3,7 +3,7 @@ module Prop = struct
 
   let make s = s
   let pp_ast fmt = Format.fprintf fmt "@[%S@]"
-  let pp fmt = Format.fprintf fmt "@[%s@]"
+  let pp = Format.pp_print_string
   let equal = String.equal
 end
 
