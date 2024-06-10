@@ -1,23 +1,24 @@
 module Syntax = Prop_logic.Syntax
 
 let syntax = Alcotest.testable Syntax.pp_ast Syntax.equal
-let same_expr = "same expression"
 
 module Test_parse = struct
   module Prop = Syntax.Prop
   open Syntax.Formula
 
+  let same_fm = "same formula"
+
   let atom () =
     let expected : Syntax.t option = Some (Atom (Prop.inj "a")) in
     let actual = Prop_logic.parse_string {| a |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    Alcotest.(check (option syntax)) same_fm expected actual
 
   let example () =
     let expected =
       Some (Imp (Or (Atom (Prop.inj "p"), Atom (Prop.inj "q")), Atom (Prop.inj "r")))
     in
     let actual = Prop_logic.parse_string {| p \/ q ==> r |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    Alcotest.(check (option syntax)) same_fm expected actual
 
   let another_example () =
     let expected =
@@ -27,24 +28,26 @@ module Test_parse = struct
              Or (And (Atom (Prop.inj "q"), Not (Atom (Prop.inj "r"))), Atom (Prop.inj "s")) ))
     in
     let actual = Prop_logic.parse_string {| p ==> q /\ ~ r \/ s |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_ands () =
     let expected =
       Some (And (Atom (Prop.inj "p"), And (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
     in
     let actual = Prop_logic.parse_string {| p /\ q /\ r |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_imps () =
     let expected =
       Some (Imp (Atom (Prop.inj "p"), Imp (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
     in
     let actual = Prop_logic.parse_string {| p ==> q ==> r |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    Alcotest.(check (option syntax)) same_fm expected actual
 end
 
 module Test_pp = struct
+  let same_string = "same string"
+
   let roundtrip (s : string) : string option =
     let to_string fm =
       Syntax.pp Format.str_formatter fm;
@@ -55,33 +58,35 @@ module Test_pp = struct
   let example () =
     let expected = Some "((p \\/ q) ==> r)" in
     let actual = roundtrip {| p \/ q ==> r |} in
-    Alcotest.(check (option string)) same_expr expected actual
+    Alcotest.(check (option string)) same_string expected actual
 
   let another_example () =
     let expected = Some "(p ==> ((q /\\ (~ r)) \\/ s))" in
     let actual = roundtrip {| p ==> q /\ ~r \/ s |} in
-    Alcotest.(check (option string)) same_expr expected actual
+    Alcotest.(check (option string)) same_string expected actual
 
   let right_associative_ands () =
     let expected = Some "(p /\\ (q /\\ r))" in
     let actual = roundtrip {| p /\ q /\ r |} in
-    Alcotest.(check (option string)) same_expr expected actual
+    Alcotest.(check (option string)) same_string expected actual
 
   let right_associative_imps () =
     let expected = Some "(p ==> (q ==> r))" in
     let actual = roundtrip {| p ==> q ==> r |} in
-    Alcotest.(check (option string)) same_expr expected actual
+    Alcotest.(check (option string)) same_string expected actual
 end
 
 module Test_eval = struct
   module Prop = Syntax.Prop
 
+  let same_bool = "same bool"
+
   let read_eval (s : string) (v : Prop.t -> bool) : bool option =
     Option.map (fun fm -> Prop_logic.eval fm v) (Prop_logic.parse_string s)
 
   let example () =
-    let v x =
-      match Prop.prj x with
+    let v prop =
+      match Prop.prj prop with
       | "p" -> true
       | "q" -> false
       | "r" -> true
@@ -89,11 +94,11 @@ module Test_eval = struct
     in
     let expected = Some true in
     let actual = read_eval {| p /\ q ==> q /\ r |} v in
-    Alcotest.(check (option bool)) same_expr expected actual
+    Alcotest.(check (option bool)) same_bool expected actual
 
   let another_example () =
-    let v x =
-      match Prop.prj x with
+    let v prop =
+      match Prop.prj prop with
       | "p" -> true
       | "q" -> true
       | "r" -> false
@@ -101,7 +106,7 @@ module Test_eval = struct
     in
     let expected = Some false in
     let actual = read_eval {| p /\ q ==> q /\ r |} v in
-    Alcotest.(check (option bool)) same_expr expected actual
+    Alcotest.(check (option bool)) same_bool expected actual
 end
 
 let prop_logic_tests =
