@@ -53,23 +53,23 @@ module Test_pp = struct
     Option.map to_string (Prop_logic.parse_string s)
 
   let example () =
-    let actual = Some "((p \\/ q) ==> r)" in
-    let expected = roundtrip {| p \/ q ==> r |} in
+    let expected = Some "((p \\/ q) ==> r)" in
+    let actual = roundtrip {| p \/ q ==> r |} in
     Alcotest.(check (option string)) same_expr expected actual
 
   let another_example () =
-    let actual = Some "(p ==> ((q /\\ (~ r)) \\/ s))" in
-    let expected = roundtrip {| p ==> q /\ ~r \/ s |} in
+    let expected = Some "(p ==> ((q /\\ (~ r)) \\/ s))" in
+    let actual = roundtrip {| p ==> q /\ ~r \/ s |} in
     Alcotest.(check (option string)) same_expr expected actual
 
   let right_associative_ands () =
-    let actual = Some "(p /\\ (q /\\ r))" in
-    let expected = roundtrip {| p /\ q /\ r |} in
+    let expected = Some "(p /\\ (q /\\ r))" in
+    let actual = roundtrip {| p /\ q /\ r |} in
     Alcotest.(check (option string)) same_expr expected actual
 
   let right_associative_imps () =
-    let actual = Some "(p ==> (q ==> r))" in
-    let expected = roundtrip {| p ==> q ==> r |} in
+    let expected = Some "(p ==> (q ==> r))" in
+    let actual = roundtrip {| p ==> q ==> r |} in
     Alcotest.(check (option string)) same_expr expected actual
 end
 
