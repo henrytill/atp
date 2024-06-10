@@ -9,5 +9,5 @@ let rec eval (fm : Syntax.t) (v : Prop.t -> bool) : bool =
   | And (p, q) -> eval p v && eval q v
   | Or (p, q) -> eval p v || eval q v
   | Imp (p, q) -> (not (eval p v)) || eval q v
-  | Iff (p, q) -> eval p v = eval q v
+  | Iff (p, q) -> Bool.equal (eval p v) (eval q v)
   | Forall _ | Exists _ -> failwith "unimplemented"
