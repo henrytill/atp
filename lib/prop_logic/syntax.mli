@@ -4,6 +4,7 @@ module Prop : sig
   val inj : string -> t
   val prj : t -> string
   val pp_ast : Format.formatter -> t -> unit
+  val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
 end
 
