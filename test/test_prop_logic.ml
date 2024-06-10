@@ -73,6 +73,37 @@ module Test_pp = struct
     Alcotest.(check (option string)) same_expr expected actual
 end
 
+module Test_eval = struct
+  module Prop = Syntax.Prop
+
+  let read_eval (s : string) (v : Prop.t -> bool) : bool option =
+    Option.map (fun fm -> Prop_logic.eval fm v) (Prop_logic.parse_string s)
+
+  let example () =
+    let v x =
+      match Prop.prj x with
+      | "p" -> true
+      | "q" -> false
+      | "r" -> true
+      | _ -> failwith "unknown prop"
+    in
+    let expected = Some true in
+    let actual = read_eval {| p /\ q ==> q /\ r |} v in
+    Alcotest.(check (option bool)) same_expr expected actual
+
+  let another_example () =
+    let v x =
+      match Prop.prj x with
+      | "p" -> true
+      | "q" -> true
+      | "r" -> false
+      | _ -> failwith "unknown prop"
+    in
+    let expected = Some false in
+    let actual = read_eval {| p /\ q ==> q /\ r |} v in
+    Alcotest.(check (option bool)) same_expr expected actual
+end
+
 let prop_logic_tests =
   let open Alcotest in
   [
@@ -90,6 +121,11 @@ let prop_logic_tests =
         test_case "Parse and print another example" `Quick Test_pp.another_example;
         test_case "Parse and print right-associative ands" `Quick Test_pp.right_associative_ands;
         test_case "Parse and print right-associative imps" `Quick Test_pp.right_associative_imps;
+      ] );
+    ( "Test_eval",
+      [
+        test_case "Parse and eval example" `Quick Test_eval.example;
+        test_case "Parse and eval another example" `Quick Test_eval.another_example;
       ] );
   ]
 
