@@ -35,7 +35,7 @@ toplevel:
 ;
 
 formula:
-  | a = ATOM                      { Atom (Prop.make a) }
+  | a = ATOM                      { Atom (Prop.inj a) }
   | FALSE                         { False }
   | TRUE                          { True }
   | f1 = formula AND f2 = formula { And (f1, f2) }

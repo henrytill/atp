@@ -8,13 +8,13 @@ module Test_parse = struct
   open Syntax.Formula
 
   let atom () =
-    let expected : Syntax.t option = Some (Atom (Prop.make "a")) in
+    let expected : Syntax.t option = Some (Atom (Prop.inj "a")) in
     let actual = Prop_logic.parse_string {| a |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let example () =
     let expected =
-      Some (Imp (Or (Atom (Prop.make "p"), Atom (Prop.make "q")), Atom (Prop.make "r")))
+      Some (Imp (Or (Atom (Prop.inj "p"), Atom (Prop.inj "q")), Atom (Prop.inj "r")))
     in
     let actual = Prop_logic.parse_string {| p \/ q ==> r |} in
     Alcotest.(check (option syntax)) same_expr expected actual
@@ -23,22 +23,22 @@ module Test_parse = struct
     let expected =
       Some
         (Imp
-           ( Atom (Prop.make "p"),
-             Or (And (Atom (Prop.make "q"), Not (Atom (Prop.make "r"))), Atom (Prop.make "s")) ))
+           ( Atom (Prop.inj "p"),
+             Or (And (Atom (Prop.inj "q"), Not (Atom (Prop.inj "r"))), Atom (Prop.inj "s")) ))
     in
     let actual = Prop_logic.parse_string {| p ==> q /\ ~ r \/ s |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let right_associative_ands () =
     let expected =
-      Some (And (Atom (Prop.make "p"), And (Atom (Prop.make "q"), Atom (Prop.make "r"))))
+      Some (And (Atom (Prop.inj "p"), And (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
     in
     let actual = Prop_logic.parse_string {| p /\ q /\ r |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let right_associative_imps () =
     let expected =
-      Some (Imp (Atom (Prop.make "p"), Imp (Atom (Prop.make "q"), Atom (Prop.make "r"))))
+      Some (Imp (Atom (Prop.inj "p"), Imp (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
     in
     let actual = Prop_logic.parse_string {| p ==> q ==> r |} in
     Alcotest.(check (option syntax)) same_expr expected actual

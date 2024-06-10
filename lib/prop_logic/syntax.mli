@@ -1,7 +1,7 @@
 module Prop : sig
   type t
 
-  val make : string -> t
+  val inj : string -> t
   val pp_ast : Format.formatter -> t -> unit
   val equal : t -> t -> bool
 end

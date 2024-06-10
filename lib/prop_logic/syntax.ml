@@ -1,7 +1,7 @@
 module Prop = struct
   type t = string
 
-  let make s = s
+  let inj s = s
   let pp_ast fmt = Format.fprintf fmt "@[%S@]"
   let pp = Format.pp_print_string
   let equal = String.equal
