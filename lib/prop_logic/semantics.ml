@@ -32,3 +32,10 @@ let rec overatoms (f : 'a -> 'b -> 'c) (fm : 'a Formula.t) (b : 'b) : 'c =
   | Not p -> overatoms f p b
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
+
+let setify xs = List.sort_uniq compare xs
+
+let atom_union (f : 'a -> 'b list) (fm : 'a Formula.t) : 'b list =
+  setify (overatoms (fun h t -> f h @ t) fm [])
+
+let atoms (fm : 'a Formula.t) : 'a list = atom_union (fun a -> [ a ]) fm
