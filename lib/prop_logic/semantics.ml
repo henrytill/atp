@@ -15,8 +15,8 @@ let rec eval (fm : Syntax.t) (v : Prop.t -> bool) : bool =
 
 let rec onatoms (f : 'a -> 'b Formula.t) (fm : 'a Formula.t) : 'b Formula.t =
   match fm with
-  | False | True -> fm
   | Atom a -> f a
+  | False | True -> fm
   | Not p -> Not (onatoms f p)
   | And (p, q) -> And (onatoms f p, onatoms f q)
   | Or (p, q) -> Or (onatoms f p, onatoms f q)
@@ -27,8 +27,8 @@ let rec onatoms (f : 'a -> 'b Formula.t) (fm : 'a Formula.t) : 'b Formula.t =
 
 let rec overatoms (f : 'a -> 'b -> 'c) (fm : 'a Formula.t) (b : 'b) : 'c =
   match fm with
-  | False | True -> b
   | Atom a -> f a b
+  | False | True -> b
   | Not p -> overatoms f p b
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
