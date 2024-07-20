@@ -25,7 +25,7 @@ let rec onatoms (f : 'a -> 'b Formula.t) (fm : 'a Formula.t) : 'b Formula.t =
   | Forall (x, p) -> Forall (x, onatoms f p)
   | Exists (x, p) -> Exists (x, onatoms f p)
 
-let rec overatoms (f : 'a -> 'b -> 'c) (fm : 'a Formula.t) (b : 'b) : 'c =
+let rec overatoms (f : 'a -> 'b -> 'b) (fm : 'a Formula.t) (b : 'b) : 'b =
   match fm with
   | Atom a -> f a b
   | False | True -> b
