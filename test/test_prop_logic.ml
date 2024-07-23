@@ -1,11 +1,10 @@
 module Syntax = Prop_logic.Syntax
-module Prop = Prop_logic.Semantics.Prop
+module Prop = Prop_logic.Syntax.Prop
 
 let syntax = Alcotest.testable Syntax.pp_ast Syntax.equal
 let prop = Alcotest.testable Prop.pp_ast Prop.equal
 
 module Test_parse = struct
-  module Prop = Syntax.Prop
   open Syntax.Formula
 
   let same_fm = "same formula"
@@ -79,8 +78,6 @@ module Test_pp = struct
 end
 
 module Test_semantics = struct
-  module Semantics = Prop_logic.Semantics
-
   let same_bool = "same bool"
   let same_list = "same list"
 
@@ -111,20 +108,10 @@ module Test_semantics = struct
     let actual = read_eval {| p /\ q ==> q /\ r |} v in
     Alcotest.(check (option bool)) same_bool expected actual
 
-  let setify_example () =
-    let expected = [ 1; 2; 3; 4 ] in
-    let actual = Semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
-    Alcotest.(check (list int)) same_list expected actual
-
-  let setify_reverse () =
-    let expected = [ 1; 2; 3; 4 ] in
-    let actual = Semantics.setify [ 4; 3; 2; 1 ] in
-    Alcotest.(check (list int)) same_list expected actual
-
   let atoms_example () =
     let expected = Some [ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
     let actual =
-      Option.map Semantics.atoms (Prop_logic.parse_string {| p /\ q \/ s ==> ~p \/ (r <=> s) |})
+      Option.map Prop_logic.atoms (Prop_logic.parse_string {| p /\ q \/ s ==> ~p \/ (r <=> s) |})
     in
     Alcotest.(check (option (list prop))) same_list expected actual
 end
@@ -151,8 +138,6 @@ let prop_logic_tests =
       [
         test_case "Parse and eval example" `Quick Test_semantics.example;
         test_case "Parse and eval another example" `Quick Test_semantics.another_example;
-        test_case "Setify removes duplicates and sorts" `Quick Test_semantics.setify_example;
-        test_case "Setify reverses a list" `Quick Test_semantics.setify_reverse;
         test_case "Check atoms against example" `Quick Test_semantics.atoms_example;
       ] );
   ]
