@@ -27,3 +27,18 @@ Test printing
 
   $ atp prop-logic "p ==> q ==> r"
   (p ==> (q ==> r))
+
+Test printing truth table
+
+  $ atp prop-logic -dump-truthtable "p /\ q ==> q /\ r"
+  p     q     r     | formula
+  ---------------------------
+  false false false | true  
+  false false true  | true  
+  false true  false | true  
+  false true  true  | true  
+  true  false false | true  
+  true  false true  | true  
+  true  true  false | false 
+  true  true  true  | true  
+  ---------------------------

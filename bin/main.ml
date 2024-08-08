@@ -85,7 +85,14 @@ end
 
 module Command_prop_logic = struct
   let dump_ast = ref false
-  let speclist = [ ("-dump-ast", Arg.Set dump_ast, "Dump AST") ]
+  let dump_truthtable = ref false
+
+  let speclist =
+    [
+      ("-dump-ast", Arg.Set dump_ast, "Dump AST");
+      ("-dump-truthtable", Arg.Set dump_truthtable, "Dump truth table");
+    ]
+
   let anon_args = ref []
 
   let print_ast formatter fm =
@@ -104,6 +111,9 @@ module Command_prop_logic = struct
     match Prop_logic.parse lexbuf with
     | Some fm when !dump_ast ->
         print_ast formatter fm;
+        true
+    | Some fm when !dump_truthtable ->
+        Prop_logic.print_truthtable fm;
         true
     | Some fm ->
         print_formula formatter fm;
