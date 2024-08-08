@@ -55,9 +55,10 @@ let print_truthtable (fm : 'a Formula.t) : unit =
   let ats = atoms fm in
   let width = itlist (fun x -> max (String.length (Prop.prj x))) ats 5 + 1 in
   let fixw s = s ^ String.make (width - String.length s) ' ' in
-  let truthstring p = fixw (if p then "true" else "false") in
+  let truthstring p = fixw (string_of_bool p) in
   let mk_row v =
-    let lis = List.map (fun x -> truthstring (v x)) ats and ans = truthstring (eval fm v) in
+    let lis = List.map (fun x -> truthstring (v x)) ats in
+    let ans = truthstring (eval fm v) in
     print_string (itlist ( ^ ) lis ("| " ^ ans));
     print_newline ();
     true
