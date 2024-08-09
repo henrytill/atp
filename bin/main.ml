@@ -1,3 +1,7 @@
+let print_exn formatter exn =
+  Format.pp_print_string formatter (Printexc.to_string exn);
+  Format.pp_print_newline formatter ()
+
 module type COMMAND = sig
   val speclist : (string * Arg.spec * string) list
   val anon_fun : string -> unit
@@ -29,10 +33,6 @@ module Command_intro : COMMAND = struct
       Format.fprintf formatter "Steps: %a" Format.pp_print_int count;
       Format.pp_print_newline formatter ()
     end
-
-  let print_exn formatter exn =
-    Format.pp_print_string formatter (Printexc.to_string exn);
-    Format.pp_print_newline formatter ()
 
   let read_eval_print lexbuf formatter =
     match Intro.parse lexbuf with
@@ -101,10 +101,6 @@ module Command_prop_logic : COMMAND = struct
 
   let print_formula formatter fm =
     Prop_logic.Syntax.pp formatter fm;
-    Format.pp_print_newline formatter ()
-
-  let print_exn formatter exn =
-    Format.pp_print_string formatter (Printexc.to_string exn);
     Format.pp_print_newline formatter ()
 
   let read_eval_print lexbuf formatter =
