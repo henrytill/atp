@@ -51,12 +51,12 @@ let rec onallvaluations (subfn : ('a -> bool) -> bool) (v : 'a -> bool) (ats : '
       let v' (t : bool) (q : 'a) : bool = if q = p then t else v q in
       onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
-let print_truthtable (fmt : Format.formatter) (fm : 'a Formula.t) : unit =
+let print_truthtable (fmt : Format.formatter) (fm : Prop.t Formula.t) : unit =
   let ats = atoms fm in
   let width = itlist (fun x -> max (String.length (Prop.prj x))) ats 5 + 1 in
   let fixw s = s ^ String.make (width - String.length s) ' ' in
   let truthstring p = fixw (string_of_bool p) in
-  let mk_row v =
+  let mk_row (v : Prop.t -> bool) =
     let lis = List.map (fun x -> truthstring (v x)) ats in
     let ans = truthstring (eval fm v) in
     Format.pp_print_string fmt (itlist ( ^ ) lis ("| " ^ ans));
