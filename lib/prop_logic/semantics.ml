@@ -41,7 +41,7 @@ let atom_union (f : 'a -> 'b list) (fm : 'a Formula.t) : 'b list =
 let atoms (fm : 'a Formula.t) : 'a list = atom_union (fun a -> [ a ]) fm
 
 (** Equivalent to [List.fold_right] *)
-let itlist f l accu = List.fold_right f l accu
+let itlist = List.fold_right
 
 (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
 let rec onallvaluations (subfn : ('a -> bool) -> bool) (v : 'a -> bool) (ats : 'a list) : bool =
