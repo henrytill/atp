@@ -99,6 +99,8 @@ module Command_prop_logic : COMMAND = struct
     Prop_logic.Syntax.pp_ast formatter fm;
     Format.pp_print_newline formatter ()
 
+  let print_truthtable = Prop_logic.print_truthtable
+
   let print_formula formatter fm =
     Prop_logic.Syntax.pp formatter fm;
     Format.pp_print_newline formatter ()
@@ -109,7 +111,7 @@ module Command_prop_logic : COMMAND = struct
         print_ast formatter fm;
         true
     | Some fm when !dump_truthtable ->
-        Prop_logic.print_truthtable formatter fm;
+        print_truthtable formatter fm;
         true
     | Some fm ->
         print_formula formatter fm;
