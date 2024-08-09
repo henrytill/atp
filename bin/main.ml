@@ -4,7 +4,7 @@ module type COMMAND = sig
   val main : unit -> unit
 end
 
-module Command_intro = struct
+module Command_intro : COMMAND = struct
   let dump_ast = ref false
   let show_count = ref false
 
@@ -83,7 +83,7 @@ module Command_intro = struct
     f Format.std_formatter Format.err_formatter
 end
 
-module Command_prop_logic = struct
+module Command_prop_logic : COMMAND = struct
   let dump_ast = ref false
   let dump_truthtable = ref false
 
