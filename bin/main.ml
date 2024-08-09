@@ -113,7 +113,7 @@ module Command_prop_logic = struct
         print_ast formatter fm;
         true
     | Some fm when !dump_truthtable ->
-        Prop_logic.print_truthtable fm;
+        Prop_logic.print_truthtable formatter fm;
         true
     | Some fm ->
         print_formula formatter fm;

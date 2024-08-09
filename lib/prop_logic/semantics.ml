@@ -51,7 +51,7 @@ let rec onallvaluations (subfn : ('a -> bool) -> bool) (v : 'a -> bool) (ats : '
       let v' (t : bool) (q : 'a) : bool = if q = p then t else v q in
       onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
-let print_truthtable (fm : 'a Formula.t) : unit =
+let print_truthtable (fmt : Format.formatter) (fm : 'a Formula.t) : unit =
   let ats = atoms fm in
   let width = itlist (fun x -> max (String.length (Prop.prj x))) ats 5 + 1 in
   let fixw s = s ^ String.make (width - String.length s) ' ' in
@@ -59,15 +59,15 @@ let print_truthtable (fm : 'a Formula.t) : unit =
   let mk_row v =
     let lis = List.map (fun x -> truthstring (v x)) ats in
     let ans = truthstring (eval fm v) in
-    print_string (itlist ( ^ ) lis ("| " ^ ans));
-    print_newline ();
+    Format.pp_print_string fmt (itlist ( ^ ) lis ("| " ^ ans));
+    Format.pp_print_newline fmt ();
     true
   in
   let separator = String.make ((width * List.length ats) + 9) '-' in
-  print_string (itlist (fun s t -> fixw (Prop.prj s) ^ t) ats "| formula");
-  print_newline ();
-  print_string separator;
-  print_newline ();
+  Format.pp_print_string fmt (itlist (fun s t -> fixw (Prop.prj s) ^ t) ats "| formula");
+  Format.pp_print_newline fmt ();
+  Format.pp_print_string fmt separator;
+  Format.pp_print_newline fmt ();
   let _ = onallvaluations mk_row (Fun.const false) ats in
-  print_string separator;
-  print_newline ()
+  Format.pp_print_string fmt separator;
+  Format.pp_print_newline fmt ()
