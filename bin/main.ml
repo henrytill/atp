@@ -35,12 +35,13 @@ module Command_intro : COMMAND = struct
     end
 
   let read_eval_print lexbuf formatter =
-    match Intro.parse lexbuf with
+    let open Intro in
+    match parse lexbuf with
     | Some expr when !dump_ast ->
         print_ast formatter expr;
         true
     | Some expr ->
-        let simplified, count = Intro.simplify_with_count expr in
+        let simplified, count = Semantics.simplify_with_count expr in
         print_expr formatter expr;
         print_expr formatter simplified;
         maybe_print_count formatter count;
@@ -99,19 +100,18 @@ module Command_prop_logic : COMMAND = struct
     Prop_logic.Syntax.pp_ast formatter fm;
     Format.pp_print_newline formatter ()
 
-  let print_truthtable = Prop_logic.print_truthtable
-
   let print_formula formatter fm =
     Prop_logic.Syntax.pp formatter fm;
     Format.pp_print_newline formatter ()
 
   let read_eval_print lexbuf formatter =
-    match Prop_logic.parse lexbuf with
+    let open Prop_logic in
+    match parse lexbuf with
     | Some fm when !dump_ast ->
         print_ast formatter fm;
         true
     | Some fm when !dump_truthtable ->
-        print_truthtable formatter fm;
+        Semantics.print_truthtable formatter fm;
         true
     | Some fm ->
         print_formula formatter fm;

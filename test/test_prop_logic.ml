@@ -82,7 +82,7 @@ module Test_semantics = struct
   let same_list = "same list"
 
   let read_eval (s : string) (v : Prop.t -> bool) : bool option =
-    Option.map (fun fm -> Prop_logic.eval fm v) (Prop_logic.parse_string s)
+    Prop_logic.(parse_string s |> Option.map (fun fm -> Semantics.eval fm v))
 
   let example () =
     let v prop =
@@ -109,10 +109,9 @@ module Test_semantics = struct
     Alcotest.(check (option bool)) same_bool expected actual
 
   let atoms_example () =
+    let read_atoms s = Prop_logic.(parse_string s |> Option.map Semantics.atoms) in
     let expected = Some [ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
-    let actual =
-      Option.map Prop_logic.atoms (Prop_logic.parse_string {| p /\ q \/ s ==> ~p \/ (r <=> s) |})
-    in
+    let actual = read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
     Alcotest.(check (option (list prop))) same_list expected actual
 end
 

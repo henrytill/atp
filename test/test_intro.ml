@@ -94,92 +94,93 @@ end
 module Test_simplify = struct
   open Syntax
 
-  let eval (s : string) : Syntax.t option = Intro.(parse_string s |> Option.map simplify)
+  let read_simplify (s : string) : Syntax.t option =
+    Intro.(parse_string s |> Option.map Semantics.simplify)
 
   let add_0x () =
     let expected = Some (Var "x") in
-    let actual = eval {| 0 + x |} in
+    let actual = read_simplify {| 0 + x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let add_x0 () =
     let expected = Some (Var "x") in
-    let actual = eval {| x + 0 |} in
+    let actual = read_simplify {| x + 0 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let sub () =
     let expected = Some (Const 1) in
-    let actual = eval {| 3 - 2 |} in
+    let actual = read_simplify {| 3 - 2 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let sub_x0 () =
     let expected = Some (Var "x") in
-    let actual = eval {| x - 0 |} in
+    let actual = read_simplify {| x - 0 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let sub_xx () =
     let expected = Some (Const 0) in
-    let actual = eval {| x - x |} in
+    let actual = read_simplify {| x - x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul () =
     let expected = Some (Const 12) in
-    let actual = eval {| 3 * 4 |} in
+    let actual = read_simplify {| 3 * 4 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul_0x () =
     let expected = Some (Const 0) in
-    let actual = eval {| 0 * x |} in
+    let actual = read_simplify {| 0 * x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul_x0 () =
     let expected = Some (Const 0) in
-    let actual = eval {| x * 0 |} in
+    let actual = read_simplify {| x * 0 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul_1x () =
     let expected = Some (Var "x") in
-    let actual = eval {| 1 * x |} in
+    let actual = read_simplify {| 1 * x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul_x1 () =
     let expected = Some (Var "x") in
-    let actual = eval {| x * 1 |} in
+    let actual = read_simplify {| x * 1 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp () =
     let expected = Some (Const 8) in
-    let actual = eval {| 2 ^ 3 |} in
+    let actual = read_simplify {| 2 ^ 3 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp_0x () =
     let expected = Some (Const 0) in
-    let actual = eval {| 0 ^ x |} in
+    let actual = read_simplify {| 0 ^ x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp_x0 () =
     let expected = Some (Const 1) in
-    let actual = eval {| x ^ 0 |} in
+    let actual = read_simplify {| x ^ 0 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp_1x () =
     let open Syntax in
     let expected = Some (Const 1) in
-    let actual = eval {| 1 ^ x |} in
+    let actual = read_simplify {| 1 ^ x |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp_x1 () =
     let expected = Some (Var "x") in
-    let actual = eval {| x ^ 1 |} in
+    let actual = read_simplify {| x ^ 1 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let neg () =
     let expected = Some (Const 0) in
-    let actual = eval {| x - - - x|} in
+    let actual = read_simplify {| x - - - x|} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let example () =
     let expected = Some (Const 15) in
-    let actual = eval {| (0 * x + 1) * 3 + 12 |} in
+    let actual = read_simplify {| (0 * x + 1) * 3 + 12 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 end
 
