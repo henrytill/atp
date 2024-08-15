@@ -1,9 +1,8 @@
 module Syntax = Prop_logic__syntax
+module Prop = Prop_logic__syntax.Prop
+module Formula = Prop_logic__syntax.Formula
 
 module Internal : sig
-  module Prop = Prop_logic__syntax.Prop
-  module Formula = Prop_logic__syntax.Formula
-
   val eval : Syntax.t -> (Prop.t -> bool) -> bool
   val onatoms : ('b -> 'b Formula.t) -> 'b Formula.t -> 'b Formula.t
   val overatoms : ('a -> 'b -> 'b) -> 'a Formula.t -> 'b -> 'b
@@ -15,6 +14,6 @@ module Internal : sig
   val print_truthtable : Format.formatter -> Prop.t Formula.t -> unit
 end
 
-val eval : Syntax.t -> (Syntax.Prop.t -> bool) -> bool
-val atoms : 'a Syntax.Formula.t -> 'a list
-val print_truthtable : Format.formatter -> Syntax.Prop.t Syntax.Formula.t -> unit
+val eval : Syntax.t -> (Prop.t -> bool) -> bool
+val atoms : 'a Formula.t -> 'a list
+val print_truthtable : Format.formatter -> Prop.t Formula.t -> unit

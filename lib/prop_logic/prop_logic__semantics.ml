@@ -1,9 +1,8 @@
 module Syntax = Prop_logic__syntax
+module Prop = Prop_logic__syntax.Prop
+module Formula = Prop_logic__syntax.Formula
 
 module Internal = struct
-  module Prop = Prop_logic__syntax.Prop
-  module Formula = Prop_logic__syntax.Formula
-
   let rec eval (fm : Syntax.t) (v : Prop.t -> bool) : bool =
     match fm with
     | False -> false
