@@ -3,7 +3,9 @@ module Prop = Prop_logic__syntax.Prop
 module Formula = Prop_logic__syntax.Formula
 
 module Internal = struct
-  let rec eval (fm : Syntax.t) (v : Prop.t -> bool) : bool =
+  open Formula
+
+  let rec eval fm v =
     match fm with
     | False -> false
     | True -> true
@@ -15,7 +17,7 @@ module Internal = struct
     | Iff (p, q) -> Bool.equal (eval p v) (eval q v)
     | Forall _ | Exists _ -> failwith "unimplemented"
 
-  let rec onatoms (f : 'a -> 'b Formula.t) (fm : 'a Formula.t) : 'b Formula.t =
+  let rec onatoms f fm =
     match fm with
     | Atom a -> f a
     | False | True -> fm
@@ -27,7 +29,7 @@ module Internal = struct
     | Forall (x, p) -> Forall (x, onatoms f p)
     | Exists (x, p) -> Exists (x, onatoms f p)
 
-  let rec overatoms (f : 'a -> 'b -> 'b) (fm : 'a Formula.t) (b : 'b) : 'b =
+  let rec overatoms f fm b =
     match fm with
     | Atom a -> f a b
     | False | True -> b
@@ -36,26 +38,23 @@ module Internal = struct
     | Forall (_, p) | Exists (_, p) -> overatoms f p b
 
   let setify xs = List.sort_uniq compare xs
-
-  let atom_union (f : 'a -> 'b list) (fm : 'a Formula.t) : 'b list =
-    setify (overatoms (fun h t -> f h @ t) fm [])
-
-  let atoms (fm : 'a Formula.t) : 'a list = atom_union (fun a -> [ a ]) fm
+  let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
+  let atoms fm = atom_union (fun a -> [ a ]) fm
   let itlist = List.fold_right
 
-  let rec onallvaluations (subfn : ('a -> bool) -> bool) (v : 'a -> bool) (ats : 'a list) : bool =
+  let rec onallvaluations subfn v ats =
     match ats with
     | [] -> subfn v
     | p :: ps ->
-        let v' (t : bool) (q : 'a) : bool = if q = p then t else v q in
+        let v' t q = if q = p then t else v q in
         onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
-  let print_truthtable (fmt : Format.formatter) (fm : Prop.t Formula.t) : unit =
+  let print_truthtable fmt fm =
     let ats = atoms fm in
     let width = itlist (fun x -> max (String.length (Prop.prj x))) ats 5 + 1 in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
-    let mk_row (v : Prop.t -> bool) =
+    let mk_row v =
       let lis = List.map (fun x -> truthstring (v x)) ats in
       let ans = truthstring (eval fm v) in
       Format.pp_print_string fmt (itlist ( ^ ) lis ("| " ^ ans));

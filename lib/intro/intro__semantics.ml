@@ -1,4 +1,5 @@
 module Syntax = Intro__syntax
+open Syntax
 
 let err_raise_negative = "cannot raise to a negative power"
 
@@ -10,7 +11,7 @@ let rec pow (a : int) : int -> int = function
       let b = pow a (n / 2) in
       b * b * if n mod 2 = 0 then 1 else a
 
-let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
+let simplify1 count expr =
   incr count;
   match expr with
   | Add (Const 0, x) | Add (x, Const 0) -> x
@@ -31,9 +32,9 @@ let simplify1 (count : int ref) (expr : Syntax.t) : Syntax.t =
   | Neg (Const m) -> Const (-m)
   | _ -> expr
 
-let simplify_with_count (expr : Syntax.t) : Syntax.t * int =
+let simplify_with_count expr =
   let count = ref 0 in
-  let rec go (expr : Syntax.t) : Syntax.t =
+  let rec go expr =
     incr count;
     let simply x = simplify1 count (go x) in
     match expr with
