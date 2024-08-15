@@ -17,7 +17,7 @@ let simplify1 count expr =
   | Add (Const 0, x) | Add (x, Const 0) -> x
   | Add (Const m, Const n) -> Const (m + n)
   | Sub (x, Const 0) -> x
-  | Sub (x, y) when Syntax.equal x y -> Const 0
+  | Sub (x, y) when equal x y -> Const 0
   | Sub (Const m, Const n) -> Const (m - n)
   | Mul (Const 0, _) | Mul (_, Const 0) -> Const 0
   | Mul (Const 1, x) | Mul (x, Const 1) -> x
@@ -41,7 +41,7 @@ let simplify_with_count expr =
     | Add (Const 0, x) | Add (x, Const 0) -> simply x
     | Add (x, y) -> simplify1 count (Add (go x, go y))
     | Sub (x, Const 0) -> simply x
-    | Sub (x, y) when Syntax.equal x y -> Const 0
+    | Sub (x, y) when equal x y -> Const 0
     | Sub (x, y) -> simplify1 count (Sub (go x, go y))
     | Mul (Const 0, _) | Mul (_, Const 0) -> Const 0
     | Mul (Const 1, x) | Mul (x, Const 1) -> simply x
