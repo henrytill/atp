@@ -16,7 +16,7 @@ module Internal : sig
   val onallvaluations : (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool
   (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
 
-  val print_truthtable : Format.formatter -> Prop.t Formula.t -> unit
+  val print_truthtable : Format.formatter -> Syntax.t -> unit
 end
 
 val eval : Syntax.t -> (Prop.t -> bool) -> bool
@@ -25,5 +25,5 @@ val eval : Syntax.t -> (Prop.t -> bool) -> bool
 val atoms : 'a Formula.t -> 'a list
 (** [atoms fm] returns a list of all the atoms in [fm]. *)
 
-val print_truthtable : Format.formatter -> Prop.t Formula.t -> unit
+val print_truthtable : Format.formatter -> Syntax.t -> unit
 (** [print_truthtable fmt fm] prints a truthtable for [fm] using [fmt]. *)
