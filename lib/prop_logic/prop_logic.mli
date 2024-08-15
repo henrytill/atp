@@ -40,7 +40,5 @@ module Semantics : sig
   val print_truthtable : Format.formatter -> Syntax.Prop.t Syntax.Formula.t -> unit
 end
 
-module Semantics_internal = Prop_logic_semantics_internal
-
 val parse : Lexing.lexbuf -> Syntax.t option
 val parse_string : string -> Syntax.t option

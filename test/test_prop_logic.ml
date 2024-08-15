@@ -110,12 +110,12 @@ module Test_semantics = struct
 
   let setify_example () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Prop_logic.Semantics_internal.setify [ 1; 2; 3; 1; 4; 3 ] in
+    let actual = Prop_logic_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
     Alcotest.(check (list int)) same_list expected actual
 
   let setify_reverse () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Prop_logic.Semantics_internal.setify [ 4; 3; 2; 1 ] in
+    let actual = Prop_logic_semantics.setify [ 4; 3; 2; 1 ] in
     Alcotest.(check (list int)) same_list expected actual
 
   let atoms_example () =
