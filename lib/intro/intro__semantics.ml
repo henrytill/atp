@@ -1,4 +1,4 @@
-module Syntax = Intro_syntax
+module Syntax = Intro__syntax
 
 let err_raise_negative = "cannot raise to a negative power"
 

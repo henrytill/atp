@@ -1,8 +1,8 @@
 (ocamllex
- (modules prop_logic_lexer))
+ (modules prop_logic__lexer))
 
 (menhir
- (modules prop_logic_parser))
+ (modules prop_logic__parser))
 
 (library
  (name prop_logic)

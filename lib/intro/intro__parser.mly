@@ -1,5 +1,5 @@
 %{
-open Intro_syntax
+open Intro__syntax
 %}
 
 /* Lexemes */

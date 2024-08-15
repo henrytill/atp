@@ -1,5 +1,5 @@
 %{
-open Prop_logic_syntax
+open Prop_logic__syntax
 %}
 
 /* Lexemes */
