@@ -1,5 +1,5 @@
 %{
-open Syntax
+open Prop_logic_syntax
 %}
 
 /* Lexemes */
@@ -23,7 +23,7 @@ open Syntax
 
 /* Top level rule */
 %start toplevel
-%type <Syntax.t option> toplevel
+%type <t option> toplevel
 
 %%
 

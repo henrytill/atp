@@ -1,8 +1,9 @@
 (ocamllex
- (modules lexer))
+ (modules intro_lexer))
 
 (menhir
- (modules parser))
+ (modules intro_parser))
 
 (library
- (name intro))
+ (name intro)
+ (wrapped false))

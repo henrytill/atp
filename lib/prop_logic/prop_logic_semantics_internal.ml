@@ -1,5 +1,6 @@
-module Prop = Syntax.Prop
-module Formula = Syntax.Formula
+module Syntax = Prop_logic_syntax
+module Prop = Prop_logic_syntax.Prop
+module Formula = Prop_logic_syntax.Formula
 
 let rec eval (fm : Syntax.t) (v : Prop.t -> bool) : bool =
   match fm with
