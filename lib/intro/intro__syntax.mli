@@ -1,3 +1,5 @@
+(** @canonical Intro.Syntax *)
+
 type t =
   | Var of string
   | Const of int
