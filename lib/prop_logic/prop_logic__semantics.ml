@@ -41,11 +41,8 @@ module Internal = struct
     setify (overatoms (fun h t -> f h @ t) fm [])
 
   let atoms (fm : 'a Formula.t) : 'a list = atom_union (fun a -> [ a ]) fm
-
-  (** Alias for [List.fold_right] *)
   let itlist = List.fold_right
 
-  (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
   let rec onallvaluations (subfn : ('a -> bool) -> bool) (v : 'a -> bool) (ats : 'a list) : bool =
     match ats with
     | [] -> subfn v

@@ -9,9 +9,15 @@ module Internal : sig
   val setify : 'a list -> 'a list
   val atom_union : ('a -> 'b list) -> 'a Formula.t -> 'b list
   val atoms : 'a Formula.t -> 'a list
+
   val itlist : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+  (** Alias for [List.fold_right]. *)
+
   val onallvaluations : (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool
+  (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
+
   val print_truthtable : Format.formatter -> Prop.t Formula.t -> unit
+  (** [print_truthtable fmt fm] prints a truthtable for [fm] using [fmt]. *)
 end
 
 val eval : Syntax.t -> (Prop.t -> bool) -> bool
