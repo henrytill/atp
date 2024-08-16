@@ -1,7 +1,6 @@
 module Internal = struct
-  open Syntax.Formula
-
   let rec eval fm v =
+    let open Syntax.Formula in
     match fm with
     | False -> false
     | True -> true
@@ -14,6 +13,7 @@ module Internal = struct
     | Forall _ | Exists _ -> failwith "unimplemented"
 
   let rec onatoms f fm =
+    let open Syntax.Formula in
     match fm with
     | Atom a -> f a
     | False | True -> fm
@@ -26,6 +26,7 @@ module Internal = struct
     | Exists (x, p) -> Exists (x, onatoms f p)
 
   let rec overatoms f fm b =
+    let open Syntax.Formula in
     match fm with
     | Atom a -> f a b
     | False | True -> b

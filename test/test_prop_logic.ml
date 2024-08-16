@@ -1,46 +1,51 @@
-module Syntax = Prop_logic.Syntax
-module Prop = Prop_logic.Syntax.Prop
+open Prop_logic
 
 let syntax = Alcotest.testable Syntax.pp_ast Syntax.equal
-let prop = Alcotest.testable Prop.pp_ast Prop.equal
+let prop = Alcotest.testable Syntax.Prop.pp_ast Syntax.Prop.equal
 
 module Test_parse = struct
-  open Syntax.Formula
-
   let same_fm = "same formula"
 
   let atom () =
-    let expected : Syntax.t option = Some (Atom (Prop.inj "a")) in
+    let expected : Syntax.t option = Some (Atom (Syntax.Prop.inj "a")) in
     let actual = Prop_logic.Input.parse_string {| a |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let example () =
-    let expected =
-      Some (Imp (Or (Atom (Prop.inj "p"), Atom (Prop.inj "q")), Atom (Prop.inj "r")))
+    let expected : Syntax.t option =
+      Some
+        (Imp
+           (Or (Atom (Syntax.Prop.inj "p"), Atom (Syntax.Prop.inj "q")), Atom (Syntax.Prop.inj "r")))
     in
     let actual = Prop_logic.Input.parse_string {| p \/ q ==> r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let another_example () =
-    let expected =
+    let expected : Syntax.t option =
       Some
         (Imp
-           ( Atom (Prop.inj "p"),
-             Or (And (Atom (Prop.inj "q"), Not (Atom (Prop.inj "r"))), Atom (Prop.inj "s")) ))
+           ( Atom (Syntax.Prop.inj "p"),
+             Or
+               ( And (Atom (Syntax.Prop.inj "q"), Not (Atom (Syntax.Prop.inj "r"))),
+                 Atom (Syntax.Prop.inj "s") ) ))
     in
     let actual = Prop_logic.Input.parse_string {| p ==> q /\ ~ r \/ s |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_ands () =
-    let expected =
-      Some (And (Atom (Prop.inj "p"), And (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
+    let expected : Syntax.t option =
+      Some
+        (And
+           (Atom (Syntax.Prop.inj "p"), And (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r"))))
     in
     let actual = Prop_logic.Input.parse_string {| p /\ q /\ r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_imps () =
-    let expected =
-      Some (Imp (Atom (Prop.inj "p"), Imp (Atom (Prop.inj "q"), Atom (Prop.inj "r"))))
+    let expected : Syntax.t option =
+      Some
+        (Imp
+           (Atom (Syntax.Prop.inj "p"), Imp (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r"))))
     in
     let actual = Prop_logic.Input.parse_string {| p ==> q ==> r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
@@ -81,12 +86,12 @@ module Test_semantics = struct
   let same_bool = "same bool"
   let same_list = "same list"
 
-  let read_eval (s : string) (v : Prop.t -> bool) : bool option =
+  let read_eval (s : string) (v : Syntax.Prop.t -> bool) : bool option =
     Prop_logic.(Input.parse_string s |> Option.map (fun fm -> Semantics.eval fm v))
 
   let example () =
     let v prop =
-      match Prop.prj prop with
+      match Syntax.Prop.prj prop with
       | "p" -> true
       | "q" -> false
       | "r" -> true
@@ -98,7 +103,7 @@ module Test_semantics = struct
 
   let another_example () =
     let v prop =
-      match Prop.prj prop with
+      match Syntax.Prop.prj prop with
       | "p" -> true
       | "q" -> true
       | "r" -> false
@@ -120,7 +125,7 @@ module Test_semantics = struct
 
   let atoms_example () =
     let read_atoms s = Prop_logic.(Input.parse_string s |> Option.map Semantics.atoms) in
-    let expected = Some [ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
+    let expected = Some Syntax.[ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
     let actual = read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
     Alcotest.(check (option (list prop))) same_list expected actual
 end
