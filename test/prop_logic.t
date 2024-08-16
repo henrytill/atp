@@ -46,3 +46,18 @@ Test printing truth table
   true  true  false | false 
   true  true  true  | true  
   ---------------------------
+
+  $ atp prop-logic -dump-ast -dump-truthtable "p /\ q ==> q /\ r"
+  (Imp (And (Atom "p", Atom "q"), And (Atom "q", Atom "r")))
+  p     q     r     | formula
+  ---------------------------
+  false false false | true  
+  false false true  | true  
+  false true  false | true  
+  false true  true  | true  
+  true  false false | true  
+  true  false true  | true  
+  true  true  false | false 
+  true  true  true  | true  
+  ---------------------------
+

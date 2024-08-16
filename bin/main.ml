@@ -107,6 +107,10 @@ module Command_prop_logic : COMMAND = struct
   let read_eval_print lexbuf formatter =
     let open Prop_logic in
     match Input.parse lexbuf with
+    | Some fm when !dump_ast && !dump_truthtable ->
+        print_ast formatter fm;
+        Semantics.print_truthtable formatter fm;
+        true
     | Some fm when !dump_ast ->
         print_ast formatter fm;
         true
