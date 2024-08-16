@@ -12,3 +12,6 @@ result*
 *__parser.mli
 *.conflicts
 *.byte
+test/*.t.err
+config.mk
+extra.mk

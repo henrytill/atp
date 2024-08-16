@@ -104,6 +104,9 @@ test/test_prop_logic.byte: INCLUDES += -I lib/prop_logic
 test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
 	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
+.PHONY: cram
+cram:
+
 # general
 
 %.ml: %.mll
@@ -147,3 +150,5 @@ distclean: clean
 	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_OBJS:.cmo=.ml) >> $@
 
 include .depend
+
+-include extra.mk

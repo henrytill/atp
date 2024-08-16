@@ -1,5 +1,9 @@
 ;; -*- mode: prog; -*-
 
+Set up environment
+
+  $ . "${TESTDIR}/setup.sh"
+
 Test parsing
 
   $ atp intro -dump-ast "a"

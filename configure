@@ -1,0 +1,26 @@
+#!/bin/sh
+
+check_python_module() {
+  module_name="$1"
+  echo "Checking for Python module $module_name..."
+  python3 -c "import $module_name" >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo "The $module_name module is available."
+    return 0
+  else
+    echo "The $module_name module is not available."
+    return 1
+  fi
+}
+
+write_config() {
+  cat <<EOF >extra.mk
+.PHONY: cram
+cram: bin/main.byte
+	python3 -m cram test/intro.t test/prop_logic.t
+EOF
+}
+
+if check_python_module "cram"; then
+  write_config
+fi

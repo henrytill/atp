@@ -1,5 +1,9 @@
 ;; -*- mode: prog; -*-
 
+Set up environment
+
+  $ . "${TESTDIR}/setup.sh"
+
 Test parsing
 
   $ atp prop-logic -dump-ast "p \/ q ==> r"

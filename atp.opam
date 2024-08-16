@@ -13,7 +13,10 @@ depends: [
   "alcotest" {with-test & >= "1.7.0"}
   "odoc" {with-doc}
 ]
-build: [make "all" "check" {with-test}]
+build: [
+  ["./configure"]
+  [make "all" "check" {with-test} "cram" {with-test}]
+]
 install: [make "PREFIX=%{prefix}%" "install"]
 run-test: [make "check"]
 dev-repo: "git+https://github.com/henrytill/atp.git"

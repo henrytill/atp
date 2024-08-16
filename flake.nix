@@ -37,7 +37,11 @@
         scope = on.buildOpamProject { resolveArgs.with-test = true; } package ./. {
           ocaml-base-compiler = "4.14.2";
         };
-        overlay = final: prev: { };
+        overlay = final: prev: {
+          atp = prev.atp.overrideAttrs (as: {
+            nativeBuildInputs = as.nativeBuildInputs ++ [ (pkgs.python3.withPackages (ps: [ ps.cram ])) ];
+          });
+        };
       in
       {
         legacyPackages = scope.overrideScope' overlay;
