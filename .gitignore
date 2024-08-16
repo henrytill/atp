@@ -1,3 +1,14 @@
 _build/
 _opam/
 result*
+.depend
+*.cmi
+*.cmt
+*.cmti
+*.cmo
+*.cma
+*__lexer.ml
+*__parser.ml
+*__parser.mli
+*.conflicts
+*.byte

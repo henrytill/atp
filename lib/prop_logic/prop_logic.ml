@@ -1,5 +1,5 @@
-module Syntax = Prop_logic__syntax
+module Input = Prop_logic__input
+module Lexer = Prop_logic__lexer
+module Parser = Prop_logic__parser
 module Semantics = Prop_logic__semantics
-
-let parse = Prop_logic__parser.toplevel Prop_logic__lexer.token
-let parse_string s = Lexing.from_string s |> parse
+module Syntax = Prop_logic__syntax

@@ -1,5 +1,5 @@
 {
-open Prop_logic__parser
+open Parser
 }
 
 let id = (['a'-'z' 'A'-'Z']+ ['a'-'z' 'A'-'Z' '0'-'9']*)

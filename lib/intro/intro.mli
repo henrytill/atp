@@ -1,5 +1,5 @@
-module Syntax = Intro__syntax
+module Input = Intro__input
+module Lexer = Intro__lexer
+module Parser = Intro__parser
 module Semantics = Intro__semantics
-
-val parse : Lexing.lexbuf -> Syntax.t option
-val parse_string : string -> Syntax.t option
+module Syntax = Intro__syntax

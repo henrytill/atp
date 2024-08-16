@@ -1,9 +1,5 @@
-module Syntax = Prop_logic__syntax
-module Prop = Prop_logic__syntax.Prop
-module Formula = Prop_logic__syntax.Formula
-
 module Internal = struct
-  open Formula
+  open Syntax.Formula
 
   let rec eval fm v =
     match fm with
@@ -51,7 +47,7 @@ module Internal = struct
 
   let print_truthtable fmt fm =
     let ats = atoms fm in
-    let width = itlist (fun x -> max (String.length (Prop.prj x))) ats 5 + 1 in
+    let width = itlist (fun x -> max (String.length (Syntax.Prop.prj x))) ats 5 + 1 in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
     let mk_row v =
@@ -62,7 +58,7 @@ module Internal = struct
       true
     in
     let separator = String.make ((width * List.length ats) + 9) '-' in
-    Format.pp_print_string fmt (itlist (fun s t -> fixw (Prop.prj s) ^ t) ats "| formula");
+    Format.pp_print_string fmt (itlist (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats "| formula");
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();

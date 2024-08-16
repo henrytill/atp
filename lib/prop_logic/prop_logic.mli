@@ -1,5 +1,5 @@
-module Syntax = Prop_logic__syntax
+module Input = Prop_logic__input
+module Lexer = Prop_logic__lexer
+module Parser = Prop_logic__parser
 module Semantics = Prop_logic__semantics
-
-val parse : Lexing.lexbuf -> Syntax.t option
-val parse_string : string -> Syntax.t option
+module Syntax = Prop_logic__syntax

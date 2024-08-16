@@ -8,42 +8,42 @@ module Test_parse = struct
 
   let var () =
     let expected = Some (Var "a") in
-    let actual = Intro.parse_string {| a |} in
+    let actual = Intro.Input.parse_string {| a |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let const () =
     let expected = Some (Const 42) in
-    let actual = Intro.parse_string {| 42 |} in
+    let actual = Intro.Input.parse_string {| 42 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let add () =
     let expected = Some (Add (Const 42, Const 42)) in
-    let actual = Intro.parse_string {| 42 + 42 |} in
+    let actual = Intro.Input.parse_string {| 42 + 42 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul () =
     let expected = Some (Mul (Const 42, Const 42)) in
-    let actual = Intro.parse_string {| 42 * 42 |} in
+    let actual = Intro.Input.parse_string {| 42 * 42 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp () =
     let expected = Some (Exp (Const 2, Const 3)) in
-    let actual = Intro.parse_string {| 2 ^ 3 |} in
+    let actual = Intro.Input.parse_string {| 2 ^ 3 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let neg () =
     let expected = Some (Sub (Var "x", Neg (Neg (Var "x")))) in
-    let actual = Intro.parse_string {| x - - - x|} in
+    let actual = Intro.Input.parse_string {| x - - - x|} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let compound1 () =
     let expected = Some (Add (Mul (Const 2, Var "x"), Var "y")) in
-    let actual = Intro.parse_string {| 2 * x + y |} in
+    let actual = Intro.Input.parse_string {| 2 * x + y |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let compound2 () =
     let expected = Some (Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12)) in
-    let actual = Intro.parse_string {| (0 * x + 1) * 3 + 12 |} in
+    let actual = Intro.Input.parse_string {| (0 * x + 1) * 3 + 12 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 end
 
@@ -52,42 +52,42 @@ module Test_precedence = struct
 
   let right () =
     let expected = Some (Add (Const 1, Mul (Const 2, Const 3))) in
-    let actual = Intro.parse_string {| 1 + 2 * 3 |} in
+    let actual = Intro.Input.parse_string {| 1 + 2 * 3 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let left () =
     let expected = Some (Add (Mul (Const 1, Const 2), Const 3)) in
-    let actual = Intro.parse_string {| 1 * 2 + 3 |} in
+    let actual = Intro.Input.parse_string {| 1 * 2 + 3 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let add () =
     let expected = Some (Add (Add (Var "x", Var "y"), Var "z")) in
-    let actual = Intro.parse_string {| x + y + z |} in
+    let actual = Intro.Input.parse_string {| x + y + z |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let sub () =
     let expected = Some (Sub (Sub (Var "x", Var "y"), Var "z")) in
-    let actual = Intro.parse_string {| x - y - z |} in
+    let actual = Intro.Input.parse_string {| x - y - z |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let mul () =
     let expected = Some (Mul (Mul (Var "x", Var "y"), Var "z")) in
-    let actual = Intro.parse_string {| x * y * z |} in
+    let actual = Intro.Input.parse_string {| x * y * z |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let exp () =
     let expected = Some (Exp (Var "x", Exp (Var "y", Var "z"))) in
-    let acutal = Intro.parse_string {| x ^ y ^ z |} in
+    let acutal = Intro.Input.parse_string {| x ^ y ^ z |} in
     Alcotest.(check (option syntax)) same_expr expected acutal
 
   let parens_left () =
     let expected = Some (Mul (Add (Const 1, Const 2), Const 3)) in
-    let actual = Intro.parse_string {| (1 + 2) * 3 |} in
+    let actual = Intro.Input.parse_string {| (1 + 2) * 3 |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 
   let parens_right () =
     let expected = Some (Mul (Const 1, Add (Const 2, Const 3))) in
-    let actual = Intro.parse_string {| 1 * (2 + 3) |} in
+    let actual = Intro.Input.parse_string {| 1 * (2 + 3) |} in
     Alcotest.(check (option syntax)) same_expr expected actual
 end
 
@@ -95,7 +95,7 @@ module Test_simplify = struct
   open Syntax
 
   let read_simplify (s : string) : Syntax.t option =
-    Intro.(parse_string s |> Option.map Semantics.simplify)
+    Intro.(Input.parse_string s |> Option.map Semantics.simplify)
 
   let add_0x () =
     let expected = Some (Var "x") in

@@ -1,5 +1,5 @@
 {
-open Intro__parser
+open Parser
 }
 
 let int = (['0'-'9']+)

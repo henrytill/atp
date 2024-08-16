@@ -1,5 +1,5 @@
 %{
-open Intro__syntax
+open Syntax
 %}
 
 /* Lexemes */
@@ -22,7 +22,8 @@ open Intro__syntax
 
 /* Top level rule */
 %start toplevel
-%type <t option> toplevel
+%type <Syntax.t option> toplevel
+%type <Syntax.t> expression
 
 %%
 

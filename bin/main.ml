@@ -36,7 +36,7 @@ module Command_intro : COMMAND = struct
 
   let read_eval_print lexbuf formatter =
     let open Intro in
-    match parse lexbuf with
+    match Input.parse lexbuf with
     | Some expr when !dump_ast ->
         print_ast formatter expr;
         true
@@ -106,7 +106,7 @@ module Command_prop_logic : COMMAND = struct
 
   let read_eval_print lexbuf formatter =
     let open Prop_logic in
-    match parse lexbuf with
+    match Input.parse lexbuf with
     | Some fm when !dump_ast ->
         print_ast formatter fm;
         true
