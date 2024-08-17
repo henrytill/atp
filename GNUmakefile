@@ -6,6 +6,7 @@ OCAMLDEP = ocamldep
 MENHIR = menhir
 OCAMLLEX = ocamllex
 OCAMLFIND = ocamlfind
+PYTHON3 = python3
 
 INCLUDES =
 OCAMLCFLAGS = $(INCLUDES) -bin-annot -g
@@ -66,7 +67,7 @@ check: $(TESTS)
 	./test/test_intro.byte
 	./test/test_prop_logic.byte
 ifeq ($(HAS_CRAM),true)
-	python3 -m cram $(TESTS_CRAM)
+	$(PYTHON3) -m cram $(TESTS_CRAM)
 endif
 
 # intro
