@@ -1,5 +1,3 @@
-(** @canonical Prop_logic.Syntax *)
-
 module Prop : sig
   type t
 
