@@ -8,7 +8,7 @@ module Test_parse = struct
 
   let atom () =
     let expected : Syntax.t option = Some (Atom (Syntax.Prop.inj "a")) in
-    let actual = Prop_logic.Input.parse_string {| a |} in
+    let actual = Input.parse_string {| a |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let example () =
@@ -17,7 +17,7 @@ module Test_parse = struct
         (Imp
            (Or (Atom (Syntax.Prop.inj "p"), Atom (Syntax.Prop.inj "q")), Atom (Syntax.Prop.inj "r")))
     in
-    let actual = Prop_logic.Input.parse_string {| p \/ q ==> r |} in
+    let actual = Input.parse_string {| p \/ q ==> r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let another_example () =
@@ -29,7 +29,7 @@ module Test_parse = struct
                ( And (Atom (Syntax.Prop.inj "q"), Not (Atom (Syntax.Prop.inj "r"))),
                  Atom (Syntax.Prop.inj "s") ) ))
     in
-    let actual = Prop_logic.Input.parse_string {| p ==> q /\ ~ r \/ s |} in
+    let actual = Input.parse_string {| p ==> q /\ ~ r \/ s |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_ands () =
@@ -38,7 +38,7 @@ module Test_parse = struct
         (And
            (Atom (Syntax.Prop.inj "p"), And (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r"))))
     in
-    let actual = Prop_logic.Input.parse_string {| p /\ q /\ r |} in
+    let actual = Input.parse_string {| p /\ q /\ r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 
   let right_associative_imps () =
@@ -47,7 +47,7 @@ module Test_parse = struct
         (Imp
            (Atom (Syntax.Prop.inj "p"), Imp (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r"))))
     in
-    let actual = Prop_logic.Input.parse_string {| p ==> q ==> r |} in
+    let actual = Input.parse_string {| p ==> q ==> r |} in
     Alcotest.(check (option syntax)) same_fm expected actual
 end
 
@@ -59,7 +59,7 @@ module Test_pp = struct
       Syntax.pp Format.str_formatter fm;
       Format.flush_str_formatter ()
     in
-    Option.map to_string (Prop_logic.Input.parse_string s)
+    Option.map to_string (Input.parse_string s)
 
   let example () =
     let expected = Some "((p \\/ q) ==> r)" in
@@ -87,7 +87,7 @@ module Test_semantics = struct
   let same_list = "same list"
 
   let read_eval (s : string) (v : Syntax.Prop.t -> bool) : bool option =
-    Prop_logic.(Input.parse_string s |> Option.map (fun fm -> Semantics.eval fm v))
+    Input.parse_string s |> Option.map (fun fm -> Semantics.eval fm v)
 
   let example () =
     let v prop =
@@ -115,16 +115,16 @@ module Test_semantics = struct
 
   let setify_example () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Prop_logic.Semantics.Internal.setify [ 1; 2; 3; 1; 4; 3 ] in
+    let actual = Semantics.Internal.setify [ 1; 2; 3; 1; 4; 3 ] in
     Alcotest.(check (list int)) same_list expected actual
 
   let setify_reverse () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Prop_logic.Semantics.Internal.setify [ 4; 3; 2; 1 ] in
+    let actual = Semantics.Internal.setify [ 4; 3; 2; 1 ] in
     Alcotest.(check (list int)) same_list expected actual
 
   let atoms_example () =
-    let read_atoms s = Prop_logic.(Input.parse_string s |> Option.map Semantics.atoms) in
+    let read_atoms s = Input.parse_string s |> Option.map Semantics.atoms in
     let expected = Some Syntax.[ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
     let actual = read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
     Alcotest.(check (option (list prop))) same_list expected actual
