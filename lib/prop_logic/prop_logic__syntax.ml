@@ -1,7 +1,7 @@
 module Prop = struct
   type t = string
 
-  let inj s = s
+  let inj = Fun.id
   let prj = Fun.id
   let pp_ast fmt = Format.fprintf fmt "@[%S@]"
   let pp = Format.pp_print_string
