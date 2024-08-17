@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 check_python_module() {
   printf "checking for Python module %s... " $1
   python3 -c "import $1" >/dev/null 2>&1
