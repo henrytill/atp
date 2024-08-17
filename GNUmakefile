@@ -149,6 +149,7 @@ clean:
 distclean: clean
 	rm -f .depend
 	rm -f $(GENERATED)
+	rm -f config.mk
 
 .depend: GNUmakefile $(GENERATED)
 	@printf "# -*- mode: makefile; -*-\n\n" > $@
