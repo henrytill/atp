@@ -15,7 +15,7 @@ depends: [
 ]
 build: [
   ["./configure"]
-  [make "all" "check" {with-test} "cram" {with-test}]
+  [make "all" "check" {with-test}]
 ]
 install: [make "PREFIX=%{prefix}%" "install"]
 run-test: [make "check"]

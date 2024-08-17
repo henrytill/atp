@@ -14,4 +14,3 @@ result*
 *.byte
 test/*.t.err
 config.mk
-extra.mk

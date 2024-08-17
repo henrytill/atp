@@ -48,7 +48,15 @@ TESTS =
 TESTS += test/test_intro.byte
 TESTS += test/test_prop_logic.byte
 
+TESTS_CRAM =
+TESTS_CRAM += test/intro.t
+TESTS_CRAM += test/prop_logic.t
+
 -include config.mk
+
+ifeq ($(HAS_CRAM),true)
+TESTS += bin/main.byte
+endif
 
 .PHONY: all
 all: $(ARCHIVES) bin/main.byte
@@ -57,6 +65,9 @@ all: $(ARCHIVES) bin/main.byte
 check: $(TESTS)
 	./test/test_intro.byte
 	./test/test_prop_logic.byte
+ifeq ($(HAS_CRAM),true)
+	python3 -m cram $(TESTS_CRAM)
+endif
 
 # intro
 
@@ -104,9 +115,6 @@ test/test_prop_logic.byte: INCLUDES += -I lib/prop_logic
 test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
 	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
-.PHONY: cram
-cram:
-
 # general
 
 %.ml: %.mll
@@ -150,5 +158,3 @@ distclean: clean
 	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_OBJS:.cmo=.ml) >> $@
 
 include .depend
-
--include extra.mk

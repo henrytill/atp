@@ -12,16 +12,10 @@ check_python_module() {
   fi
 }
 
-write_extra_mk_cram() {
-  cat <<EOF >extra.mk
-.PHONY: cram
-cram: bin/main.byte
-	python3 -m cram test/intro.t test/prop_logic.t
-EOF
-}
+rm -f config.mk
 
 if check_python_module "cram"; then
-  write_extra_mk_cram
+  printf "HAS_CRAM = true\n" >>config.mk
 fi
 
 printf "OK\n"
