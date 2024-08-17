@@ -48,7 +48,7 @@ module Internal = struct
 
   let print_truthtable fmt fm =
     let ats = atoms fm in
-    let width = itlist (fun x -> max (String.length (Syntax.Prop.prj x))) ats 5 + 1 in
+    let width = itlist (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats 5 + 1 in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
     let mk_row v =
