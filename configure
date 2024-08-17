@@ -14,7 +14,7 @@ check_python_module() {
   fi
 }
 
-rm -f config.mk
+>config.mk
 
 if check_python_module "cram"; then
   printf "HAS_CRAM = true\n" >>config.mk
