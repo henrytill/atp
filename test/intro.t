@@ -1,5 +1,3 @@
-;; -*- mode: prog; -*-
-
 Set up environment
 
   $ . "${TESTDIR}/setup.sh"
@@ -238,3 +236,9 @@ Count number of simplification steps
   (- (- (1 - 1)))
   0
   Steps: 3
+
+# Local Variables:
+# mode: prog
+# tab-width: 2
+# eval: (whitespace-mode 0)
+# End:

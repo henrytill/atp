@@ -1,5 +1,3 @@
-;; -*- mode: prog; -*-
-
 Set up environment
 
   $ . "${TESTDIR}/setup.sh"
@@ -61,3 +59,8 @@ Test printing truth table
   true  true  true  | true  
   ---------------------------
 
+# Local Variables:
+# mode: prog
+# tab-width: 2
+# eval: (whitespace-mode 0)
+# End:
