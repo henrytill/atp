@@ -17,6 +17,6 @@ build: [
   ["./configure"]
   [make "all" "check" {with-test}]
 ]
-install: [make "PREFIX=%{prefix}%" "install"]
+install: [make "DESTDIR=%{prefix}%" "install"]
 run-test: [make "check"]
 dev-repo: "git+https://github.com/henrytill/atp.git"

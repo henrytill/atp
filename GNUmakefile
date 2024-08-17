@@ -8,10 +8,18 @@ OCAMLLEX = ocamllex
 OCAMLFIND = ocamlfind
 PYTHON3 = python3
 
+INSTALL = install
+INSTALL_PROGRAM = $(INSTALL)
+INSTALL_DATA = $(INSTALL) -m 644
+
 INCLUDES =
 OCAMLCFLAGS = $(INCLUDES) -bin-annot -g
 OCAMLOPTFLAGS = $(INCLUDES) -bin-annot -g
 OCAMLFINDFLAGS =
+
+bindir = /bin
+prefix = /usr/local
+DESTDIR = $(prefix)
 
 GENERATED =
 GENERATED += lib/intro/intro__parser.ml
@@ -130,12 +138,12 @@ test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
 %.cmo: %.ml
 	$(OCAMLC) $(OCAMLCFLAGS) -c $<
 
-$(PREFIX)/bin:
+$(DESTDIR)$(bindir):
 	mkdir -p $@
 
 .PHONY: install
-install: bin/main.byte | $(PREFIX)/bin
-	install -m 755 bin/main.byte $(PREFIX)/bin/main.byte
+install: bin/main.byte | $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) bin/main.byte $(DESTDIR)$(bindir)/main.byte
 
 .PHONY: clean
 clean:
