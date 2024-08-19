@@ -10,10 +10,20 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      ...
+    }:
     let
-      makeAtp = system:
-        { compiler ? "ghc948", doCheck ? true }:
+      makeAtp =
+        system:
+        {
+          compiler ? "ghc948",
+          doCheck ? true,
+        }:
         let
           pkgs = nixpkgs.legacyPackages.${system};
           call = compiler: pkgs.haskell.packages.${compiler}.callCabal2nixWithOptions;
@@ -23,16 +33,22 @@
             name = "atp-src";
           };
           atp_ = call compiler "atp" src flags { };
-        in pkgs.haskell.lib.overrideCabal atp_ (_: {
+        in
+        pkgs.haskell.lib.overrideCabal atp_ (_: {
           inherit doCheck;
           isExecutable = true;
           isLibrary = true;
           doHaddock = false;
         });
-    in flake-utils.lib.eachDefaultSystem (system:
-      let atp = makeAtp system;
-      in {
+    in
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        atp = makeAtp system;
+      in
+      {
         packages.atp = atp { };
         packages.default = self.packages.${system}.atp;
-      });
+      }
+    );
 }
