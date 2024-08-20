@@ -1,12 +1,12 @@
-module Prop.Quote (prop) where
+module PropLogic.Quote (prop) where
 
 import Data.Generics.Aliases (extQ)
 import Language.Haskell.TH qualified as TH
 import Language.Haskell.TH.Quote (QuasiQuoter (..))
 import Language.Haskell.TH.Syntax (dataToExpQ, dataToPatQ)
-import Prop.Lexer (AlexPosn (..), lex)
-import Prop.Parser (parseProp)
-import Prop.Syntax (Formula (..), Prop)
+import PropLogic.Lexer (AlexPosn (..), lex)
+import PropLogic.Parser (parseProp)
+import PropLogic.Syntax (Formula (..), Prop)
 import Prelude hiding (lex)
 
 getSourcePos :: TH.Q AlexPosn

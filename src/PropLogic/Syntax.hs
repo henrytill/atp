@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
 
-module Prop.Syntax where
+module PropLogic.Syntax where
 
 import Data.Data
 import Text.PrettyPrint.HughesPJClass

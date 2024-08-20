@@ -1,6 +1,6 @@
 -- -*- mode: text; tab-width: 2; -*-
 {
-module Prop.Lexer where
+module PropLogic.Lexer where
 }
 
 %wrapper "posn"

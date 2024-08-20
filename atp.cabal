@@ -23,10 +23,10 @@ library
                          Intro.Quote
                          Intro.Semantics
                          Intro.Syntax
-                         Prop.Lexer
-                         Prop.Parser
-                         Prop.Quote
-                         Prop.Syntax
+                         PropLogic.Lexer
+                         PropLogic.Parser
+                         PropLogic.Quote
+                         PropLogic.Syntax
     -- other-modules:
     -- other-extensions:
     build-depends:       base             >=4.17 && <5,
@@ -59,8 +59,8 @@ test-suite atp-test
                          Intro.QuoteTests
                          Intro.SemanticsTests
                          Intro.SyntaxTests
-                         Prop
-                         Prop.SyntaxTests
+                         PropLogic
+                         PropLogic.SyntaxTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          pretty      >=1.1  && <1.2,

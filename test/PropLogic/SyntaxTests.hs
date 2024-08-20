@@ -1,8 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Prop.SyntaxTests where
+module PropLogic.SyntaxTests where
 
-import Prop.Quote (prop)
+import PropLogic.Quote (prop)
 import Test.Tasty
 import Test.Tasty.HUnit
 import Text.PrettyPrint.HughesPJClass (prettyShow)

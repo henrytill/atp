@@ -1,9 +1,9 @@
 -- -*- mode: prog; tab-width: 2; -*-
 {
-module Prop.Parser where
+module PropLogic.Parser where
 
-import Prop.Lexer
-import Prop.Syntax
+import PropLogic.Lexer
+import PropLogic.Syntax
 }
 
 %name parseProp
