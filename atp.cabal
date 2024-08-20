@@ -26,6 +26,7 @@ library
                          PropLogic.Lexer
                          PropLogic.Parser
                          PropLogic.Quote
+                         PropLogic.Semantics
                          PropLogic.Syntax
     -- other-modules:
     -- other-extensions:
@@ -60,6 +61,7 @@ test-suite atp-test
                          Intro.SemanticsTests
                          Intro.SyntaxTests
                          PropLogic
+                         PropLogic.SemanticsTests
                          PropLogic.SyntaxTests
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,

@@ -39,7 +39,7 @@ instance (Pretty a) => Pretty (Formula a) where
       binary s x y = parens (pPrint x <+> text s <+> pPrint y)
 
 newtype Prop = MkProp {unProp :: String}
-  deriving (Show, Eq, Data, Typeable)
+  deriving (Show, Eq, Ord, Data, Typeable)
 
 instance Pretty Prop where
   pPrint = text . unProp
