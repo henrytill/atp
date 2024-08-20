@@ -19,13 +19,12 @@
     }:
     let
       makeAtp =
-        system:
+        pkgs:
         {
           compiler ? "ghc948",
           doCheck ? true,
         }:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
           call = compiler: pkgs.haskell.packages.${compiler}.callCabal2nixWithOptions;
           flags = "";
           src = builtins.path {
@@ -44,10 +43,10 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        atp = makeAtp system;
+        pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        packages.atp = atp { };
+        packages.atp = makeAtp pkgs { };
         packages.default = self.packages.${system}.atp;
       }
     );
