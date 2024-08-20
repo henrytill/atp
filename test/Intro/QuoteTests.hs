@@ -26,7 +26,7 @@ tests =
       testCase "Parse compound expression" $ do
         [intro| 2 * x + y |] @?= Add (Mul (Const 2) (Var "x")) (Var "y"),
       testCase "Parse example compound expression" $ do
-        [intro| (0 * x + 1) * 3 + 12 |] @=? Add (Mul (Add (Mul (Const 0) (Var "x")) (Const 1)) (Const 3)) (Const 12),
+        [intro| (0 * x + 1) * 3 + 12 |] @?= Add (Mul (Add (Mul (Const 0) (Var "x")) (Const 1)) (Const 3)) (Const 12),
       testCase "Parse metavariable" $ do
         [intro| $m - 1 |] @?= Sub (Const 1) (Const 1),
       testCase "Parse precedence (right)" $ do

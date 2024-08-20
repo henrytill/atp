@@ -27,7 +27,7 @@ tests =
       testCase "Print compound expression" $ do
         prettyShow [intro| 2 * x + y |] @?= "((2 * x) + y)",
       testCase "Print example compound expression" $ do
-        prettyShow [intro| (0 * x + 1) * 3 + 12 |] @=? "((((0 * x) + 1) * 3) + 12)",
+        prettyShow [intro| (0 * x + 1) * 3 + 12 |] @?= "((((0 * x) + 1) * 3) + 12)",
       testCase "Print metavariable" $ do
         prettyShow [intro| $m - 1 |] @?= "(1 - 1)",
       testCase "Print precedence (right)" $ do
