@@ -1,23 +1,28 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main where
 
 import Data.ByteString.Lazy (ByteString)
+import Data.ByteString.Lazy qualified as ByteString
 import Data.ByteString.Lazy.Char8 qualified as Char8
 import Data.Maybe (fromJust)
 import PropLogic.Quote (prop)
 import PropLogic.Semantics qualified as Semantics
+import PropLogic.Syntax (Formula, Prop)
 import System.FilePath (takeBaseName)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
 import Text.PrettyPrint (render)
 
-appendNewline :: ByteString -> ByteString
-appendNewline = flip Char8.append (Char8.pack "\n")
+renderTruthtable :: Formula Prop -> IO ByteString
+renderTruthtable = return . appendNewline . Char8.pack . render . Semantics.printTruthtable
+  where
+    appendNewline = flip ByteString.append "\n"
 
 tests :: [(String, IO ByteString)]
 tests =
-  [ ("truthtable", return . appendNewline . Char8.pack . render . Semantics.printTruthtable $ [prop| p ==> q ==> r |])
+  [ ("truthtable", renderTruthtable $ [prop| p ==> q ==> r |])
   ]
 
 mkGoldenTest :: FilePath -> TestTree
