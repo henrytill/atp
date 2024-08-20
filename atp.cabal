@@ -72,3 +72,20 @@ test-suite atp-test
     hs-source-dirs:      test
     default-language:    Haskell98
     default-extensions:  ImportQualifiedPost
+
+test-suite atp-golden
+    import:              warnings
+    main-is:             Main.hs
+    type:                exitcode-stdio-1.0
+    -- other-modules:
+    -- other-extensions:
+    build-depends:       base         >=4.17 && <5,
+                         pretty       >=1.1  && <1.2,
+                         tasty        >=1.0  && <1.6,
+                         filepath     ^>=1.4.2.2,
+                         bytestring   ^>=0.11.5.3,
+                         tasty-golden ^>=2.3.5,
+                         atp
+    hs-source-dirs:      test-golden
+    default-language:    Haskell98
+    default-extensions:  ImportQualifiedPost
