@@ -3,8 +3,8 @@
 module PropLogic.SyntaxTests where
 
 import PropLogic.Quote (prop)
-import Test.Tasty
-import Test.Tasty.HUnit
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (testCase, (@?=))
 import Text.PrettyPrint.HughesPJClass (prettyShow)
 
 tests :: TestTree

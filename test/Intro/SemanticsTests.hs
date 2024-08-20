@@ -3,10 +3,10 @@
 module Intro.SemanticsTests where
 
 import Intro.Quote (intro)
-import Intro.Semantics
-import Intro.Syntax
-import Test.Tasty
-import Test.Tasty.HUnit
+import Intro.Semantics (simplifyWithCount)
+import Intro.Syntax (Expression (..))
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 tests :: TestTree
 tests =

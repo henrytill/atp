@@ -2,8 +2,8 @@
 
 module Intro.Syntax where
 
-import Data.Data
-import Text.PrettyPrint.HughesPJClass
+import Data.Data (Data, Typeable)
+import Text.PrettyPrint.HughesPJClass (Pretty (..), char, integer, parens, text, (<+>), (<>))
 import Prelude hiding ((<>))
 
 data Expression

@@ -1,9 +1,9 @@
 module Intro.Semantics (simplify, simplifyWithCount) where
 
-import Control.Monad.ST
+import Control.Monad.ST (ST, runST)
 import Data.Functor (($>))
-import Data.STRef
-import Intro.Syntax
+import Data.STRef (STRef, modifySTRef, newSTRef, readSTRef)
+import Intro.Syntax (Expression (..))
 import Prelude hiding (exp)
 
 errRaiseNegative :: String

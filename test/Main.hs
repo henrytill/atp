@@ -2,7 +2,7 @@ module Main (main) where
 
 import Intro qualified
 import PropLogic qualified
-import Test.Tasty
+import Test.Tasty (TestTree, defaultMain, testGroup)
 
 unitTests :: TestTree
 unitTests =

@@ -3,8 +3,8 @@
 
 module PropLogic.Syntax where
 
-import Data.Data
-import Text.PrettyPrint.HughesPJClass
+import Data.Data (Data, Typeable)
+import Text.PrettyPrint.HughesPJClass (Pretty (..), char, parens, text, (<+>), (<>))
 import Prelude hiding ((<>))
 
 data Formula a

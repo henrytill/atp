@@ -3,10 +3,10 @@
 module PropLogic.SemanticsTests where
 
 import PropLogic.Quote (prop)
-import PropLogic.Semantics
-import PropLogic.Syntax
-import Test.Tasty
-import Test.Tasty.HUnit
+import PropLogic.Semantics (atoms, eval, setify)
+import PropLogic.Syntax (Prop (MkProp))
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 tests :: TestTree
 tests =

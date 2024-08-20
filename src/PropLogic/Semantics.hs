@@ -1,8 +1,8 @@
 module PropLogic.Semantics where
 
 import Data.List qualified as List
-import PropLogic.Syntax
-import Text.PrettyPrint
+import PropLogic.Syntax (Formula (..), Prop (..))
+import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
 
 eval :: Formula Prop -> (Prop -> Bool) -> Bool
