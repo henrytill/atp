@@ -1,6 +1,7 @@
 module PropLogic.Semantics where
 
 import Data.List qualified as List
+import Data.Monoid (All (..))
 import PropLogic.Syntax (Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -47,6 +48,11 @@ accumAllValuations subfn v ats = case ats of
   p : ps ->
     let v' t q = if q == p then t else v q
      in accumAllValuations subfn (v' False) ps ++ accumAllValuations subfn (v' True) ps
+
+onAllValuations :: (Eq a) => ((a -> Bool) -> Bool) -> (a -> Bool) -> [a] -> Bool
+onAllValuations subfn v = getAll . mconcat . accumAllValuations subfn' v
+  where
+    subfn' = All . subfn
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
