@@ -1,0 +1,6 @@
+(p /\ (~ p))
+
+p     | formula
+---------------
+False | False 
+True  | False 

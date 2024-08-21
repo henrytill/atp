@@ -1,3 +1,5 @@
+(p ==> (q ==> r))
+
 p     q     r     | formula
 ---------------------------
 False False False | True  

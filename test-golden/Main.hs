@@ -13,16 +13,26 @@ import PropLogic.Syntax (Formula, Prop)
 import System.FilePath (takeBaseName)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsStringDiff)
-import Text.PrettyPrint (render)
+import Text.PrettyPrint (render, text, ($+$))
+import Text.PrettyPrint.HughesPJClass (pPrint)
 
 renderTruthtable :: Formula Prop -> IO ByteString
-renderTruthtable = return . appendNewline . Char8.pack . render . Semantics.printTruthtable
+renderTruthtable = return . appendNewline . Char8.pack . render . layout
   where
+    blankLine = text mempty
+    layout fm = pPrint fm $+$ blankLine $+$ Semantics.printTruthtable fm
     appendNewline = flip ByteString.append "\n"
 
 tests :: [(String, IO ByteString)]
 tests =
-  [ ("truthtable-example", renderTruthtable [prop| p ==> q ==> r |])
+  [ -- Example, p. 36
+    ("truthtable-p036-example", renderTruthtable [prop| p ==> q ==> r |]),
+    -- Peirce's Law, p. 39
+    ("truthtable-p039-peirce", renderTruthtable [prop| ((p ==> q) ==> p) ==> p |]),
+    -- A simple contradiction, p. 40
+    ("truthtable-p040-contradiction", renderTruthtable [prop| p /\ ~p |]),
+    -- Example, p. 56
+    ("truthtable-p056-example", renderTruthtable [prop| (p \/ q /\ r) /\ (~p \/ ~r) |])
   ]
 
 mkGoldenTest :: FilePath -> TestTree

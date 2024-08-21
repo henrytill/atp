@@ -1,0 +1,8 @@
+(((p ==> q) ==> p) ==> p)
+
+p     q     | formula
+---------------------
+False False | True  
+False True  | True  
+True  False | True  
+True  True  | True  
