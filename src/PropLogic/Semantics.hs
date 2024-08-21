@@ -46,8 +46,11 @@ accumAllValuations :: (Eq a) => ((a -> Bool) -> b) -> (a -> Bool) -> [a] -> [b]
 accumAllValuations subfn v ats = case ats of
   [] -> [subfn v]
   p : ps ->
-    let v' t q = if q == p then t else v q
-     in accumAllValuations subfn (v' False) ps ++ accumAllValuations subfn (v' True) ps
+    accumAllValuations subfn (v' False) ps ++ accumAllValuations subfn (v' True) ps
+    where
+      v' t q
+        | q == p = t
+        | otherwise = v q
 
 onAllValuations :: (Eq a) => ((a -> Bool) -> Bool) -> (a -> Bool) -> [a] -> Bool
 onAllValuations subfn v = getAll . mconcat . accumAllValuations subfn' v
