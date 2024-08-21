@@ -41,12 +41,12 @@ atomUnion f fm = setify $ overAtoms ((++) . f) fm []
 atoms :: (Ord a) => Formula a -> [a]
 atoms = atomUnion (: [])
 
-onAllValuations :: (Eq a) => ((a -> Bool) -> b) -> (a -> Bool) -> [a] -> [b]
-onAllValuations subfn v ats = case ats of
+accumAllValuations :: (Eq a) => ((a -> Bool) -> b) -> (a -> Bool) -> [a] -> [b]
+accumAllValuations subfn v ats = case ats of
   [] -> [subfn v]
   p : ps ->
     let v' t q = if q == p then t else v q
-     in onAllValuations subfn (v' False) ps ++ onAllValuations subfn (v' True) ps
+     in accumAllValuations subfn (v' False) ps ++ accumAllValuations subfn (v' True) ps
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
@@ -73,4 +73,4 @@ printTruthtable fm = vcat $ header : separator : body
     mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v)) ats
 
     body :: [Doc]
-    body = onAllValuations mkRow (const False) ats
+    body = accumAllValuations mkRow (const False) ats
