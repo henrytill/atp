@@ -34,8 +34,7 @@ mkGoldenTest outFile = goldenVsString name outFile test
 goldenTests :: IO TestTree
 goldenTests = do
   outFiles <- findByExtension [".out"] "test-golden"
-  goldens <- mapM (return . mkGoldenTest) outFiles
-  return $ testGroup "Golden tests" goldens
+  return $ testGroup "Golden tests" (mkGoldenTest <$> outFiles)
 
 main :: IO ()
 main = defaultMain =<< goldenTests
