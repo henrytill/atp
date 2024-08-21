@@ -12,7 +12,7 @@ import PropLogic.Semantics qualified as Semantics
 import PropLogic.Syntax (Formula, Prop)
 import System.FilePath (takeBaseName)
 import Test.Tasty (TestTree, defaultMain, testGroup)
-import Test.Tasty.Golden (findByExtension, goldenVsString)
+import Test.Tasty.Golden (findByExtension, goldenVsStringDiff)
 import Text.PrettyPrint (render)
 
 renderTruthtable :: Formula Prop -> IO ByteString
@@ -26,9 +26,10 @@ tests =
   ]
 
 mkGoldenTest :: FilePath -> TestTree
-mkGoldenTest outFile = goldenVsString name outFile test
+mkGoldenTest outFile = goldenVsStringDiff name cmd outFile test
   where
     name = takeBaseName outFile
+    cmd ref new = ["diff", "-u", ref, new]
     test = fromJust $ lookup name tests
 
 goldenTests :: IO TestTree
