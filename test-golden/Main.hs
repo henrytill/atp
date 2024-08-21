@@ -22,7 +22,7 @@ renderTruthtable = return . appendNewline . Char8.pack . render . Semantics.prin
 
 tests :: [(String, IO ByteString)]
 tests =
-  [ ("truthtable", renderTruthtable [prop| p ==> q ==> r |])
+  [ ("truthtable-example", renderTruthtable [prop| p ==> q ==> r |])
   ]
 
 mkGoldenTest :: FilePath -> TestTree
