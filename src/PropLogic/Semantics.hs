@@ -1,7 +1,10 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module PropLogic.Semantics where
 
+import Control.Monad (replicateM)
 import Data.List qualified as List
-import Data.Monoid (All (..))
+import Data.Maybe (fromJust)
 import PropLogic.Syntax (Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -36,26 +39,17 @@ overAtoms f fm b = case fm of
 setify :: (Ord a) => [a] -> [a]
 setify = List.sort . List.nub
 
-atomUnion :: (Ord b) => (a -> [b]) -> Formula a -> [b]
-atomUnion f fm = setify $ overAtoms ((++) . f) fm []
-
 atoms :: (Ord a) => Formula a -> [a]
-atoms = atomUnion (: [])
+atoms fm = setify $ overAtoms (:) fm []
 
-accumAllValuations :: (Eq a) => ((a -> Bool) -> b) -> (a -> Bool) -> [a] -> [b]
-accumAllValuations subfn v ats = case ats of
-  [] -> [subfn v]
-  p : ps ->
-    accumAllValuations subfn (v' False) ps ++ accumAllValuations subfn (v' True) ps
-    where
-      v' t q
-        | q == p = t
-        | otherwise = v q
-
-onAllValuations :: (Eq a) => ((a -> Bool) -> Bool) -> (a -> Bool) -> [a] -> Bool
-onAllValuations subfn v = getAll . mconcat . accumAllValuations subfn' v
+generateTruthtable :: forall a b. (Eq a) => ((a -> Bool) -> b) -> [a] -> [b]
+generateTruthtable subfn = fmap subfn . fns
   where
-    subfn' = All . subfn
+    fns :: [a] -> [a -> Bool]
+    fns as = rowfn as <$> replicateM (length as) [False, True]
+
+    rowfn :: [a] -> [Bool] -> (a -> Bool)
+    rowfn inputs outputs i = fromJust . lookup i $ zip inputs outputs
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
@@ -82,4 +76,4 @@ printTruthtable fm = vcat $ header : separator : body
     mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v)) ats
 
     body :: [Doc]
-    body = accumAllValuations mkRow (const False) ats
+    body = generateTruthtable mkRow ats
