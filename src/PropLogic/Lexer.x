@@ -12,10 +12,10 @@ $alpha = [a-zA-Z]
 tokens :-
 
   $white+                          ;
-  $alpha [$alpha $digit \_ \']*    { \p s -> TokAtom p s }
   \$ $alpha [$alpha $digit \_ \']* { \p s -> TokMetaVar p (drop 1 s) }
   false                            { \p _ -> TokFalse p }
   true                             { \p _ -> TokTrue p }
+  $alpha [$alpha $digit \_ \']*    { \p s -> TokAtom p s }
   \~                               { \p _ -> TokNot p }
   "/\"                             { \p _ -> TokAnd p }
   "\/"                             { \p _ -> TokOr p }

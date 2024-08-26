@@ -6,6 +6,7 @@ import Data.Bits qualified as Bits
 import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
+import Data.Monoid (All (..))
 import PropLogic.Syntax (Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -43,9 +44,9 @@ setify = List.sort . List.nub
 atoms :: (Ord a) => Formula a -> [a]
 atoms fm = setify $ overAtoms (:) fm []
 
-generateTruthtable :: forall a b. (Eq a, Ord a) => ((a -> Bool) -> [a] -> b) -> [a] -> [b]
-generateTruthtable subfn as =
-  [subfn (valuationFor row) as | row <- [0 .. (2 ^ asLen) - 1]]
+onAllValuations :: forall a b. (Eq a, Ord a) => ((a -> Bool) -> b) -> [a] -> [b]
+onAllValuations subfn as =
+  [subfn (valuationFor row) | row <- [0 .. (2 ^ asLen) - 1]]
   where
     asLen :: Int
     asLen = length as
@@ -77,8 +78,19 @@ printTruthtable fm = vcat $ header : separator : body
     truthString :: Bool -> Doc
     truthString = fixw . show
 
-    mkRow :: (Prop -> Bool) -> [Prop] -> Doc
-    mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v))
+    mkRow :: (Prop -> Bool) -> Doc
+    mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v)) as
 
     body :: [Doc]
-    body = generateTruthtable mkRow as
+    body = onAllValuations mkRow as
+
+tautology :: Formula Prop -> Bool
+tautology fm = getAll . mconcat . onAllValuations subfn . atoms $ fm
+  where
+    subfn = All . eval fm
+
+unsatisfiable :: Formula Prop -> Bool
+unsatisfiable = tautology . FmNot
+
+satisfiable :: Formula Prop -> Bool
+satisfiable = not . unsatisfiable
