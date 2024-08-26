@@ -1,4 +1,6 @@
 module Internal = struct
+  module Seq = Stdlib.Seq
+
   let rec eval fm v =
     let open Syntax.Formula in
     match fm with
@@ -46,6 +48,22 @@ module Internal = struct
         let v' t q = if q = p then t else v q in
         onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
+  module PropMap = Map.Make (struct
+    type t = Syntax.Prop.t
+
+    let compare = Syntax.Prop.compare
+  end)
+
+  let onallvaluations' subfn ats =
+    let ats_len = List.length ats in
+    let offset_table =
+      List.fold_left (fun (i, m) a -> (i - 1, PropMap.add a i m)) (ats_len - 1, PropMap.empty) ats
+      |> snd
+    in
+    let valuation_for row a = Z.testbit row (PropMap.find a offset_table) in
+    let num_valuations = Z.to_int (Z.shift_left (Z.of_int 1) ats_len) in
+    Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
+
   let print_truthtable fmt fm =
     let ats = atoms fm in
     let width = itlist (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats 5 + 1 in
@@ -63,7 +81,7 @@ module Internal = struct
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();
-    let _ = onallvaluations mk_row (Fun.const false) ats in
+    let _ = Seq.iter ignore (onallvaluations' mk_row ats) in
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ()
 end

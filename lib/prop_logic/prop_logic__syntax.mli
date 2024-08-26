@@ -6,6 +6,7 @@ module Prop : sig
   val pp_ast : Format.formatter -> t -> unit
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
+  val compare : t -> t -> int
 end
 
 module Formula : sig

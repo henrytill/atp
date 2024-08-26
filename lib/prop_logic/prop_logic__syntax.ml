@@ -6,6 +6,7 @@ module Prop = struct
   let pp_ast fmt = Format.fprintf fmt "@[%S@]"
   let pp = Format.pp_print_string
   let equal = String.equal
+  let compare = String.compare
 end
 
 module Formula = struct

@@ -95,7 +95,7 @@ lib/intro/intro__lexer.ml: lib/intro/intro__parser.mly
 # prop_logic
 
 lib/prop_logic/prop_logic.cma: lib/prop_logic/prop_logic.cmi $(PROP_LOGIC_OBJS)
-	$(OCAMLC) -a $(PROP_LOGIC_OBJS) -o $@
+	$(OCAMLFIND) $(OCAMLC) -a $(PROP_LOGIC_OBJS) -o $@
 
 lib/prop_logic/prop_logic.cmi: lib/prop_logic/prop_logic.mli
 	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
@@ -106,11 +106,14 @@ $(PROP_LOGIC_SUBS): OCAMLCFLAGS += -no-alias-deps -open Prop_logic
 
 lib/prop_logic/prop_logic__lexer.ml: lib/prop_logic/prop_logic__parser.mly
 
+lib/prop_logic/prop_logic__semantics.cmo: OCAMLFINDFLAGS += -linkpkg -package zarith
+
 # main
 
+bin/main.byte: OCAMLFINDFLAGS += -linkpkg -package zarith
 bin/main.byte: INCLUDES += -I lib/intro -I lib/prop_logic
 bin/main.byte: lib/intro/intro.cma lib/prop_logic/prop_logic.cma bin/main.ml
-	$(OCAMLC) $(OCAMLCFLAGS) -o $@ $^
+	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 # tests
 
@@ -119,7 +122,7 @@ test/test_intro.byte: INCLUDES += -I lib/intro
 test/test_intro.byte: lib/intro/intro.cma test/test_intro.ml
 	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
-test/test_prop_logic.byte: OCAMLFINDFLAGS += -linkpkg -package alcotest
+test/test_prop_logic.byte: OCAMLFINDFLAGS += -linkpkg -package alcotest -package zarith
 test/test_prop_logic.byte: INCLUDES += -I lib/prop_logic
 test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
 	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
@@ -133,10 +136,10 @@ test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
 	$(MENHIR) --explain $<
 
 %.cmi: %.mli
-	$(OCAMLC) $(OCAMLCFLAGS) -c $<
+	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
 
 %.cmo: %.ml
-	$(OCAMLC) $(OCAMLCFLAGS) -c $<
+	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
 
 $(DESTDIR)$(bindir):
 	mkdir -p $@

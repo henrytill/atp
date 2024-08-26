@@ -9,6 +9,7 @@ bug-reports: "https://github.com/henrytill/atp/issues"
 depends: [
   "ocaml"
   "menhir"
+  "zarith" {>= "1.14"}
   "ocamlfind" {with-test}
   "alcotest" {with-test & >= "1.7.0"}
   "odoc" {with-doc}

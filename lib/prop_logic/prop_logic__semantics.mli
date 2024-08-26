@@ -12,6 +12,7 @@ module Internal : sig
   val onallvaluations : (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool
   (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
 
+  val onallvaluations' : ((Syntax.Prop.t -> bool) -> 'a) -> Syntax.Prop.t list -> 'a Seq.t
   val print_truthtable : Format.formatter -> Syntax.t -> unit
 end
 
