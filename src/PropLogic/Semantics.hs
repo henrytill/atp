@@ -4,7 +4,8 @@ module PropLogic.Semantics where
 
 import Data.Bits (testBit)
 import Data.List qualified as List
-import Data.Maybe (fromJust)
+import Data.Map.Strict (Map, (!))
+import Data.Map.Strict qualified as Map
 import PropLogic.Syntax (Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -42,7 +43,7 @@ setify = List.sort . List.nub
 atoms :: (Ord a) => Formula a -> [a]
 atoms fm = setify $ overAtoms (:) fm []
 
-generateTruthtable :: forall a b. (Eq a) => ((a -> Bool) -> [a] -> b) -> [a] -> [b]
+generateTruthtable :: forall a b. (Eq a, Ord a) => ((a -> Bool) -> [a] -> b) -> [a] -> [b]
 generateTruthtable subfn as =
   [subfn (valuationFor row) as | row <- [0 .. (2 ^ asLen) - 1]]
   where
@@ -52,11 +53,11 @@ generateTruthtable subfn as =
     maxIndex :: Int
     maxIndex = asLen - 1
 
-    offsetFor :: a -> Maybe Int
-    offsetFor a = fmap (maxIndex -) (List.elemIndex a as)
+    offsetTable :: Map a Int
+    offsetTable = Map.fromList $ zip as [maxIndex, maxIndex - 1 .. 0]
 
     valuationFor :: Int -> a -> Bool
-    valuationFor row = testBit row . fromJust . offsetFor
+    valuationFor row a = testBit row $ offsetTable ! a
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
