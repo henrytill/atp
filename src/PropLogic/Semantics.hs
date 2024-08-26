@@ -2,7 +2,7 @@
 
 module PropLogic.Semantics where
 
-import Control.Monad (replicateM)
+import Data.Bits (testBit)
 import Data.List qualified as List
 import Data.Maybe (fromJust)
 import PropLogic.Syntax (Formula (..), Prop (..))
@@ -42,38 +42,45 @@ setify = List.sort . List.nub
 atoms :: (Ord a) => Formula a -> [a]
 atoms fm = setify $ overAtoms (:) fm []
 
-generateTruthtable :: forall a b. (Eq a) => ((a -> Bool) -> b) -> [a] -> [b]
-generateTruthtable subfn = fmap subfn . fns
+generateTruthtable :: forall a b. (Eq a) => ((a -> Bool) -> [a] -> b) -> [a] -> [b]
+generateTruthtable subfn as =
+  [subfn (valuationFor row) as | row <- [0 .. (2 ^ asLen) - 1]]
   where
-    fns :: [a] -> [a -> Bool]
-    fns as = rowfn as <$> replicateM (length as) [False, True]
+    asLen :: Int
+    asLen = length as
 
-    rowfn :: [a] -> [Bool] -> (a -> Bool)
-    rowfn inputs outputs i = fromJust . lookup i $ zip inputs outputs
+    maxIndex :: Int
+    maxIndex = asLen - 1
+
+    offsetFor :: a -> Maybe Int
+    offsetFor a = fmap (maxIndex -) (List.elemIndex a as)
+
+    valuationFor :: Int -> a -> Bool
+    valuationFor row = testBit row . fromJust . offsetFor
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
   where
-    ats :: [Prop]
-    ats = atoms fm
+    as :: [Prop]
+    as = atoms fm
 
     width :: Int
-    width = foldr (max . length . unProp) 5 ats + 1
+    width = foldr (max . length . unProp) 5 as + 1
 
     fixw :: String -> Doc
     fixw s = text $ s ++ replicate (width - length s) ' '
 
     header :: Doc
-    header = foldr ((<>) . fixw . unProp) (text "| formula") ats
+    header = foldr ((<>) . fixw . unProp) (text "| formula") as
 
     separator :: Doc
-    separator = text $ replicate ((width * length ats) + 9) '-'
+    separator = text $ replicate ((width * length as) + 9) '-'
 
     truthString :: Bool -> Doc
     truthString = fixw . show
 
-    mkRow :: (Prop -> Bool) -> Doc
-    mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v)) ats
+    mkRow :: (Prop -> Bool) -> [Prop] -> Doc
+    mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v))
 
     body :: [Doc]
-    body = generateTruthtable mkRow ats
+    body = generateTruthtable mkRow as
