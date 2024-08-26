@@ -50,11 +50,8 @@ generateTruthtable subfn as =
     asLen :: Int
     asLen = length as
 
-    maxIndex :: Int
-    maxIndex = asLen - 1
-
     offsetTable :: Map a Int
-    offsetTable = Map.fromList $ zip as [maxIndex, maxIndex - 1 .. 0]
+    offsetTable = snd $ List.foldl' (\(i, m) a -> (i - 1, Map.insert a i m)) (asLen - 1, Map.empty) as
 
     valuationFor :: Int -> a -> Bool
     valuationFor row a = testBit row $ offsetTable ! a
