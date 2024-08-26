@@ -59,6 +59,36 @@ Test printing truth table
   true  true  true  | true  
   ---------------------------
 
+  $ atp prop-logic -dump-truthtable "((p ==> q) ==> p) ==> p"
+  p     q     | formula
+  ---------------------
+  false false | true  
+  false true  | true  
+  true  false | true  
+  true  true  | true  
+  ---------------------
+
+  $ atp prop-logic -dump-truthtable "p /\ ~p"
+  p     | formula
+  ---------------
+  false | false 
+  true  | false 
+  ---------------
+
+  $ atp prop-logic -dump-truthtable "(p \/ q /\ r) /\ (~p \/ ~r)"
+  p     q     r     | formula
+  ---------------------------
+  false false false | false 
+  false false true  | false 
+  false true  false | false 
+  false true  true  | true  
+  true  false false | true  
+  true  false true  | false 
+  true  true  false | true  
+  true  true  true  | false 
+  ---------------------------
+
+
 # Local Variables:
 # mode: prog
 # tab-width: 2
