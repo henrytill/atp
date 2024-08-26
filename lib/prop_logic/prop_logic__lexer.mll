@@ -9,9 +9,9 @@ let newline = '\r' | '\n' | "\r\n"
 rule token = parse
   | white   { token lexbuf }
   | newline { Lexing.new_line lexbuf; token lexbuf }
-  | id      { ATOM (Lexing.lexeme lexbuf) }
   | "false" { FALSE }
   | "true"  { TRUE }
+  | id      { ATOM (Lexing.lexeme lexbuf) }
   | '~'     { NOT }
   | "/\\"   { AND }
   | "\\/"   { OR }
