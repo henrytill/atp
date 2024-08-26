@@ -89,3 +89,6 @@ end
 let eval = Internal.eval
 let atoms = Internal.atoms
 let print_truthtable = Internal.print_truthtable
+let tautology fm = Seq.for_all Fun.id (Internal.onallvaluations' (eval fm) (atoms fm))
+let unsatisfiable fm = tautology (Not fm)
+let satisfiable fm = not (unsatisfiable fm)

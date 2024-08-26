@@ -128,6 +128,38 @@ module Test_semantics = struct
     let expected = Some Syntax.[ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
     let actual = read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
     Alcotest.(check (option (list prop))) same_list expected actual
+
+  let true_taut () =
+    let fm = Input.parse_string {| true |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.tautology fm)
+
+  let true_satis () =
+    let fm = Input.parse_string {| true |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
+
+  let peirce_taut () =
+    let fm = Input.parse_string {| ((p ==> q) ==> p) ==> p |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.tautology fm)
+
+  let peirce_satis () =
+    let fm = Input.parse_string {| ((p ==> q) ==> p) ==> p |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
+
+  let example_not_taut () =
+    let fm = Input.parse_string {| p /\ q ==> q /\ r |} |> Option.get in
+    Alcotest.(check bool) same_bool false (Semantics.tautology fm)
+
+  let example_satis () =
+    let fm = Input.parse_string {| p /\ q ==> q /\ r |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
+
+  let contradiction_not_taut () =
+    let fm = Input.parse_string {| p /\ ~p |} |> Option.get in
+    Alcotest.(check bool) same_bool false (Semantics.tautology fm)
+
+  let contradiction_unsatis () =
+    let fm = Input.parse_string {| p /\ ~p |} |> Option.get in
+    Alcotest.(check bool) same_bool true (Semantics.unsatisfiable fm)
 end
 
 let prop_logic_tests =
@@ -155,6 +187,14 @@ let prop_logic_tests =
         test_case "setify removes duplicates and sorts" `Quick Test_semantics.setify_example;
         test_case "setify reverses a list" `Quick Test_semantics.setify_reverse;
         test_case "atoms returns the set of propositions" `Quick Test_semantics.atoms_example;
+        test_case "true is a tautology" `Quick Test_semantics.true_taut;
+        test_case "true is satisfiable" `Quick Test_semantics.true_satis;
+        test_case "Peirce's Law is a tautology" `Quick Test_semantics.peirce_taut;
+        test_case "Peirce's Law is satisfiable" `Quick Test_semantics.peirce_satis;
+        test_case "The example is not a tautology" `Quick Test_semantics.example_not_taut;
+        test_case "The example is satisfiable" `Quick Test_semantics.example_satis;
+        test_case "Contradiction is not a tautology" `Quick Test_semantics.contradiction_not_taut;
+        test_case "Contradiction is unsatisfiable" `Quick Test_semantics.contradiction_unsatis;
       ] );
   ]
 

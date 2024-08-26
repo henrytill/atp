@@ -24,3 +24,7 @@ val atoms : 'a Syntax.Formula.t -> 'a list
 
 val print_truthtable : Format.formatter -> Syntax.t -> unit
 (** [print_truthtable fmt fm] prints a truthtable for [fm] using [fmt]. *)
+
+val tautology : Syntax.t -> bool
+val unsatisfiable : Syntax.t -> bool
+val satisfiable : Syntax.t -> bool
