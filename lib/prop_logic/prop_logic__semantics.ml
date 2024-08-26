@@ -84,11 +84,13 @@ module Internal = struct
     let _ = Seq.for_all Fun.id (onallvaluations' mk_row ats) in
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ()
+
+  let tautology fm = Seq.for_all Fun.id (onallvaluations' (eval fm) (atoms fm))
 end
 
 let eval = Internal.eval
 let atoms = Internal.atoms
 let print_truthtable = Internal.print_truthtable
-let tautology fm = Seq.for_all Fun.id (Internal.onallvaluations' (eval fm) (atoms fm))
+let tautology = Internal.tautology
 let unsatisfiable fm = tautology (Not fm)
 let satisfiable fm = not (unsatisfiable fm)

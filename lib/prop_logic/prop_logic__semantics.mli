@@ -14,6 +14,7 @@ module Internal : sig
 
   val onallvaluations' : ((Syntax.Prop.t -> bool) -> 'a) -> Syntax.Prop.t list -> 'a Seq.t
   val print_truthtable : Format.formatter -> Syntax.t -> unit
+  val tautology : Syntax.t -> bool
 end
 
 val eval : Syntax.t -> (Syntax.Prop.t -> bool) -> bool
