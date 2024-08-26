@@ -81,7 +81,7 @@ module Internal = struct
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();
-    let _ = Seq.iter ignore (onallvaluations' mk_row ats) in
+    let _ = Seq.for_all Fun.id (onallvaluations' mk_row ats) in
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ()
 end
