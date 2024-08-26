@@ -2,7 +2,7 @@
 
 module PropLogic.Semantics where
 
-import Data.Bits (testBit)
+import Data.Bits qualified as Bits
 import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
@@ -54,7 +54,7 @@ generateTruthtable subfn as =
     offsetTable = snd $ List.foldl' (\(i, m) a -> (i - 1, Map.insert a i m)) (asLen - 1, Map.empty) as
 
     valuationFor :: Int -> a -> Bool
-    valuationFor row a = testBit row $ offsetTable ! a
+    valuationFor row a = Bits.testBit row $ offsetTable ! a
 
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
