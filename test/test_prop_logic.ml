@@ -152,9 +152,9 @@ let prop_logic_tests =
       [
         test_case "Parse and eval example" `Quick Test_semantics.example;
         test_case "Parse and eval another example" `Quick Test_semantics.another_example;
-        test_case "Setify removes duplicates and sorts" `Quick Test_semantics.setify_example;
-        test_case "Setify reverses a list" `Quick Test_semantics.setify_reverse;
-        test_case "Check atoms against example" `Quick Test_semantics.atoms_example;
+        test_case "setify removes duplicates and sorts" `Quick Test_semantics.setify_example;
+        test_case "setify reverses a list" `Quick Test_semantics.setify_reverse;
+        test_case "atoms returns the set of propositions" `Quick Test_semantics.atoms_example;
       ] );
   ]
 
