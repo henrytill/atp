@@ -55,7 +55,7 @@ module Internal = struct
       |> snd
     in
     let valuation_for row a = Z.testbit row (PropMap.find a offset_table) in
-    let num_valuations = Z.to_int (Z.shift_left (Z.of_int 1) ats_len) in
+    let num_valuations = Int.shift_left 1 ats_len in
     Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
   let print_truthtable fmt fm =
