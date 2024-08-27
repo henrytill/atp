@@ -60,7 +60,8 @@ module Internal = struct
 
   let print_truthtable fmt fm =
     let ats = atoms fm in
-    let width = itlist (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats 5 + 1 in
+    let false_len = 5 in
+    let width = itlist (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1 in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
     let mk_row v =
@@ -70,8 +71,10 @@ module Internal = struct
       Format.pp_print_newline fmt ();
       true
     in
-    let separator = String.make ((width * List.length ats) + 9) '-' in
-    Format.pp_print_string fmt (itlist (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats "| formula");
+    let formula_header = "| formula" in
+    let header = itlist (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
+    let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
+    Format.pp_print_string fmt header;
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();
