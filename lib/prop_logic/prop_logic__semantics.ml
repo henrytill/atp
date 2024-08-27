@@ -46,15 +46,15 @@ module Internal = struct
         let v' t q = if q = p then t else v q in
         onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
-  module PropMap = Map.Make (Syntax.Prop)
-
-  let onallvaluations' subfn ats =
+  let onallvaluations' (type a b) (module Atom : Map.OrderedType with type t = a)
+      (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
+    let module AtomMap = Map.Make (Atom) in
     let ats_len = List.length ats in
     let offset_table =
-      List.fold_left (fun (i, m) a -> (i - 1, PropMap.add a i m)) (ats_len - 1, PropMap.empty) ats
+      List.fold_left (fun (i, m) a -> (i - 1, AtomMap.add a i m)) (ats_len - 1, AtomMap.empty) ats
       |> snd
     in
-    let valuation_for row a = Z.testbit row (PropMap.find a offset_table) in
+    let valuation_for row a = Z.testbit row (AtomMap.find a offset_table) in
     let num_valuations = Int.shift_left 1 ats_len in
     Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
@@ -78,11 +78,11 @@ module Internal = struct
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();
-    let _ = Seq.for_all Fun.id (onallvaluations' mk_row ats) in
+    let _ = Seq.for_all Fun.id (onallvaluations' (module Syntax.Prop) mk_row ats) in
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ()
 
-  let tautology fm = Seq.for_all Fun.id (onallvaluations' (eval fm) (atoms fm))
+  let tautology fm = Seq.for_all Fun.id (onallvaluations' (module Syntax.Prop) (eval fm) (atoms fm))
 end
 
 let eval = Internal.eval

@@ -12,7 +12,9 @@ module Internal : sig
   val onallvaluations : (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool
   (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
 
-  val onallvaluations' : ((Syntax.Prop.t -> bool) -> 'a) -> Syntax.Prop.t list -> 'a Seq.t
+  val onallvaluations' :
+    (module Map.OrderedType with type t = 'a) -> (('a -> bool) -> 'b) -> 'a list -> 'b Seq.t
+
   val print_truthtable : Format.formatter -> Syntax.t -> unit
   val tautology : Syntax.t -> bool
 end
