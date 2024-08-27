@@ -17,6 +17,8 @@ OCAMLCFLAGS = $(INCLUDES) -bin-annot -g
 OCAMLOPTFLAGS = $(INCLUDES) -bin-annot -g
 OCAMLFINDFLAGS =
 
+OCAMLC_WHERE = $(shell ocamlc -where)
+
 bindir = /bin
 prefix = /usr/local
 DESTDIR = $(prefix)
@@ -117,11 +119,13 @@ bin/main.byte: lib/intro/intro.cma lib/prop_logic/prop_logic.cma bin/main.ml
 
 # tests
 
+test/test_intro.byte: export OCAMLFIND_IGNORE_DUPS_IN = $(OCAMLC_WHERE)
 test/test_intro.byte: OCAMLFINDFLAGS += -linkpkg -package alcotest
 test/test_intro.byte: INCLUDES += -I lib/intro
 test/test_intro.byte: lib/intro/intro.cma test/test_intro.ml
 	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
+test/test_prop_logic.byte: export OCAMLFIND_IGNORE_DUPS_IN = $(OCAMLC_WHERE)
 test/test_prop_logic.byte: OCAMLFINDFLAGS += -linkpkg -package alcotest -package zarith
 test/test_prop_logic.byte: INCLUDES += -I lib/prop_logic
 test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
