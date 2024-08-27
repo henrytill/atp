@@ -1,6 +1,4 @@
 module Internal = struct
-  module Seq = Stdlib.Seq
-
   let rec eval fm v =
     let open Syntax.Formula in
     match fm with
