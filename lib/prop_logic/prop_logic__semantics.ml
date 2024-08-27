@@ -48,13 +48,13 @@ module Internal = struct
 
   let onallvaluations' (type a b) (module Atom : Map.OrderedType with type t = a)
       (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
-    let module AtomMap = Map.Make (Atom) in
+    let module Atom_map = Map.Make (Atom) in
     let ats_len = List.length ats in
     let offset_table =
-      List.fold_left (fun (i, m) a -> (i - 1, AtomMap.add a i m)) (ats_len - 1, AtomMap.empty) ats
+      List.fold_left (fun (i, m) a -> (i - 1, Atom_map.add a i m)) (ats_len - 1, Atom_map.empty) ats
       |> snd
     in
-    let valuation_for row a = Z.testbit row (AtomMap.find a offset_table) in
+    let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
     let num_valuations = Int.shift_left 1 ats_len in
     Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
