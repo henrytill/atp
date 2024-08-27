@@ -48,11 +48,7 @@ module Internal = struct
         let v' t q = if q = p then t else v q in
         onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
 
-  module PropMap = Map.Make (struct
-    type t = Syntax.Prop.t
-
-    let compare = Syntax.Prop.compare
-  end)
+  module PropMap = Map.Make (Syntax.Prop)
 
   let onallvaluations' subfn ats =
     let ats_len = List.length ats in
