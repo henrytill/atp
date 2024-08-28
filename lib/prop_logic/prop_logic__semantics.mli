@@ -6,13 +6,7 @@ module Internal : sig
   val atom_union : ('a -> 'b list) -> 'a Syntax.Formula.t -> 'b list
   val atoms : 'a Syntax.Formula.t -> 'a list
 
-  val itlist : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-  (** Alias for [List.fold_right]. *)
-
-  val onallvaluations : (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool
-  (** Returns [true] on all possible valuations of the atoms [ats], using an existing [v] for all other atoms. *)
-
-  val onallvaluations' :
+  val onallvaluations :
     (module Map.OrderedType with type t = 'a) -> (('a -> bool) -> 'b) -> 'a list -> 'b Seq.t
 
   val print_truthtable : Format.formatter -> Syntax.t -> unit

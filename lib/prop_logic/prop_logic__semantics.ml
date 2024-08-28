@@ -37,16 +37,8 @@ module Internal = struct
   let setify xs = List.sort_uniq compare xs
   let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
   let atoms fm = atom_union (fun a -> [ a ]) fm
-  let itlist = List.fold_right
 
-  let rec onallvaluations subfn v ats =
-    match ats with
-    | [] -> subfn v
-    | p :: ps ->
-        let v' t q = if q = p then t else v q in
-        onallvaluations subfn (v' false) ps && onallvaluations subfn (v' true) ps
-
-  let onallvaluations' (type a b) (module Atom : Map.OrderedType with type t = a)
+  let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
       (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
     let module Atom_map = Map.Make (Atom) in
     let ats_len = List.length ats in
@@ -61,28 +53,30 @@ module Internal = struct
   let print_truthtable fmt fm =
     let ats = atoms fm in
     let false_len = 5 in
-    let width = itlist (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1 in
+    let width =
+      List.fold_right (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1
+    in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
     let mk_row v =
       let lis = List.map (fun x -> truthstring (v x)) ats in
       let ans = truthstring (eval fm v) in
-      Format.pp_print_string fmt (itlist ( ^ ) lis ("| " ^ ans));
+      Format.pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
       Format.pp_print_newline fmt ();
       true
     in
     let formula_header = "| formula" in
-    let header = itlist (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
+    let header = List.fold_right (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
     let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
     Format.pp_print_string fmt header;
     Format.pp_print_newline fmt ();
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ();
-    let _ = Seq.for_all Fun.id (onallvaluations' (module Syntax.Prop) mk_row ats) in
+    let _ = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) mk_row ats) in
     Format.pp_print_string fmt separator;
     Format.pp_print_newline fmt ()
 
-  let tautology fm = Seq.for_all Fun.id (onallvaluations' (module Syntax.Prop) (eval fm) (atoms fm))
+  let tautology fm = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (atoms fm))
 end
 
 let eval = Internal.eval
