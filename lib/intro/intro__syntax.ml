@@ -10,28 +10,28 @@ type t =
 let pp_ast fmt expr =
   let open Format in
   let rec go fmt = function
-    | Var x -> fprintf fmt "@[Var %S@]" x
-    | Const m -> fprintf fmt "@[Const %d@]" m
-    | Neg a -> fprintf fmt "@[Neg (%a)@]" go a
-    | Add (a, b) -> fprintf fmt "@[Add (%a, %a)@]" go a go b
-    | Sub (a, b) -> fprintf fmt "@[Sub (%a, %a)@]" go a go b
-    | Mul (a, b) -> fprintf fmt "@[Mul (%a, %a)@]" go a go b
-    | Exp (a, b) -> fprintf fmt "@[Exp (%a, %a)@]" go a go b
+    | Var x -> fprintf fmt "Var %S" x
+    | Const m -> fprintf fmt "Const %d" m
+    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>(%a)@]" go a
+    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" go a go b
+    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" go a go b
+    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" go a go b
+    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" go a go b
   in
-  fprintf fmt "@[(";
+  fprintf fmt "@[<hv 1>";
   go fmt expr;
-  fprintf fmt ")@]"
+  fprintf fmt "@]"
 
 let rec pp fmt expr =
   let open Format in
   match expr with
-  | Var x -> fprintf fmt "@[%s@]" x
-  | Const m -> fprintf fmt "@[%d@]" m
-  | Neg a -> fprintf fmt "@[(- %a)@]" pp a
-  | Add (a, b) -> fprintf fmt "@[(%a + %a)@]" pp a pp b
-  | Sub (a, b) -> fprintf fmt "@[(%a - %a)@]" pp a pp b
-  | Mul (a, b) -> fprintf fmt "@[(%a * %a)@]" pp a pp b
-  | Exp (a, b) -> fprintf fmt "@[(%a ^ %a)@]" pp a pp b
+  | Var x -> fprintf fmt "%s" x
+  | Const m -> fprintf fmt "%d" m
+  | Neg a -> fprintf fmt "@[<h>(-@ %a)@]" pp a
+  | Add (a, b) -> fprintf fmt "@[<h>(%a@ +@ %a)@]" pp a pp b
+  | Sub (a, b) -> fprintf fmt "@[<h>(%a@ -@ %a)@]" pp a pp b
+  | Mul (a, b) -> fprintf fmt "@[<h>(%a@ *@ %a)@]" pp a pp b
+  | Exp (a, b) -> fprintf fmt "@[<h>(%a@ ^@ %a)@]" pp a pp b
 
 let rec equal e1 e2 =
   match (e1, e2) with
