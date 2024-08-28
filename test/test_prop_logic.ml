@@ -131,6 +131,18 @@ module Test_semantics = struct
 
   let make_fm s = Input.parse_string s |> Option.get
 
+  let tautology_examples () =
+    let fms =
+      [
+        make_fm {| true <=> false ==> false |};
+        make_fm {| ~p <=> p ==> false |};
+        make_fm {| p /\ q <=> (p ==> q ==> false) ==> false |};
+        make_fm {| p \/ q <=> (p ==> false) ==> q |};
+        make_fm {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};
+      ]
+    in
+    Alcotest.(check bool) same_bool true (List.for_all Semantics.tautology fms)
+
   let true_taut () =
     let fm = make_fm {| true |} in
     Alcotest.(check bool) same_bool true (Semantics.tautology fm)
@@ -189,6 +201,7 @@ let prop_logic_tests =
         test_case "setify removes duplicates and sorts" `Quick Test_semantics.setify_example;
         test_case "setify reverses a list" `Quick Test_semantics.setify_reverse;
         test_case "atoms returns the set of propositions" `Quick Test_semantics.atoms_example;
+        test_case "tautology is true for all examples" `Quick Test_semantics.tautology_examples;
         test_case "true is a tautology" `Quick Test_semantics.true_taut;
         test_case "true is satisfiable" `Quick Test_semantics.true_satis;
         test_case "Peirce's Law is a tautology" `Quick Test_semantics.peirce_taut;
