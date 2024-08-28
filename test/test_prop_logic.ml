@@ -129,36 +129,38 @@ module Test_semantics = struct
     let actual = read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
     Alcotest.(check (option (list prop))) same_list expected actual
 
+  let make_fm s = Input.parse_string s |> Option.get
+
   let true_taut () =
-    let fm = Input.parse_string {| true |} |> Option.get in
+    let fm = make_fm {| true |} in
     Alcotest.(check bool) same_bool true (Semantics.tautology fm)
 
   let true_satis () =
-    let fm = Input.parse_string {| true |} |> Option.get in
+    let fm = make_fm {| true |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let peirce_taut () =
-    let fm = Input.parse_string {| ((p ==> q) ==> p) ==> p |} |> Option.get in
+    let fm = make_fm {| ((p ==> q) ==> p) ==> p |} in
     Alcotest.(check bool) same_bool true (Semantics.tautology fm)
 
   let peirce_satis () =
-    let fm = Input.parse_string {| ((p ==> q) ==> p) ==> p |} |> Option.get in
+    let fm = make_fm {| ((p ==> q) ==> p) ==> p |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let example_not_taut () =
-    let fm = Input.parse_string {| p /\ q ==> q /\ r |} |> Option.get in
+    let fm = make_fm {| p /\ q ==> q /\ r |} in
     Alcotest.(check bool) same_bool false (Semantics.tautology fm)
 
   let example_satis () =
-    let fm = Input.parse_string {| p /\ q ==> q /\ r |} |> Option.get in
+    let fm = make_fm {| p /\ q ==> q /\ r |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let contradiction_not_taut () =
-    let fm = Input.parse_string {| p /\ ~p |} |> Option.get in
+    let fm = make_fm {| p /\ ~p |} in
     Alcotest.(check bool) same_bool false (Semantics.tautology fm)
 
   let contradiction_unsatis () =
-    let fm = Input.parse_string {| p /\ ~p |} |> Option.get in
+    let fm = make_fm {| p /\ ~p |} in
     Alcotest.(check bool) same_bool true (Semantics.unsatisfiable fm)
 end
 
