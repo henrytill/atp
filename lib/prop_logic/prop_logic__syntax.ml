@@ -3,7 +3,7 @@ module Prop = struct
 
   let inj = Fun.id
   let prj = Fun.id
-  let pp_ast fmt = Format.fprintf fmt "@[%S@]"
+  let pp_ast fmt = Format.fprintf fmt "%S"
   let pp = Format.pp_print_string
   let equal = String.equal
   let compare = String.compare
@@ -25,32 +25,32 @@ module Formula = struct
   let pp_ast atom_pp_ast fmt fm =
     let open Format in
     let rec go fmt = function
-      | Atom a -> fprintf fmt "@[Atom %a@]" atom_pp_ast a
-      | False -> fprintf fmt "@[False@]"
-      | True -> fprintf fmt "@[True@]"
-      | Not p -> fprintf fmt "@[Not (%a)@]" go p
-      | And (p, q) -> fprintf fmt "@[And (%a, %a)@]" go p go q
-      | Or (p, q) -> fprintf fmt "@[Or (%a, %a)@]" go p go q
-      | Imp (p, q) -> fprintf fmt "@[Imp (%a, %a)@]" go p go q
-      | Iff (p, q) -> fprintf fmt "@[Iff (%a, %a)@]" go p go q
-      | Forall (x, p) -> fprintf fmt "@[Forall (%S, %a)@]" x go p
-      | Exists (x, p) -> fprintf fmt "@[Exists (%S, %a)@]" x go p
+      | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
+      | False -> fprintf fmt "False"
+      | True -> fprintf fmt "True"
+      | Not p -> fprintf fmt "@[<hv 1>Not@ (%a)@]" go p
+      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" go p go q
+      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" go p go q
+      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" go p go q
+      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" go p go q
+      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x go p
+      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x go p
     in
-    fprintf fmt "@[(";
+    fprintf fmt "@[<hv 1>";
     go fmt fm;
-    fprintf fmt ")@]"
+    fprintf fmt "@]"
 
   let pp atom_pp fmt fm =
     let open Format in
     let rec go fmt = function
       | Atom a -> atom_pp fmt a
-      | False -> fprintf fmt "@[false@]"
-      | True -> fprintf fmt "@[true@]"
-      | Not p -> fprintf fmt "@[(~ %a)@]" go p
-      | And (p, q) -> fprintf fmt "@[(%a /\\ %a)@]" go p go q
-      | Or (p, q) -> fprintf fmt "@[(%a \\/ %a)@]" go p go q
-      | Imp (p, q) -> fprintf fmt "@[(%a ==> %a)@]" go p go q
-      | Iff (p, q) -> fprintf fmt "@[(%a <=> %a)@]" go p go q
+      | False -> fprintf fmt "false"
+      | True -> fprintf fmt "true"
+      | Not p -> fprintf fmt "@[<hv 1>(~ %a)@]" go p
+      | And (p, q) -> fprintf fmt "@[<h>(%a@ /\\@ %a)@]" go p go q
+      | Or (p, q) -> fprintf fmt "@[<h>(%a@ \\/@ %a)@]" go p go q
+      | Imp (p, q) -> fprintf fmt "@[<hv 1>(%a ==>@;<1 0>%a)@]" go p go q
+      | Iff (p, q) -> fprintf fmt "@[<hv 1>(%a <=>@;<1 0>%a)@]" go p go q
       | Forall _ | Exists _ -> failwith "unimplemented"
     in
     go fmt fm
