@@ -6,11 +6,16 @@ result*
 *.cmt
 *.cmti
 *.cmo
+*.cmx
+*.o
 *.cma
+*.cmxa
+*.a
+*.byte
+*.exe
 *__lexer.ml
 *__parser.ml
 *__parser.mli
 *.conflicts
-*.byte
 test/*.t.err
 config.mk
