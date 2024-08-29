@@ -1,11 +1,11 @@
 open Syntax
 
-let err_raise_negative = "cannot raise to a negative power"
+let err_raise_negative () = raise (Invalid_argument "cannot raise to a negative power")
 
 let rec pow (a : int) : int -> int = function
   | 0 -> 1
   | 1 -> a
-  | n when n < 0 -> raise (Invalid_argument err_raise_negative)
+  | n when n < 0 -> err_raise_negative ()
   | n ->
       let b = pow a (n / 2) in
       b * b * if n mod 2 = 0 then 1 else a
@@ -25,7 +25,7 @@ let simplify1 count expr =
   | Exp (Const 0, _) -> Const 0
   | Exp (Const 1, _) -> Const 1
   | Exp (x, Const 1) -> x
-  | Exp (_, Neg (Const _)) -> raise (Invalid_argument err_raise_negative)
+  | Exp (_, Neg (Const _)) -> err_raise_negative ()
   | Exp (Const m, Const n) -> Const (pow m n)
   | Neg (Neg x) -> x
   | Neg (Const m) -> Const (-m)
@@ -49,7 +49,7 @@ let simplify_with_count expr =
     | Exp (Const 0, _) -> Const 0
     | Exp (Const 1, _) -> Const 1
     | Exp (x, Const 1) -> simply x
-    | Exp (_, Neg (Const _)) -> raise (Invalid_argument err_raise_negative)
+    | Exp (_, Neg (Const _)) -> err_raise_negative ()
     | Exp (x, y) -> simplify1 count (Exp (go x, go y))
     | Neg (Neg x) -> simply x
     | Neg x -> simplify1 count (Neg (go x))
