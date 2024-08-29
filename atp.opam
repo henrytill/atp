@@ -8,10 +8,11 @@ homepage: "https://github.com/henrytill/atp"
 bug-reports: "https://github.com/henrytill/atp/issues"
 depends: [
   "ocaml"
+  "ocamlfind"
   "menhir"
   "zarith" {>= "1.14"}
-  "ocamlfind" {with-test}
   "alcotest" {with-test & >= "1.7.0"}
+  "conf-python-3" {with-test}
   "odoc" {with-doc}
 ]
 build: [
