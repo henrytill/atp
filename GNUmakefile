@@ -102,11 +102,16 @@ endif
 
 # intro
 
-lib/intro/intro.cma: lib/intro/intro.cmi $(INTRO_CMOS)
+
+lib/intro/intro.cma: $(INTRO_CMOS)
 	$(OCAMLC) -a $(INTRO_CMOS) -o $@
 
-lib/intro/intro.cmxa: lib/intro/intro.cmi $(INTRO_CMXS)
+lib/intro/intro.cmxa: $(INTRO_CMXS)
 	$(OCAMLOPT) -a $(INTRO_CMXS) -o $@
+
+$(INTRO_CMOS): lib/intro/intro.cmi
+
+$(INTRO_CMXS): lib/intro/intro.cmi
 
 lib/intro/intro.cmi: lib/intro/intro.mli
 	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
@@ -128,11 +133,15 @@ lib/intro/intro__lexer.ml: lib/intro/intro__parser.mly
 
 # prop_logic
 
-lib/prop_logic/prop_logic.cma: lib/prop_logic/prop_logic.cmi $(PROP_LOGIC_CMOS)
+lib/prop_logic/prop_logic.cma: $(PROP_LOGIC_CMOS)
 	$(OCAMLFIND) $(OCAMLC) -a $(PROP_LOGIC_CMOS) -o $@
 
-lib/prop_logic/prop_logic.cmxa: lib/prop_logic/prop_logic.cmi $(PROP_LOGIC_CMXS)
+lib/prop_logic/prop_logic.cmxa: $(PROP_LOGIC_CMXS)
 	$(OCAMLFIND) $(OCAMLOPT) -a $(PROP_LOGIC_CMXS) -o $@
+
+$(PROP_LOGIC_CMOS): lib/prop_logic/prop_logic.cmi
+
+$(PROP_LOGIC_CMXS): lib/prop_logic/prop_logic.cmi
 
 lib/prop_logic/prop_logic.cmi: lib/prop_logic/prop_logic.mli
 	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
@@ -234,8 +243,8 @@ distclean: clean
 .depend: GNUmakefile $(GENERATED)
 	@printf "# -*- mode: makefile; -*-\n\n" > $@
 	@printf "# intro\n" >> $@
-	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_CMOS_SUBS:.cmo=.ml) >> $@
+	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_CMOS_SUBS:.cmo=.mli) $(INTRO_CMOS_SUBS:.cmo=.ml) >> $@
 	@printf "\n# prop_logic\n" >> $@
-	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_CMOS_SUBS:.cmo=.ml) >> $@
+	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_CMOS_SUBS:.cmo=.mli) $(PROP_LOGIC_CMOS_SUBS:.cmo=.ml) >> $@
 
 include .depend
