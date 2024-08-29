@@ -1,8 +1,0 @@
-S bin
-S lib/intro
-S lib/prop_logic
-S test
-B _build/bin
-B _build/lib/intro
-B _build/lib/prop_logic
-B _build/test

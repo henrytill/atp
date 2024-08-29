@@ -19,3 +19,4 @@ result*
 *.conflicts
 test/*.t.err
 config.mk
+/.merlin
