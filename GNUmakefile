@@ -41,13 +41,13 @@ INTRO_CMOS += lib/intro/intro__parser.cmo
 INTRO_CMOS += lib/intro/intro__lexer.cmo
 INTRO_CMOS += lib/intro/intro__input.cmo
 
-INTRO_MLIS = $(INTRO_CMOS_SUBS:.cmo=.mli)
-INTRO_MLS = $(INTRO_CMOS_SUBS:.cmo=.ml)
-
 INTRO_CMXS = $(INTRO_CMOS:.cmo=.cmx)
 
-INTRO_CMOS_SUBS = $(filter lib/intro/intro__%,$(INTRO_CMOS))
-INTRO_CMXS_SUBS = $(INTRO_CMOS_SUBS:.cmo=.cmx)
+INTRO_SUBS_CMOS = $(filter lib/intro/intro__%,$(INTRO_CMOS))
+INTRO_SUBS_CMXS = $(INTRO_SUBS_CMOS:.cmo=.cmx)
+
+INTRO_SUBS_MLIS = $(INTRO_SUBS_CMOS:.cmo=.mli)
+INTRO_SUBS_MLS = $(INTRO_SUBS_CMOS:.cmo=.ml)
 
 PROP_LOGIC_CMOS =
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic.cmo
@@ -57,13 +57,13 @@ PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__parser.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__lexer.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__input.cmo
 
-PROP_LOGIC_MLIS = $(PROP_LOGIC_CMOS_SUBS:.cmo=.mli)
-PROP_LOGIC_MLS = $(PROP_LOGIC_CMOS_SUBS:.cmo=.ml)
-
 PROP_LOGIC_CMXS = $(PROP_LOGIC_CMOS:.cmo=.cmx)
 
-PROP_LOGIC_CMOS_SUBS = $(filter lib/prop_logic/prop_logic__%,$(PROP_LOGIC_CMOS))
-PROP_LOGIC_CMXS_SUBS = $(PROP_LOGIC_CMOS_SUBS:.cmo=.cmx)
+PROP_LOGIC_SUBS_CMOS = $(filter lib/prop_logic/prop_logic__%,$(PROP_LOGIC_CMOS))
+PROP_LOGIC_SUBS_CMXS = $(PROP_LOGIC_SUBS_CMOS:.cmo=.cmx)
+
+PROP_LOGIC_SUBS_MLIS = $(PROP_LOGIC_SUBS_CMOS:.cmo=.mli)
+PROP_LOGIC_SUBS_MLS = $(PROP_LOGIC_SUBS_CMOS:.cmo=.ml)
 
 ARCHIVES =
 ARCHIVES += lib/intro/intro.cma
@@ -132,9 +132,9 @@ lib/intro/intro.cmx: lib/intro/intro.ml lib/intro/intro.cmi
 
 # intro submodules
 
-$(INTRO_CMOS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro
-$(INTRO_CMXS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro # for .mli -> .cmi
-$(INTRO_CMXS_SUBS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Intro
+$(INTRO_SUBS_CMOS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro
+$(INTRO_SUBS_CMXS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro # for .mli -> .cmi
+$(INTRO_SUBS_CMXS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Intro
 
 lib/intro/intro__lexer.ml: lib/intro/intro__parser.mly
 
@@ -162,9 +162,9 @@ lib/prop_logic/prop_logic.cmx: lib/prop_logic/prop_logic.ml lib/prop_logic/prop_
 
 # prop_logic submdoules
 
-$(PROP_LOGIC_CMOS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic
-$(PROP_LOGIC_CMXS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic # for .mli -> .cmi
-$(PROP_LOGIC_CMXS_SUBS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Prop_logic
+$(PROP_LOGIC_SUBS_CMOS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic
+$(PROP_LOGIC_SUBS_CMXS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic # for .mli -> .cmi
+$(PROP_LOGIC_SUBS_CMXS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Prop_logic
 
 lib/prop_logic/prop_logic__lexer.ml: lib/prop_logic/prop_logic__parser.mly
 
@@ -247,11 +247,11 @@ distclean: clean
 	rm -f $(GENERATED)
 	rm -f config.mk
 
-.depend: GNUmakefile $(GENERATED) $(INTRO_MLIS) $(INTRO_MLS) $(PROP_LOGIC_MLIS) $(PROP_LOGIC_MLS)
+.depend: GNUmakefile $(GENERATED) $(INTRO_SUBS_MLIS) $(INTRO_SUBS_MLS) $(PROP_LOGIC_SUBS_MLIS) $(PROP_LOGIC_SUBS_MLS)
 	@printf "# -*- mode: makefile; -*-\n\n" > $@
 	@printf "# intro\n" >> $@
-	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_MLIS) $(INTRO_MLS) >> $@
+	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_SUBS_MLIS) $(INTRO_SUBS_MLS) >> $@
 	@printf "\n# prop_logic\n" >> $@
-	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_MLIS) $(PROP_LOGIC_MLS) >> $@
+	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_SUBS_MLIS) $(PROP_LOGIC_SUBS_MLS) >> $@
 
 include .depend
