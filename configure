@@ -2,8 +2,11 @@
 
 set -e
 
+SRC_DIR="$(pwd)"
+BUILD_DIR="$SRC_DIR"  # Default to source directory
+
 check_python_module() {
-  printf "checking for Python module %s... " $1
+  printf "checking for Python module %s... " "$1"
   python3 -c "import $1" >/dev/null 2>&1
   if [ $? -eq 0 ]; then
     printf "yes\n"
@@ -14,10 +17,64 @@ check_python_module() {
   fi
 }
 
->config.mk
+setup_out_of_tree_build() {
+  mkdir -p "$BUILD_DIR"
 
-if check_python_module "cram"; then
-  printf "HAS_CRAM = true\n" >>config.mk
+  for dir in bin lib test; do
+    cp -asf "${SRC_DIR}/${dir}" "${BUILD_DIR}/"
+  done
+
+  ln -sf "${SRC_DIR}/GNUmakefile" "${BUILD_DIR}/GNUmakefile"
+
+  find "$BUILD_DIR" -name .merlin -delete
+}
+
+generate_config_mk() {
+  config_mk="${BUILD_DIR}/config.mk"
+  : > "$config_mk"
+
+  if check_python_module "cram"; then
+    printf "HAS_CRAM = true\n" >> "$config_mk"
+  fi
+}
+
+usage() {
+  echo "Usage: $0 [-d BUILD_DIR] [-h]"
+  echo "  -d BUILD_DIR  Specify the build directory"
+  echo "  -h            Display this help message"
+}
+
+# Parse command-line arguments
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -d)
+      if [ -n "$2" ]; then
+        BUILD_DIR="$(realpath $2)"
+        shift 2
+      else
+        echo "Error: -d requires a directory argument."
+        exit 1
+      fi
+      ;;
+    -h)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+# If BUILD_DIR is different from SRC_DIR, set up out-of-tree build
+if [ "$BUILD_DIR" != "$SRC_DIR" ]; then
+  setup_out_of_tree_build
 fi
 
+# Generate config.mk
+generate_config_mk
+
+printf "Build directory: %s\n" "$BUILD_DIR"
 printf "OK\n"

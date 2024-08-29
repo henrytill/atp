@@ -15,8 +15,8 @@ depends: [
   "odoc" {with-doc}
 ]
 build: [
-  ["./configure"]
-  [make "all" "check" {with-test}]
+  ["./configure" "-d" "_build"]
+  [make "-C" "_build" "all" "check" {with-test}]
 ]
 install: [make "DESTDIR=%{prefix}%" "install"]
 run-test: [make "check"]

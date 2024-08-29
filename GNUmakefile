@@ -1,5 +1,7 @@
 .SUFFIXES:
 
+VPATH = bin:lib:test
+
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OCAMLDEP = ocamldep
@@ -72,6 +74,12 @@ ARCHIVES += lib/prop_logic/prop_logic.cma
 ARCHIVES_OPT =
 ARCHIVES_OPT += lib/intro/intro.cmxa
 ARCHIVES_OPT += lib/prop_logic/prop_logic.cmxa
+
+BINS =
+BINS += bin/main.byte
+
+BINS_OPT =
+BINS_OPT += bin/main.exe
 
 TESTS =
 TESTS += test/test_intro.byte
@@ -238,8 +246,12 @@ clean:
 	rm -f $(PROP_LOGIC_CMOS:.cmo=.cmi) $(PROP_LOGIC_CMOS:.cmo=.cmti)
 	rm -f $(PROP_LOGIC_CMXS) $(PROP_LOGIC_CMXS:.cmx=.o)
 	rm -f $(ARCHIVES) $(ARCHIVES_OPT) $(ARCHIVES_OPT:.cmxa=.a)
-	rm -f bin/main.byte bin/main.exe
+	rm -f $(BINS) $(BINS_OPT)
+	rm -f $(BINS:.byte=.cmi) $(BINS:.byte=.cmo) $(BINS:.byte=.cmt)
+	rm -f $(BINS_OPT:.exe=.cmx) $(BINS_OPT:.exe=.o)
 	rm -f $(TESTS) $(TESTS_OPT)
+	rm -f $(TESTS:.byte=.cmi) $(TESTS:.byte=.cmo) $(TESTS:.byte=.cmt)
+	rm -f $(TESTS_OPT:.exe=.cmx) $(TESTS_OPT:.exe=.o)
 
 .PHONY: distclean
 distclean: clean
