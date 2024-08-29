@@ -1,7 +1,5 @@
 .SUFFIXES:
 
-VPATH = bin:lib:test
-
 OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OCAMLDEP = ocamldep
