@@ -69,8 +69,12 @@ while [ $# -gt 0 ]; do
 done
 
 # If BUILD_DIR is different from SRC_DIR, set up out-of-tree build
+printf "checking for out of tree build... "
 if [ "$BUILD_DIR" != "$SRC_DIR" ]; then
+  printf "yes\n"
   setup_out_of_tree_build
+else
+  printf "no\n"
 fi
 
 # Generate config.mk
