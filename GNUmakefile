@@ -32,12 +32,12 @@ GENERATED += lib/prop_logic/prop_logic__parser.mli
 GENERATED += lib/prop_logic/prop_logic__lexer.ml
 
 INTRO_CMOS =
+INTRO_CMOS += lib/intro/intro.cmo
 INTRO_CMOS += lib/intro/intro__syntax.cmo
 INTRO_CMOS += lib/intro/intro__semantics.cmo
 INTRO_CMOS += lib/intro/intro__parser.cmo
 INTRO_CMOS += lib/intro/intro__lexer.cmo
 INTRO_CMOS += lib/intro/intro__input.cmo
-INTRO_CMOS += lib/intro/intro.cmo
 
 INTRO_CMXS = $(INTRO_CMOS:.cmo=.cmx)
 
@@ -45,12 +45,12 @@ INTRO_CMOS_SUBS = $(filter lib/intro/intro__%,$(INTRO_CMOS))
 INTRO_CMXS_SUBS = $(INTRO_CMOS_SUBS:.cmo=.cmx)
 
 PROP_LOGIC_CMOS =
+PROP_LOGIC_CMOS += lib/prop_logic/prop_logic.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__syntax.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__semantics.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__parser.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__lexer.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__input.cmo
-PROP_LOGIC_CMOS += lib/prop_logic/prop_logic.cmo
 
 PROP_LOGIC_CMXS = $(PROP_LOGIC_CMOS:.cmo=.cmx)
 
@@ -105,7 +105,7 @@ endif
 lib/intro/intro.cma: lib/intro/intro.cmi $(INTRO_CMOS)
 	$(OCAMLC) -a $(INTRO_CMOS) -o $@
 
-lib/intro/intro.cmxa: lib/intro/intro.cmi lib/intro/intro.cmx $(INTRO_CMXS_SUBS)
+lib/intro/intro.cmxa: lib/intro/intro.cmi $(INTRO_CMXS)
 	$(OCAMLOPT) -a $(INTRO_CMXS) -o $@
 
 lib/intro/intro.cmi: lib/intro/intro.mli
@@ -131,7 +131,7 @@ lib/intro/intro__lexer.ml: lib/intro/intro__parser.mly
 lib/prop_logic/prop_logic.cma: lib/prop_logic/prop_logic.cmi $(PROP_LOGIC_CMOS)
 	$(OCAMLFIND) $(OCAMLC) -a $(PROP_LOGIC_CMOS) -o $@
 
-lib/prop_logic/prop_logic.cmxa: lib/prop_logic/prop_logic.cmi lib/prop_logic/prop_logic.cmx $(PROP_LOGIC_CMXS_SUBS)
+lib/prop_logic/prop_logic.cmxa: lib/prop_logic/prop_logic.cmi $(PROP_LOGIC_CMXS)
 	$(OCAMLFIND) $(OCAMLOPT) -a $(PROP_LOGIC_CMXS) -o $@
 
 lib/prop_logic/prop_logic.cmi: lib/prop_logic/prop_logic.mli
@@ -221,8 +221,9 @@ clean:
 	rm -f $(PROP_LOGIC_CMOS) $(PROP_LOGIC_CMOS:.cmo=.cmt)
 	rm -f $(PROP_LOGIC_CMOS:.cmo=.cmi) $(PROP_LOGIC_CMOS:.cmo=.cmti)
 	rm -f $(PROP_LOGIC_CMXS) $(PROP_LOGIC_CMXS:.cmx=.o)
-	rm -f $(ARCHIVES)
-	rm -f bin/main.byte
+	rm -f $(ARCHIVES) $(ARCHIVES_OPT)
+	rm -f bin/main.byte bin/main.exe
+	rm -f $(TESTS) $(TESTS_OPT)
 
 .PHONY: distclean
 distclean: clean
