@@ -237,7 +237,7 @@ clean:
 	rm -f $(PROP_LOGIC_CMOS) $(PROP_LOGIC_CMOS:.cmo=.cmt)
 	rm -f $(PROP_LOGIC_CMOS:.cmo=.cmi) $(PROP_LOGIC_CMOS:.cmo=.cmti)
 	rm -f $(PROP_LOGIC_CMXS) $(PROP_LOGIC_CMXS:.cmx=.o)
-	rm -f $(ARCHIVES) $(ARCHIVES_OPT)
+	rm -f $(ARCHIVES) $(ARCHIVES_OPT) $(ARCHIVES_OPT:.cmxa=.a)
 	rm -f bin/main.byte bin/main.exe
 	rm -f $(TESTS) $(TESTS_OPT)
 
