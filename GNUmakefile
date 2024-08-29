@@ -41,6 +41,9 @@ INTRO_CMOS += lib/intro/intro__parser.cmo
 INTRO_CMOS += lib/intro/intro__lexer.cmo
 INTRO_CMOS += lib/intro/intro__input.cmo
 
+INTRO_MLIS = $(INTRO_CMOS_SUBS:.cmo=.mli)
+INTRO_MLS = $(INTRO_CMOS_SUBS:.cmo=.ml)
+
 INTRO_CMXS = $(INTRO_CMOS:.cmo=.cmx)
 
 INTRO_CMOS_SUBS = $(filter lib/intro/intro__%,$(INTRO_CMOS))
@@ -53,6 +56,9 @@ PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__semantics.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__parser.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__lexer.cmo
 PROP_LOGIC_CMOS += lib/prop_logic/prop_logic__input.cmo
+
+PROP_LOGIC_MLIS = $(PROP_LOGIC_CMOS_SUBS:.cmo=.mli)
+PROP_LOGIC_MLS = $(PROP_LOGIC_CMOS_SUBS:.cmo=.ml)
 
 PROP_LOGIC_CMXS = $(PROP_LOGIC_CMOS:.cmo=.cmx)
 
@@ -241,11 +247,11 @@ distclean: clean
 	rm -f $(GENERATED)
 	rm -f config.mk
 
-.depend: GNUmakefile $(GENERATED)
+.depend: GNUmakefile $(GENERATED) $(INTRO_MLIS) $(INTRO_MLS) $(PROP_LOGIC_MLIS) $(PROP_LOGIC_MLS)
 	@printf "# -*- mode: makefile; -*-\n\n" > $@
 	@printf "# intro\n" >> $@
-	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_CMOS_SUBS:.cmo=.mli) $(INTRO_CMOS_SUBS:.cmo=.ml) >> $@
+	$(OCAMLDEP) -I lib/intro -map lib/intro/intro.mli -open Intro $(INTRO_MLIS) $(INTRO_MLS) >> $@
 	@printf "\n# prop_logic\n" >> $@
-	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_CMOS_SUBS:.cmo=.mli) $(PROP_LOGIC_CMOS_SUBS:.cmo=.ml) >> $@
+	$(OCAMLDEP) -I lib/prop_logic -map lib/prop_logic/prop_logic.mli -open Prop_logic $(PROP_LOGIC_MLIS) $(PROP_LOGIC_MLS) >> $@
 
 include .depend
