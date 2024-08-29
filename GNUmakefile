@@ -13,8 +13,10 @@ INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL) -m 644
 
 INCLUDES =
-OCAMLCFLAGS = $(INCLUDES) -bin-annot -g
-OCAMLOPTFLAGS = $(INCLUDES) -bin-annot -g
+OCAMLCFLAGS = -bin-annot -g
+ALL_OCAMLCFLAGS = $(INCLUDES) $(OCAMLCFLAGS)
+OCAMLOPTFLAGS = -bin-annot -g
+ALL_OCAMLOPTFLAGS = $(INCLUDES) $(OCAMLOPTFLAGS)
 OCAMLFINDFLAGS =
 
 OCAMLC_WHERE = $(shell ocamlc -where)
@@ -102,62 +104,61 @@ endif
 
 # intro
 
-
 lib/intro/intro.cma: $(INTRO_CMOS)
 	$(OCAMLC) -a $(INTRO_CMOS) -o $@
 
 lib/intro/intro.cmxa: $(INTRO_CMXS)
 	$(OCAMLOPT) -a $(INTRO_CMXS) -o $@
 
-$(INTRO_CMOS): lib/intro/intro.cmi
-
-$(INTRO_CMXS): lib/intro/intro.cmi
-
-lib/intro/intro.cmi: lib/intro/intro.mli
-	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
-
-lib/intro/intro.cmo: lib/intro/intro.ml
-	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
-
-lib/intro/intro.cmx: lib/intro/intro.ml
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -no-alias-deps -w -49 -c $<
-
 $(INTRO_CMOS): INCLUDES += -I lib/intro
 $(INTRO_CMXS): INCLUDES += -I lib/intro
 
-$(INTRO_CMOS_SUBS): OCAMLCFLAGS += -no-alias-deps -open Intro
-$(INTRO_CMXS_SUBS): OCAMLCFLAGS += -no-alias-deps -open Intro # for .mli -> .cmi
-$(INTRO_CMXS_SUBS): OCAMLOPTFLAGS += -no-alias-deps -open Intro
+# intro alias module
+
+lib/intro/intro.cmi: ALL_OCAMLCFLAGS = $(INCLUDES) $(OCAMLCFLAGS) -no-alias-deps -w -49
+lib/intro/intro.cmi: lib/intro/intro.mli
+
+lib/intro/intro.cmo: ALL_OCAMLCFLAGS = $(INCLUDES) $(OCAMLCFLAGS) -no-alias-deps -w -49
+lib/intro/intro.cmo: lib/intro/intro.ml lib/intro/intro.cmi
+
+lib/intro/intro.cmx: ALL_OCAMLOPTFLAGS = $(INCLUDES) $(OCAMLOPTFLAGS) -no-alias-deps -w -49
+lib/intro/intro.cmx: lib/intro/intro.ml lib/intro/intro.cmi
+
+# intro submodules
+
+$(INTRO_CMOS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro
+$(INTRO_CMXS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Intro # for .mli -> .cmi
+$(INTRO_CMXS_SUBS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Intro
 
 lib/intro/intro__lexer.ml: lib/intro/intro__parser.mly
 
 # prop_logic
 
 lib/prop_logic/prop_logic.cma: $(PROP_LOGIC_CMOS)
-	$(OCAMLFIND) $(OCAMLC) -a $(PROP_LOGIC_CMOS) -o $@
+	$(OCAMLFIND) $(OCAMLC) -a $^ -o $@
 
 lib/prop_logic/prop_logic.cmxa: $(PROP_LOGIC_CMXS)
-	$(OCAMLFIND) $(OCAMLOPT) -a $(PROP_LOGIC_CMXS) -o $@
-
-$(PROP_LOGIC_CMOS): lib/prop_logic/prop_logic.cmi
-
-$(PROP_LOGIC_CMXS): lib/prop_logic/prop_logic.cmi
-
-lib/prop_logic/prop_logic.cmi: lib/prop_logic/prop_logic.mli
-	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
-
-lib/prop_logic/prop_logic.cmo: lib/prop_logic/prop_logic.ml
-	$(OCAMLC) $(OCAMLCFLAGS) -no-alias-deps -w -49 -c $<
-
-lib/prop_logic/prop_logic.cmx: lib/prop_logic/prop_logic.ml
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -no-alias-deps -w -49 -c $<
+	$(OCAMLFIND) $(OCAMLOPT) -a $^ -o $@
 
 $(PROP_LOGIC_CMOS): INCLUDES += -I lib/prop_logic
 $(PROP_LOGIC_CMXS): INCLUDES += -I lib/prop_logic
 
-$(PROP_LOGIC_CMOS_SUBS): OCAMLCFLAGS += -no-alias-deps -open Prop_logic
-$(PROP_LOGIC_CMXS_SUBS): OCAMLCFLAGS += -no-alias-deps -open Prop_logic # for .mli -> .cmi
-$(PROP_LOGIC_CMXS_SUBS): OCAMLOPTFLAGS += -no-alias-deps -open Prop_logic
+# prop_logic alias module
+
+lib/prop_logic/prop_logic.cmi: ALL_OCAMLCFLAGS = $(INCLUDES) $(OCAMLCFLAGS) -no-alias-deps -w -49
+lib/prop_logic/prop_logic.cmi: lib/prop_logic/prop_logic.mli
+
+lib/prop_logic/prop_logic.cmo: ALL_OCAMLCFLAGS = $(INCLUDES) $(OCAMLCFLAGS) -no-alias-deps -w -49
+lib/prop_logic/prop_logic.cmo: lib/prop_logic/prop_logic.ml lib/prop_logic/prop_logic.cmi
+
+lib/prop_logic/prop_logic.cmx: ALL_OCAMLOPTFLAGS = $(INCLUDES) $(OCAMLOPTFLAGS) -no-alias-deps -w -49
+lib/prop_logic/prop_logic.cmx: lib/prop_logic/prop_logic.ml lib/prop_logic/prop_logic.cmi
+
+# prop_logic submdoules
+
+$(PROP_LOGIC_CMOS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic
+$(PROP_LOGIC_CMXS_SUBS): ALL_OCAMLCFLAGS += -no-alias-deps -open Prop_logic # for .mli -> .cmi
+$(PROP_LOGIC_CMXS_SUBS): ALL_OCAMLOPTFLAGS += -no-alias-deps -open Prop_logic
 
 lib/prop_logic/prop_logic__lexer.ml: lib/prop_logic/prop_logic__parser.mly
 
@@ -170,10 +171,10 @@ bin/main.%: OCAMLFINDFLAGS += -linkpkg -package zarith
 bin/main.%: INCLUDES += -I lib/intro -I lib/prop_logic
 
 bin/main.byte: lib/intro/intro.cma lib/prop_logic/prop_logic.cma bin/main.ml
-	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLC) $(ALL_OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 bin/main.exe: lib/intro/intro.cmxa lib/prop_logic/prop_logic.cmxa bin/main.ml
-	$(OCAMLFIND) $(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLOPT) $(ALL_OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 # tests
 
@@ -182,20 +183,20 @@ test/test_intro.%: OCAMLFINDFLAGS += -linkpkg -package alcotest
 test/test_intro.%: INCLUDES += -I lib/intro
 
 test/test_intro.byte: lib/intro/intro.cma test/test_intro.ml
-	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLC) $(ALL_OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 test/test_intro.exe: lib/intro/intro.cmxa test/test_intro.ml
-	$(OCAMLFIND) $(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLOPT) $(ALL_OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 test/test_prop_logic.%: export OCAMLFIND_IGNORE_DUPS_IN = $(OCAMLC_WHERE)
 test/test_prop_logic.%: OCAMLFINDFLAGS += -linkpkg -package alcotest -package zarith
 test/test_prop_logic.%: INCLUDES += -I lib/prop_logic
 
 test/test_prop_logic.byte: lib/prop_logic/prop_logic.cma test/test_prop_logic.ml
-	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLC) $(ALL_OCAMLCFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 test/test_prop_logic.exe: lib/prop_logic/prop_logic.cmxa test/test_prop_logic.ml
-	$(OCAMLFIND) $(OCAMLOPT) $(OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
+	$(OCAMLFIND) $(OCAMLOPT) $(ALL_OCAMLOPTFLAGS) -o $@ $(OCAMLFINDFLAGS) $^
 
 # general
 
@@ -206,13 +207,13 @@ test/test_prop_logic.exe: lib/prop_logic/prop_logic.cmxa test/test_prop_logic.ml
 	$(MENHIR) --explain $<
 
 %.cmi: %.mli
-	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
+	$(OCAMLFIND) $(OCAMLC) $(ALL_OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
 
 %.cmo: %.ml
-	$(OCAMLFIND) $(OCAMLC) $(OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
+	$(OCAMLFIND) $(OCAMLC) $(ALL_OCAMLCFLAGS) $(OCAMLFINDFLAGS) -c $<
 
 %.cmx: %.ml
-	$(OCAMLFIND) $(OCAMLOPT) $(OCAMLOPTFLAGS) $(OCAMLFINDFLAGS) -c $<
+	$(OCAMLFIND) $(OCAMLOPT) $(ALL_OCAMLOPTFLAGS) $(OCAMLFINDFLAGS) -c $<
 
 $(DESTDIR)$(bindir):
 	mkdir -p $@
