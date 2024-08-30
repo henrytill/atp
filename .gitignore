@@ -20,4 +20,5 @@ result*
 test/*.t.err
 config.mk
 /.merlin
+/.ocamlinit
 /test/setup.sh
