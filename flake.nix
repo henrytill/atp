@@ -39,7 +39,14 @@
         };
         overlay = final: prev: {
           atp = prev.atp.overrideAttrs (as: {
-            nativeBuildInputs = as.nativeBuildInputs ++ [ (pkgs.python3.withPackages (ps: [ ps.cram ])) ];
+            nativeBuildInputs = as.nativeBuildInputs ++ [
+              (pkgs.python3.withPackages (ps: [ ps.cram ]))
+              pkgs.makeWrapper
+            ];
+            dontStrip = true;
+            postInstall = ''
+              wrapProgram $out/bin/main.byte --prefix CAML_LD_LIBRARY_PATH : "$CAML_LD_LIBRARY_PATH"
+            '';
           });
         };
       in
