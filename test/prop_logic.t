@@ -2,7 +2,7 @@ Set up environment
 
   $ . "${TESTDIR}/setup.sh"
 
-Test parsing
+Test parsing & printing AST
 
   $ atp prop-logic -dump-ast "p \/ q ==> r"
   Imp (Or (Atom "p", Atom "q"), Atom "r")
@@ -96,7 +96,6 @@ Test printing truth table
   true  true  false | true  
   true  true  true  | false 
   ---------------------------
-
 
 # Local Variables:
 # mode: prog
