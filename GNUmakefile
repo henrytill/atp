@@ -255,7 +255,10 @@ clean:
 distclean: clean
 	rm -f .depend
 	rm -f $(GENERATED)
+	rm -f test/setup.sh
 	rm -f config.mk
+	rm -f .merlin
+	rm -f .ocamlinit
 
 .depend: GNUmakefile $(GENERATED) $(INTRO_SUBS_MLIS) $(INTRO_SUBS_MLS) $(PROP_LOGIC_SUBS_MLIS) $(PROP_LOGIC_SUBS_MLS)
 	@printf "# -*- mode: makefile; -*-\n\n" > $@
