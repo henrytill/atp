@@ -5,9 +5,9 @@ set -e
 PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
 
 generate_test_setup_sh() {
-  build_dir="$1"
+  local build_dir="$1"
 
-  setup_sh="${PROJECT_ROOT}/test/setup.sh"
+  local setup_sh="${PROJECT_ROOT}/test/setup.sh"
   :>"$setup_sh"
 
   cat >"$setup_sh" <<EOF
@@ -17,7 +17,7 @@ EOF
 }
 
 setup_out_of_tree_build() {
-  build_dir="$1"
+  local build_dir="$1"
 
   mkdir -p "$build_dir"
 
@@ -31,7 +31,7 @@ setup_out_of_tree_build() {
 }
 
 check_python_module() {
-  module="$1"
+  local module="$1"
 
   printf "checking for Python module %s... " "$module"
 
@@ -47,9 +47,9 @@ check_python_module() {
 }
 
 generate_config_mk() {
-  build_dir="$1"
+  local build_dir="$1"
 
-  config_mk="${build_dir}/config.mk"
+  local config_mk="${build_dir}/config.mk"
   :>"$config_mk"
 
   if check_python_module "cram"; then
@@ -58,12 +58,12 @@ generate_config_mk() {
 }
 
 generate_dot_merlin() {
-  build_dir="$1"
+  local build_dir="$1"
 
-  dot_merlin="${PROJECT_ROOT}/.merlin"
+  local dot_merlin="${PROJECT_ROOT}/.merlin"
   :>"$dot_merlin"
 
-  build_path=$(realpath --relative-to="$PROJECT_ROOT" "$build_dir")
+  local build_path=$(realpath --relative-to="$PROJECT_ROOT" "$build_dir")
 
   cat >"$dot_merlin" <<EOF
 S bin
@@ -78,9 +78,9 @@ EOF
 }
 
 generate_dot_ocamlinit() {
-  build_dir="$1"
+  local build_dir="$1"
 
-  dot_ocamlinit="${PROJECT_ROOT}/.ocamlinit"
+  local dot_ocamlinit="${PROJECT_ROOT}/.ocamlinit"
   :>"$dot_ocamlinit"
 
   cat >"$dot_ocamlinit" <<EOF
@@ -111,14 +111,14 @@ usage() {
 }
 
 main() {
-  arg_build_dir="$PROJECT_ROOT" # Default to project root
+  local build_dir="$PROJECT_ROOT" # Default to project root
 
   # Parse command-line arguments
   while [ $# -gt 0 ]; do
     case "$1" in
       -d)
         if [ -n "$2" ]; then
-          arg_build_dir=$(realpath "$2")
+          build_dir=$(realpath "$2")
           shift 2
         else
           printf "Error: -d requires a directory argument.\n"
@@ -138,27 +138,27 @@ main() {
   done
 
   # Generate test/setup.sh
-  generate_test_setup_sh "$arg_build_dir"
+  generate_test_setup_sh "$build_dir"
 
-  # If arg_build_dir is different from PROJECT_ROOT, set up out-of-tree build
+  # If build_dir is different from PROJECT_ROOT, set up out-of-tree build
   printf "checking for out of tree build... "
-  if [ "$arg_build_dir" != "$PROJECT_ROOT" ]; then
+  if [ "$build_dir" != "$PROJECT_ROOT" ]; then
     printf "yes\n"
-    setup_out_of_tree_build "$arg_build_dir"
+    setup_out_of_tree_build "$build_dir"
   else
     printf "no\n"
   fi
 
   # Generate config.mk
-  generate_config_mk "$arg_build_dir"
+  generate_config_mk "$build_dir"
 
   # Generate .merlin
-  generate_dot_merlin "$arg_build_dir"
+  generate_dot_merlin "$build_dir"
 
   # Generate .ocamlinit
-  generate_dot_ocamlinit "$arg_build_dir"
+  generate_dot_ocamlinit "$build_dir"
 
-  printf "Build directory: %s\n" "$arg_build_dir"
+  printf "Build directory: %s\n" "$build_dir"
   printf "OK\n"
 }
 
