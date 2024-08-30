@@ -12,7 +12,6 @@ depends: [
   "menhir"
   "zarith" {>= "1.14"}
   "alcotest" {with-test & >= "1.7.0"}
-  "conf-python-3" {with-test}
   "odoc" {with-doc}
 ]
 build: [
