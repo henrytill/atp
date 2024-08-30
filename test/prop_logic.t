@@ -16,6 +16,15 @@ Test parsing
   $ atp prop-logic -dump-ast "p ==> q ==> r"
   Imp (Atom "p", Imp (Atom "q", Atom "r"))
 
+  $ atp prop-logic -dump-ast "p ==> q <=> r /\ s \/ (t <=> ~ ~u /\ v)"
+  Imp
+   (Atom "p",
+    Iff
+     (Atom "q",
+      Or (And (Atom "r", Atom "s"), Iff
+                                     (Atom "t",
+                                      And (Not (Not (Atom "u")), Atom "v")))))
+
 Test printing
 
   $ atp prop-logic "p \/ q ==> r"
