@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
+PROJECT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 
 generate_test_setup_sh() {
   local build_dir="$1"
