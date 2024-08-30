@@ -20,3 +20,4 @@ result*
 test/*.t.err
 config.mk
 /.merlin
+/test/setup.sh
