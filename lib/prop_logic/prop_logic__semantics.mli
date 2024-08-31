@@ -17,7 +17,7 @@ val eval : Syntax.t -> (Syntax.Prop.t -> bool) -> bool
 (** [eval fm v] returns the truth-value of [fm] using the valuation [v]. *)
 
 val atoms : 'a Syntax.Formula.t -> 'a list
-(** [atoms fm] returns a list of all the atoms in [fm]. *)
+(** [atoms fm] returns a list of the atoms in [fm]. *)
 
 val print_truthtable : Format.formatter -> Syntax.t -> unit
 (** [print_truthtable fmt fm] prints a truthtable for [fm] using [fmt]. *)
