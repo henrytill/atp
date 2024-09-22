@@ -51,6 +51,7 @@ module Internal = struct
     Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
   let print_truthtable fmt fm =
+    let open Format in
     let ats = atoms fm in
     let false_len = 5 in
     let width =
@@ -61,20 +62,20 @@ module Internal = struct
     let mk_row v =
       let lis = List.map (fun x -> truthstring (v x)) ats in
       let ans = truthstring (eval fm v) in
-      Format.pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
-      Format.pp_print_newline fmt ();
+      pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
+      pp_print_newline fmt ();
       true
     in
     let formula_header = "| formula" in
     let header = List.fold_right (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
     let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
-    Format.pp_print_string fmt header;
-    Format.pp_print_newline fmt ();
-    Format.pp_print_string fmt separator;
-    Format.pp_print_newline fmt ();
+    pp_print_string fmt header;
+    pp_print_newline fmt ();
+    pp_print_string fmt separator;
+    pp_print_newline fmt ();
     let _ = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) mk_row ats) in
-    Format.pp_print_string fmt separator;
-    Format.pp_print_newline fmt ()
+    pp_print_string fmt separator;
+    pp_print_newline fmt ()
 
   let tautology fm = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (atoms fm))
 end
