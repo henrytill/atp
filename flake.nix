@@ -37,18 +37,7 @@
         scope = on.buildOpamProject { resolveArgs.with-test = true; } package ./. {
           ocaml-base-compiler = "4.14.2";
         };
-        overlay = final: prev: {
-          atp = prev.atp.overrideAttrs (as: {
-            nativeBuildInputs = as.nativeBuildInputs ++ [
-              (pkgs.python3.withPackages (ps: [ ps.cram ]))
-              pkgs.makeWrapper
-            ];
-            dontStrip = true;
-            postInstall = ''
-              wrapProgram $out/bin/main.byte --prefix CAML_LD_LIBRARY_PATH : "$CAML_LD_LIBRARY_PATH"
-            '';
-          });
-        };
+        overlay = final: prev: { atp = prev.atp.overrideAttrs (as: { }); };
       in
       {
         legacyPackages = scope.overrideScope' overlay;

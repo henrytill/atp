@@ -1,7 +1,3 @@
-Set up environment
-
-  $ . "${TESTDIR}/setup.sh"
-
 Test parsing & printing AST
 
   $ atp prop-logic -dump-ast "p \/ q ==> r"
