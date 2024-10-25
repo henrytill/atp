@@ -1,6 +1,6 @@
 (lang dune 3.16)
 
-(using menhir 2.0)
+(using menhir 3.0)
 
 (name atp)
 
