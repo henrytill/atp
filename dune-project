@@ -15,8 +15,6 @@
 
 (license Unlicense)
 
-(documentation https://url/to/documentation)
-
 (package
  (name atp)
  (synopsis "Handbook of Practical Logic and Automated Reasoning")
