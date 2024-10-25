@@ -5,7 +5,7 @@ description:
   "Work from Harrison's \"Handbook of Practical Logic and Automated Reasoning\""
 maintainer: ["Maintainer Name"]
 authors: ["Henry Till <henrytill@gmail.com>"]
-license: "UNLICENSE"
+license: "Unlicense"
 homepage: "https://github.com/henrytill/atp"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/henrytill/atp/issues"

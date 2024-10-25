@@ -13,7 +13,7 @@
 
 (maintainers "Maintainer Name")
 
-(license UNLICENSE)
+(license Unlicense)
 
 (documentation https://url/to/documentation)
 
