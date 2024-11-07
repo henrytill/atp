@@ -37,6 +37,15 @@ Test printing
 
 Test printing truth table
 
+  $ atp prop-logic -dump-truthtable "p ==> q"
+  p     q     | formula
+  ---------------------
+  false false | true  
+  false true  | true  
+  true  false | false 
+  true  true  | true  
+  ---------------------
+
   $ atp prop-logic -dump-truthtable "p /\ q ==> q /\ r"
   p     q     r     | formula
   ---------------------------
