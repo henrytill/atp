@@ -2,6 +2,8 @@
 
 (using menhir 3.0)
 
+(using mdx 0.2)
+
 (name atp)
 
 (generate_opam_files true)
@@ -28,5 +30,9 @@
    (and
     :with-test
     (>= 1.7.0)))
+  (mdx
+   (and
+    :with-test
+    (>= 2.4.1)))
   (zarith
    (>= 1.14))))

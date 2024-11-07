@@ -5,4 +5,5 @@
  (modules parser))
 
 (library
- (name intro))
+ (name intro)
+ (public_name atp.intro))

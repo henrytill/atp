@@ -10,3 +10,7 @@
 
 (cram
  (deps %{bin:atp}))
+
+(mdx
+ (deps
+  (package atp)))
