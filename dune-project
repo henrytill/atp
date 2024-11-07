@@ -18,5 +18,15 @@
 (package
  (name atp)
  (synopsis "Handbook of Practical Logic and Automated Reasoning")
- (description  "Work from Harrison's \"Handbook of Practical Logic and Automated Reasoning\"")
- (depends ocaml dune menhir (alcotest (and :with-test (>= 1.7.0))) (zarith (>= 1.14))))
+ (description
+  "Work from Harrison's \"Handbook of Practical Logic and Automated Reasoning\"")
+ (depends
+  ocaml
+  dune
+  menhir
+  (alcotest
+   (and
+    :with-test
+    (>= 1.7.0)))
+  (zarith
+   (>= 1.14))))
