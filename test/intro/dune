@@ -1,0 +1,7 @@
+(test
+ (name intro_test)
+ (modules intro_test)
+ (libraries alcotest intro))
+
+(cram
+ (deps %{bin:atp}))
