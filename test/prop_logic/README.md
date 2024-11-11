@@ -8,36 +8,29 @@
 ## Parsing
 
 ```ocaml
-# #install_printer Syntax.Prop.pp;;
+# #install_printer Syntax.Formula.pp_ast;;
+# #install_printer Syntax.Prop.pp_ast;;
 ```
 
 $a$
 
 ```ocaml
 # Input.parse_string {| a |};;
-- : Syntax.t option = Some (Prop_logic.Syntax.Formula.Atom a)
+- : Syntax.t option = Some Atom "a"
 ```
 
 $p \implies q$
 
 ```ocaml
 # Input.parse_string {| p ==> q |};;
-- : Syntax.t option =
-Some
- (Prop_logic.Syntax.Formula.Imp (Prop_logic.Syntax.Formula.Atom p,
-   Prop_logic.Syntax.Formula.Atom q))
+- : Syntax.t option = Some Imp (Atom "p", Atom "q")
 ```
 
 $p \lor q \implies r$
 
 ```ocaml
 # Input.parse_string {| p \/ q ==> r |};;
-- : Syntax.t option =
-Some
- (Prop_logic.Syntax.Formula.Imp
-   (Prop_logic.Syntax.Formula.Or (Prop_logic.Syntax.Formula.Atom p,
-     Prop_logic.Syntax.Formula.Atom q),
-   Prop_logic.Syntax.Formula.Atom r))
+- : Syntax.t option = Some Imp (Or (Atom "p", Atom "q"), Atom "r")
 ```
 
 $p \implies q \land \neg r \lor s$
@@ -45,34 +38,21 @@ $p \implies q \land \neg r \lor s$
 ```ocaml
 # Input.parse_string {| p ==> q /\ ~ r \/ s |};;
 - : Syntax.t option =
-Some
- (Prop_logic.Syntax.Formula.Imp (Prop_logic.Syntax.Formula.Atom p,
-   Prop_logic.Syntax.Formula.Or
-    (Prop_logic.Syntax.Formula.And (Prop_logic.Syntax.Formula.Atom q,
-      Prop_logic.Syntax.Formula.Not (Prop_logic.Syntax.Formula.Atom r)),
-    Prop_logic.Syntax.Formula.Atom s)))
+Some Imp (Atom "p", Or (And (Atom "q", Not (Atom "r")), Atom "s"))
 ```
 
 $p \land q \land r$
 
 ```ocaml
 # Input.parse_string {| p /\ q /\ r |};;
-- : Syntax.t option =
-Some
- (Prop_logic.Syntax.Formula.And (Prop_logic.Syntax.Formula.Atom p,
-   Prop_logic.Syntax.Formula.And (Prop_logic.Syntax.Formula.Atom q,
-    Prop_logic.Syntax.Formula.Atom r)))
+- : Syntax.t option = Some And (Atom "p", And (Atom "q", Atom "r"))
 ```
 
 $p \implies q \implies r$
 
 ```ocaml
 # Input.parse_string {| p ==> q ==> r |};;
-- : Syntax.t option =
-Some
- (Prop_logic.Syntax.Formula.Imp (Prop_logic.Syntax.Formula.Atom p,
-   Prop_logic.Syntax.Formula.Imp (Prop_logic.Syntax.Formula.Atom q,
-    Prop_logic.Syntax.Formula.Atom r)))
+- : Syntax.t option = Some Imp (Atom "p", Imp (Atom "q", Atom "r"))
 ```
 
 ## Pretty printing
@@ -186,7 +166,7 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 ```ocaml
 # let read_atoms s = Input.parse_string s |> Option.map Semantics.atoms in
   read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
-- : Syntax.Prop.t list option = Some [p; q; r; s]
+- : Syntax.Prop.t list option = Some ["p"; "q"; "r"; "s"]
 ```
 
 ### Tautology
