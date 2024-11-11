@@ -248,3 +248,65 @@ true  true  | true
 ---------------------
 - : unit = ()
 ```
+
+$p \land q \implies q \land r$
+
+```ocaml
+# print_truthtable {| p /\ q ==> q /\ r |};;
+p     q     r     | formula
+---------------------------
+false false false | true
+false false true  | true
+false true  false | true
+false true  true  | true
+true  false false | true
+true  false true  | true
+true  true  false | false
+true  true  true  | true
+---------------------------
+- : unit = ()
+```
+
+$((p \implies q) \implies p) \implies p$
+
+```ocaml
+# print_truthtable {| ((p ==> q) ==> p) ==> p |};;
+p     q     | formula
+---------------------
+false false | true
+false true  | true
+true  false | true
+true  true  | true
+---------------------
+- : unit = ()
+```
+
+$p \land \lnot p$
+
+```ocaml
+# print_truthtable {| p /\ ~p |};;
+p     | formula
+---------------
+false | false
+true  | false
+---------------
+- : unit = ()
+```
+
+$(p \lor q \land r) \land (\lnot p \lor \lnot r)$
+
+```ocaml
+# print_truthtable {| (p \/ q /\ r) /\ (~p \/ ~r) |};;
+p     q     r     | formula
+---------------------------
+false false false | false
+false false true  | false
+false true  false | false
+false true  true  | true
+true  false false | true
+true  false true  | false
+true  true  false | true
+true  true  true  | false
+---------------------------
+- : unit = ()
+```
