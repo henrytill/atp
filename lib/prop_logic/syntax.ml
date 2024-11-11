@@ -35,18 +35,19 @@ module Formula = struct
       | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
       | False -> pp_print_string fmt "False"
       | True -> pp_print_string fmt "True"
-      | Not p -> fprintf fmt "Not@ %a" (go true) p
-      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" (go false) p (go false) q
-      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" (go false) p (go false) q
-      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" (go false) p (go false) q
-      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" (go false) p (go false) q
-      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x (go false) p
-      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x (go false) p
-    in
+      | Not p -> fprintf fmt "Not@ %a" wrapped p
+      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" unwrapped p unwrapped q
+      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" unwrapped p unwrapped q
+      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" unwrapped p unwrapped q
+      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" unwrapped p unwrapped q
+      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x unwrapped p
+      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x unwrapped p
+    and wrapped fmt fm = go true fmt fm
+    and unwrapped fmt fm = go false fmt fm in
     match fm with
     | False -> pp_print_string fmt "False"
     | True -> pp_print_string fmt "True"
-    | _ -> fprintf fmt "@[<hv 1>%a@]" (go true) fm
+    | _ -> fprintf fmt "@[<hv 1>%a@]" wrapped fm
 
   let pp atom_pp fmt fm =
     let open Format in

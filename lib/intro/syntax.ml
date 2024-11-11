@@ -19,13 +19,14 @@ let pp_ast fmt expr =
     wrap flag fmt fm @@ fun fmt -> function
     | Var x -> fprintf fmt "Var %S" x
     | Const m -> fprintf fmt "Const %d" m
-    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>%a@]" (go true) a
-    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
-    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
-    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
-    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
-  in
-  fprintf fmt "@[<hv 1>%a@]" (go true) expr
+    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>%a@]" wrapped a
+    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
+    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
+    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
+    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
+  and wrapped fmt fm = go true fmt fm
+  and unwrapped fmt fm = go false fmt fm in
+  fprintf fmt "@[<hv 1>%a@]" wrapped expr
 
 let rec pp fmt expr =
   let open Format in
