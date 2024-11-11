@@ -19,6 +19,13 @@ $a$
 - : Syntax.t option = Some (Atom "a")
 ```
 
+$\lnot \bot$
+
+```ocaml
+# Input.parse_string {| ~ false |};;
+- : Syntax.t option = Some (Not False)
+```
+
 $p \implies q$
 
 ```ocaml
