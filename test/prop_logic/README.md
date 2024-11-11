@@ -16,21 +16,21 @@ $a$
 
 ```ocaml
 # Input.parse_string {| a |};;
-- : Syntax.t option = Some Atom "a"
+- : Syntax.t option = Some (Atom "a")
 ```
 
 $p \implies q$
 
 ```ocaml
 # Input.parse_string {| p ==> q |};;
-- : Syntax.t option = Some Imp (Atom "p", Atom "q")
+- : Syntax.t option = Some (Imp (Atom "p", Atom "q"))
 ```
 
 $p \lor q \implies r$
 
 ```ocaml
 # Input.parse_string {| p \/ q ==> r |};;
-- : Syntax.t option = Some Imp (Or (Atom "p", Atom "q"), Atom "r")
+- : Syntax.t option = Some (Imp (Or (Atom "p", Atom "q"), Atom "r"))
 ```
 
 $p \implies q \land \neg r \lor s$
@@ -38,21 +38,21 @@ $p \implies q \land \neg r \lor s$
 ```ocaml
 # Input.parse_string {| p ==> q /\ ~ r \/ s |};;
 - : Syntax.t option =
-Some Imp (Atom "p", Or (And (Atom "q", Not (Atom "r")), Atom "s"))
+Some (Imp (Atom "p", Or (And (Atom "q", Not (Atom "r")), Atom "s")))
 ```
 
 $p \land q \land r$
 
 ```ocaml
 # Input.parse_string {| p /\ q /\ r |};;
-- : Syntax.t option = Some And (Atom "p", And (Atom "q", Atom "r"))
+- : Syntax.t option = Some (And (Atom "p", And (Atom "q", Atom "r")))
 ```
 
 $p \implies q \implies r$
 
 ```ocaml
 # Input.parse_string {| p ==> q ==> r |};;
-- : Syntax.t option = Some Imp (Atom "p", Imp (Atom "q", Atom "r"))
+- : Syntax.t option = Some (Imp (Atom "p", Imp (Atom "q", Atom "r")))
 ```
 
 ## Pretty printing

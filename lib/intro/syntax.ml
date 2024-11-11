@@ -9,18 +9,23 @@ type t =
 
 let pp_ast fmt expr =
   let open Format in
-  let rec go fmt = function
+  let wrap flag fmt x pp =
+    if flag then
+      fprintf fmt "@[<hv 1>(%a)@]" pp x
+    else
+      pp fmt x
+  in
+  let rec go flag fmt fm =
+    wrap flag fmt fm @@ fun fmt -> function
     | Var x -> fprintf fmt "Var %S" x
     | Const m -> fprintf fmt "Const %d" m
-    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>(%a)@]" go a
-    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" go a go b
-    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" go a go b
-    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" go a go b
-    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" go a go b
+    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>%a@]" (go true) a
+    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
+    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
+    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
+    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" (go false) a (go false) b
   in
-  fprintf fmt "@[<hv 1>";
-  go fmt expr;
-  fprintf fmt "@]"
+  fprintf fmt "@[<hv 1>%a@]" (go true) expr
 
 let rec pp fmt expr =
   let open Format in

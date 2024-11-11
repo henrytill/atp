@@ -24,21 +24,29 @@ module Formula = struct
 
   let pp_ast atom_pp_ast fmt fm =
     let open Format in
-    let rec go fmt = function
-      | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
-      | False -> fprintf fmt "False"
-      | True -> fprintf fmt "True"
-      | Not p -> fprintf fmt "@[<hv 1>Not@ (%a)@]" go p
-      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" go p go q
-      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" go p go q
-      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" go p go q
-      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" go p go q
-      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x go p
-      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x go p
+    let wrap flag fmt fm pp =
+      if flag then
+        fprintf fmt "@[<hv 1>(%a)@]" pp fm
+      else
+        pp fmt fm
     in
-    fprintf fmt "@[<hv 1>";
-    go fmt fm;
-    fprintf fmt "@]"
+    let rec go flag fmt fm =
+      wrap flag fmt fm @@ fun fmt -> function
+      | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
+      | False -> pp_print_string fmt "False"
+      | True -> pp_print_string fmt "True"
+      | Not p -> fprintf fmt "Not@ %a" (go true) p
+      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" (go false) p (go false) q
+      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" (go false) p (go false) q
+      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" (go false) p (go false) q
+      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" (go false) p (go false) q
+      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x (go false) p
+      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x (go false) p
+    in
+    match fm with
+    | False -> pp_print_string fmt "False"
+    | True -> pp_print_string fmt "True"
+    | _ -> fprintf fmt "@[<hv 1>%a@]" (go true) fm
 
   let pp atom_pp fmt fm =
     let open Format in

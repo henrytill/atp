@@ -1,25 +1,25 @@
 Test parsing & printing AST
 
   $ atp prop-logic -dump-ast "p \/ q ==> r"
-  Imp (Or (Atom "p", Atom "q"), Atom "r")
+  (Imp (Or (Atom "p", Atom "q"), Atom "r"))
 
   $ atp prop-logic -dump-ast "p ==> q /\ ~ r \/ s"
-  Imp (Atom "p", Or (And (Atom "q", Not (Atom "r")), Atom "s"))
+  (Imp (Atom "p", Or (And (Atom "q", Not (Atom "r")), Atom "s")))
 
   $ atp prop-logic -dump-ast "p /\ q /\ r"
-  And (Atom "p", And (Atom "q", Atom "r"))
+  (And (Atom "p", And (Atom "q", Atom "r")))
 
   $ atp prop-logic -dump-ast "p ==> q ==> r"
-  Imp (Atom "p", Imp (Atom "q", Atom "r"))
+  (Imp (Atom "p", Imp (Atom "q", Atom "r")))
 
   $ atp prop-logic -dump-ast "p ==> q <=> r /\ s \/ (t <=> ~ ~u /\ v)"
-  Imp
-   (Atom "p",
-    Iff
-     (Atom "q",
-      Or (And (Atom "r", Atom "s"), Iff
-                                     (Atom "t",
-                                      And (Not (Not (Atom "u")), Atom "v")))))
+  (Imp
+    (Atom "p",
+     Iff
+      (Atom "q",
+       Or (And (Atom "r", Atom "s"), Iff
+                                      (Atom "t",
+                                       And (Not (Not (Atom "u")), Atom "v"))))))
 
 Test printing
 
@@ -60,7 +60,7 @@ Test printing truth table
   ---------------------------
 
   $ atp prop-logic -dump-ast -dump-truthtable "p /\ q ==> q /\ r"
-  Imp (And (Atom "p", Atom "q"), And (Atom "q", Atom "r"))
+  (Imp (And (Atom "p", Atom "q"), And (Atom "q", Atom "r")))
   p     q     r     | formula
   ---------------------------
   false false false | true  
