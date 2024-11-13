@@ -274,6 +274,26 @@ true  true  true  | true
 - : unit = ()
 ```
 
+### Example, p. 36
+
+$p \implies q \implies r$
+
+```ocaml
+# print_truthtable {| p ==> q ==> r |};;
+p     q     r     | formula
+---------------------------
+false false false | true
+false false true  | true
+false true  false | true
+false true  true  | true
+true  false false | true
+true  false true  | true
+true  true  false | false
+true  true  true  | true
+---------------------------
+- : unit = ()
+```
+
 ### Peirce's Law, p. 39
 
 $((p \implies q) \implies p) \implies p$
