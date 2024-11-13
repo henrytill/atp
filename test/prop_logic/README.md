@@ -274,6 +274,8 @@ true  true  true  | true
 - : unit = ()
 ```
 
+### Peirce's Law, p. 39
+
 $((p \implies q) \implies p) \implies p$
 
 ```ocaml
@@ -288,6 +290,8 @@ true  true  | true
 - : unit = ()
 ```
 
+### A simple contradiction, p. 40
+
 $p \land \lnot p$
 
 ```ocaml
@@ -299,6 +303,8 @@ true  | false
 ---------------
 - : unit = ()
 ```
+
+### Example, p. 56
 
 $(p \lor q \land r) \land (\lnot p \lor \lnot r)$
 
