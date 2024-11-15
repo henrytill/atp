@@ -176,49 +176,7 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 - : Syntax.Prop.t list option = Some ["p"; "q"; "r"; "s"]
 ```
 
-### Tautology
-
-```ocaml
-# let taut s = Input.parse_string s |> Option.map Semantics.tautology;;
-val taut : string -> bool option = <fun>
-```
-
-$\forall v. 〚\top \iff \bot \implies \bot〛_v = \text{true}$
-
-```ocaml
-# taut {| true <=> false ==> false |};;
-- : bool option = Some true
-```
-
-$\forall v. 〚\neg p \iff p \implies \bot〛_v = \text{true}$
-
-```ocaml
-# taut {| ~p <=> p ==> false |};;
-- : bool option = Some true
-```
-
-$\forall v. 〚p \land q \iff (p \implies q \implies \bot) \implies \bot〛_v = \text{true}$
-
-```ocaml
-# taut {| p /\ q <=> (p ==> q ==> false) ==> false |};;
-- : bool option = Some true
-```
-
-$\forall v. 〚p \lor q \iff (p \implies \bot) \implies q〛_v = \text{true}$
-
-```ocaml
-# taut {| p \/ q <=> (p ==> false) ==> q |};;
-- : bool option = Some true
-```
-
-$\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies \bot) \implies \bot〛_v = \text{true}$
-
-```ocaml
-# taut {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};;
-- : bool option = Some true
-```
-
-## Truth Tables
+### Truth Tables
 
 ```ocaml
 # let print_truthtable s =
@@ -274,7 +232,7 @@ true  true  true  | true
 - : unit = ()
 ```
 
-### Example, p. 36
+#### Example, p. 36
 
 $p \implies q \implies r$
 
@@ -294,7 +252,7 @@ true  true  true  | true
 - : unit = ()
 ```
 
-### Peirce's Law, p. 39
+#### Peirce's Law, p. 39
 
 $((p \implies q) \implies p) \implies p$
 
@@ -310,7 +268,7 @@ true  true  | true
 - : unit = ()
 ```
 
-### A simple contradiction, p. 40
+#### A simple contradiction, p. 40
 
 $p \land \lnot p$
 
@@ -324,7 +282,7 @@ true  | false
 - : unit = ()
 ```
 
-### Example, p. 56
+#### Example, p. 56
 
 $(p \lor q \land r) \land (\lnot p \lor \lnot r)$
 
@@ -342,4 +300,46 @@ true  true  false | true
 true  true  true  | false
 ---------------------------
 - : unit = ()
+```
+
+### Tautology
+
+```ocaml
+# let taut s = Input.parse_string s |> Option.map Semantics.tautology;;
+val taut : string -> bool option = <fun>
+```
+
+$\forall v. 〚\top \iff \bot \implies \bot〛_v = \text{true}$
+
+```ocaml
+# taut {| true <=> false ==> false |};;
+- : bool option = Some true
+```
+
+$\forall v. 〚\neg p \iff p \implies \bot〛_v = \text{true}$
+
+```ocaml
+# taut {| ~p <=> p ==> false |};;
+- : bool option = Some true
+```
+
+$\forall v. 〚p \land q \iff (p \implies q \implies \bot) \implies \bot〛_v = \text{true}$
+
+```ocaml
+# taut {| p /\ q <=> (p ==> q ==> false) ==> false |};;
+- : bool option = Some true
+```
+
+$\forall v. 〚p \lor q \iff (p \implies \bot) \implies q〛_v = \text{true}$
+
+```ocaml
+# taut {| p \/ q <=> (p ==> false) ==> q |};;
+- : bool option = Some true
+```
+
+$\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies \bot) \implies \bot〛_v = \text{true}$
+
+```ocaml
+# taut {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};;
+- : bool option = Some true
 ```
