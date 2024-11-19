@@ -60,20 +60,26 @@ onAllValuations subfn as =
 printTruthtable :: Formula Prop -> Doc
 printTruthtable fm = vcat $ header : separator : body
   where
+    falseLen :: Int
+    falseLen = length (show False)
+
     as :: [Prop]
     as = atoms fm
 
     width :: Int
-    width = foldr (max . length . unProp) 5 as + 1
+    width = succ $ foldr (max . length . unProp) falseLen as
 
     fixw :: String -> Doc
     fixw s = text $ s ++ replicate (width - length s) ' '
 
+    formulaHeader :: String
+    formulaHeader = "| formula"
+
     header :: Doc
-    header = foldr ((<>) . fixw . unProp) (text "| formula") as
+    header = foldr ((<>) . fixw . unProp) (text formulaHeader) as
 
     separator :: Doc
-    separator = text $ replicate ((width * length as) + 9) '-'
+    separator = text $ replicate ((width * length as) + length formulaHeader) '-'
 
     truthString :: Bool -> Doc
     truthString = fixw . show
