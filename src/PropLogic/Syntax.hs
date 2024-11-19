@@ -22,8 +22,8 @@ data Formula a
   deriving (Show, Eq, Data, Typeable, Functor)
 
 instance (Pretty a) => Pretty (Formula a) where
-  pPrint form =
-    case form of
+  pPrint fm =
+    case fm of
       FmFalse -> text "false"
       FmTrue -> text "true"
       FmAtom x -> pPrint x
