@@ -21,6 +21,24 @@ data Formula a
   | FmMetaVar String
   deriving (Show, Eq, Data, Typeable, Functor)
 
+newtype Atoms a = MkAtoms {unAtoms :: Formula a}
+  deriving (Show, Eq, Functor)
+
+instance Foldable Atoms where
+  foldr f z (MkAtoms fm) =
+    case fm of
+      FmFalse -> z
+      FmTrue -> z
+      FmAtom a -> f a z
+      FmNot p -> foldr f z (MkAtoms p)
+      FmAnd p q -> foldr f (foldr f z (MkAtoms q)) (MkAtoms p)
+      FmOr p q -> foldr f (foldr f z (MkAtoms q)) (MkAtoms p)
+      FmImp p q -> foldr f (foldr f z (MkAtoms q)) (MkAtoms p)
+      FmIff p q -> foldr f (foldr f z (MkAtoms q)) (MkAtoms p)
+      FmForAll _ p -> foldr f z (MkAtoms p)
+      FmExists _ p -> foldr f z (MkAtoms p)
+      FmMetaVar _ -> z
+
 instance (Pretty a) => Pretty (Formula a) where
   pPrint fm =
     case fm of

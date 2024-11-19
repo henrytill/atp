@@ -2,12 +2,13 @@
 
 module PropLogic.Semantics where
 
+import Data.Foldable (toList)
 import Data.Bits qualified as Bits
 import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
 import Data.Monoid (All (..))
-import PropLogic.Syntax (Formula (..), Prop (..))
+import PropLogic.Syntax (Formula (..), Prop (..), Atoms (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
 
@@ -25,24 +26,13 @@ eval (FmExists {}) _ = undefined
 eval (FmMetaVar {}) _ = undefined
 
 overAtoms :: (a -> b -> b) -> Formula a -> b -> b
-overAtoms f fm b = case fm of
-  FmAtom a -> f a b
-  FmFalse -> b
-  FmTrue -> b
-  FmNot p -> overAtoms f p b
-  FmAnd p q -> overAtoms f p (overAtoms f q b)
-  FmOr p q -> overAtoms f p (overAtoms f q b)
-  FmImp p q -> overAtoms f p (overAtoms f q b)
-  FmIff p q -> overAtoms f p (overAtoms f q b)
-  FmForAll _ p -> overAtoms f p b
-  FmExists _ p -> overAtoms f p b
-  FmMetaVar _ -> undefined
+overAtoms f fm b = foldr f b (MkAtoms fm)
 
 setify :: (Ord a) => [a] -> [a]
 setify = List.sort . List.nub
 
 atoms :: (Ord a) => Formula a -> [a]
-atoms fm = setify $ overAtoms (:) fm []
+atoms = setify . toList . MkAtoms
 
 onAllValuations :: forall a b. (Eq a, Ord a) => ((a -> Bool) -> b) -> [a] -> [b]
 onAllValuations subfn as =
