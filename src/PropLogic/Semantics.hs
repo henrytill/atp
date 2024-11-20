@@ -2,13 +2,13 @@
 
 module PropLogic.Semantics where
 
-import Data.Foldable (toList)
 import Data.Bits qualified as Bits
+import Data.Foldable (toList)
 import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
 import Data.Monoid (All (..))
-import PropLogic.Syntax (Formula (..), Prop (..), Atoms (..))
+import PropLogic.Syntax (Atoms (..), Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
 
@@ -42,7 +42,7 @@ onAllValuations subfn as =
     asLen = length as
 
     offsetTable :: Map a Int
-    offsetTable = snd $ List.foldl' (\(i, m) a -> (i - 1, Map.insert a i m)) (asLen - 1, Map.empty) as
+    offsetTable = snd $ List.foldl' (\(i, m) a -> (pred i, Map.insert a i m)) (asLen - 1, Map.empty) as
 
     valuationFor :: Int -> a -> Bool
     valuationFor row a = Bits.testBit row $ offsetTable ! a
@@ -71,11 +71,11 @@ printTruthtable fm = vcat $ header : separator : body
     separator :: Doc
     separator = text $ replicate ((width * length as) + length formulaHeader) '-'
 
-    truthString :: Bool -> Doc
-    truthString = fixw . show
+    truthDoc :: Bool -> Doc
+    truthDoc = fixw . show
 
     mkRow :: (Prop -> Bool) -> Doc
-    mkRow v = foldr ((<>) . truthString . v) (text "| " <> truthString (eval fm v)) as
+    mkRow v = foldr ((<>) . truthDoc . v) (text "| " <> truthDoc (eval fm v)) as
 
     body :: [Doc]
     body = onAllValuations mkRow as
