@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeApplications #-}
 
 module PropLogic.SemanticsTests where
 
@@ -25,9 +26,9 @@ tests =
             v _ = undefined
         eval [prop| p /\ q ==> q /\ r |] v @?= False,
       testCase "Check that setify removes duplicates and sorts" $ do
-        setify ([1, 2, 3, 1, 4, 3] :: [Int]) @?= [1, 2, 3, 4],
+        setify @Int [1, 2, 3, 1, 4, 3] @?= [1, 2, 3, 4],
       testCase "Check that setify reverses" $ do
-        setify ([4, 3, 2, 1] :: [Int]) @?= [1, 2, 3, 4],
+        setify @Int [4, 3, 2, 1] @?= [1, 2, 3, 4],
       testCase "Check atoms against example" $ do
         atoms [prop| p /\ q \/ s ==> ~p \/ (r <=> s) |] @?= MkProp <$> ["p", "q", "r", "s"],
       testCase "Check that true is a tautology" $ do
