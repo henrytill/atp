@@ -33,9 +33,9 @@ let simplify1 count expr =
 
 let simplify_with_count expr =
   let count = ref 0 in
-  let rec go expr =
+  let rec simply x = simplify1 count (go x)
+  and go expr =
     incr count;
-    let simply x = simplify1 count (go x) in
     match expr with
     | Add (Const 0, x) | Add (x, Const 0) -> simply x
     | Add (x, y) -> simplify1 count (Add (go x, go y))
