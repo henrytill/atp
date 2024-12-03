@@ -161,12 +161,12 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 ### Internals
 
 ```ocaml
-# Semantics.Internal.setify [ 1; 2; 3; 1; 4; 3 ];;
+# Semantics_internal.setify [ 1; 2; 3; 1; 4; 3 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
 ```ocaml
-# Semantics.Internal.setify [ 4; 3; 2; 1 ];;
+# Semantics_internal.setify [ 4; 3; 2; 1 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
