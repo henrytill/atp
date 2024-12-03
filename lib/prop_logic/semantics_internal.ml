@@ -49,10 +49,11 @@ let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
   let num_valuations = Int.shift_left 1 ats_len in
   Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
+let false_len = String.length (string_of_bool false)
+
 let print_truthtable fmt fm =
   let open Format in
   let ats = atoms fm in
-  let false_len = 5 in
   let width =
     List.fold_right (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1
   in
