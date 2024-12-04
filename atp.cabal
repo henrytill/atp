@@ -27,11 +27,13 @@ library
                          PropLogic.Parser
                          PropLogic.Quote
                          PropLogic.Semantics
+                         PropLogic.Semantics.Func
                          PropLogic.Syntax
     -- other-modules:
     -- other-extensions:
     build-depends:       base             >=4.17 && <5,
                          array            >=0.5  && <0.6,
+                         hashable         ^>=1.4.4.0,
                          pretty           >=1.1  && <1.2,
                          syb              >=0.7  && <0.8,
                          template-haskell >=2.12 && <2.22,
