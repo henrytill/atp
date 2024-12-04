@@ -80,3 +80,76 @@ let print_truthtable fmt fm =
 let tautology fm = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (atoms fm))
 let unsatisfiable fm = tautology (Not fm)
 let satisfiable fm = not (unsatisfiable fm)
+
+module Function = struct
+  type ('a, 'b) t =
+    | Empty
+    | Leaf of int * ('a * 'b) list
+    | Branch of int * int * ('a, 'b) t * ('a, 'b) t
+
+  let undefined = Empty
+
+  let is_undefined f =
+    match f with
+    | Empty -> true
+    | _ -> false
+
+  let assocd (l : ('a * 'b) list) (d : 'a -> 'b) (x : 'a) : 'b =
+    match List.assoc_opt x l with
+    | Some b -> b
+    | None -> d x
+
+  let applyd (f : ('a, 'b) t) (d : 'a -> 'b) (x : 'a) : 'b =
+    let k = Hashtbl.hash x in
+    let rec look t =
+      match t with
+      | Leaf (h, l) when h = k -> assocd l d x
+      | Branch (p, b, l, r) when k lxor p land (b - 1) = 0 -> look (if k land b = 0 then l else r)
+      | _ -> d x
+    in
+    look f
+
+  let tryapplyd (f : ('a, 'b) t) (a : 'a) (d : 'b) : 'b = applyd f (fun _ -> d) a
+  let apply (f : ('a, 'b) t) : 'a -> 'b = applyd f (fun _ -> failwith "apply")
+
+  let make_branch p1 t1 p2 t2 =
+    (* Find differing bits between the two prefixes *)
+    let zp = p1 lxor p2 in
+    (* Find lowest differing bit aka the branching bit *)
+    let b = zp land -zp in
+    (* Get common prefix up to the branching bit *)
+    let p = p1 land (b - 1) in
+    if p1 land b = 0 then
+      Branch (p, b, t1, t2)
+    else
+      Branch (p, b, t2, t1)
+
+  let rec define_list ((x, _) as xy) l =
+    match l with
+    | ((a, _) as ab) :: t ->
+        let c = compare x a in
+        if c = 0 then
+          xy :: t
+        else if c < 0 then
+          xy :: l
+        else
+          ab :: define_list xy t
+    | [] -> [ xy ]
+
+  let ( |-> ) x y =
+    let k = Hashtbl.hash x in
+    let rec upd t =
+      match t with
+      | Empty -> Leaf (k, [ (x, y) ])
+      | Leaf (h, l) when h = k -> Leaf (h, define_list (x, y) l)
+      | Leaf (h, _) -> make_branch h t k (Leaf (k, [ (x, y) ]))
+      | Branch (p, b, _, _) when k land (b - 1) <> p -> make_branch p t k (Leaf (k, [ (x, y) ]))
+      | Branch (p, b, l, r) when k land b = 0 -> Branch (p, b, upd l, r)
+      | Branch (p, b, l, r) -> Branch (p, b, l, upd r)
+    in
+    upd
+
+  let ( |=> ) x y = (x |-> y) undefined
+end
+
+let psubst subfn = onatoms (fun p -> Function.tryapplyd subfn p (Syntax.Formula.Atom p))

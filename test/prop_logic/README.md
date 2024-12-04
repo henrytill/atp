@@ -343,3 +343,25 @@ $\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies 
 # taut {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};;
 - : bool option = Some true
 ```
+
+### Substitution
+
+```ocaml
+# let form s = Input.parse_string s |> Option.get;;
+val form : string -> Syntax.t = <fun>
+```
+
+```ocaml
+# form {|p /\ q /\ p /\ q|};;
+- : Syntax.t = (And (Atom "p", And (Atom "q", And (Atom "p", Atom "q"))))
+```
+
+```ocaml
+# let p = Syntax.Prop.inj "p";;
+val p : Syntax.Prop.t = "p"
+# let f = Semantics.Function.(p |=> form {|p /\ q|});;
+val f : (Syntax.Prop.t, Syntax.t) Semantics.Function.t = <abstr>
+# Semantics.psubst f (form {|p /\ q /\ p /\ q|});;
+- : Syntax.Prop.t Syntax.Formula.t =
+(And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
+```

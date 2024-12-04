@@ -18,3 +18,12 @@ val print_truthtable : Format.formatter -> Syntax.t -> unit
 val tautology : Syntax.t -> bool
 val unsatisfiable : Syntax.t -> bool
 val satisfiable : Syntax.t -> bool
+
+module Function : sig
+  type (_, _) t
+
+  val ( |-> ) : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+  val ( |=> ) : 'a -> 'b -> ('a, 'b) t
+end
+
+val psubst : ('a, 'a Syntax.Formula.t) Function.t -> 'a Syntax.Formula.t -> 'a Syntax.Formula.t
