@@ -1,7 +1,7 @@
 val eval : Syntax.t -> (Syntax.Prop.t -> bool) -> bool
 (** [eval fm v] returns the truth-value of [fm] using the valuation [v]. *)
 
-val onatoms : ('b -> 'b Syntax.Formula.t) -> 'b Syntax.Formula.t -> 'b Syntax.Formula.t
+val onatoms : ('a -> 'b Syntax.Formula.t) -> 'a Syntax.Formula.t -> 'b Syntax.Formula.t
 val overatoms : ('a -> 'b -> 'b) -> 'a Syntax.Formula.t -> 'b -> 'b
 val setify : 'a list -> 'a list
 val atom_union : ('a -> 'b list) -> 'a Syntax.Formula.t -> 'b list

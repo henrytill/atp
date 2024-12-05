@@ -15,7 +15,8 @@ let rec onatoms f fm =
   let open Syntax.Formula in
   match fm with
   | Atom a -> f a
-  | False | True -> fm
+  | False -> False
+  | True -> True
   | Not p -> Not (onatoms f p)
   | And (p, q) -> And (onatoms f p, onatoms f q)
   | Or (p, q) -> Or (onatoms f p, onatoms f q)
