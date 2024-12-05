@@ -5,6 +5,7 @@ module PropLogic.SemanticsTests where
 
 import PropLogic.Quote (prop)
 import PropLogic.Semantics
+import PropLogic.Semantics.Func ((|=>))
 import PropLogic.Syntax (Prop (MkProp))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
@@ -46,5 +47,10 @@ tests =
       testCase "Check that contradiction is not tautology" $ do
         tautology [prop| p /\ ~p |] @?= False,
       testCase "Check that contradiction is unsatisfiable" $ do
-        unsatisfiable [prop| p /\ ~p |] @?= True
+        unsatisfiable [prop| p /\ ~p |] @?= True,
+      testCase "Check that substitution works" $ do
+        let p = MkProp "p"
+            s = [prop| p /\ q |]
+            f = p |=> s
+        psubst f [prop| p /\ q /\ p /\ q |] @?= [prop| $s /\ q /\ $s /\ q |]
     ]

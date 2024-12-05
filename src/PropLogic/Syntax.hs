@@ -1,9 +1,12 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module PropLogic.Syntax where
 
 import Data.Data (Data, Typeable)
+import Data.Hashable
+import GHC.Generics (Generic)
 import Text.PrettyPrint.HughesPJClass (Pretty (..), char, parens, text, (<+>), (<>))
 import Prelude hiding ((<>))
 
@@ -19,7 +22,9 @@ data Formula a
   | FmForAll String (Formula a)
   | FmExists String (Formula a)
   | FmMetaVar String
-  deriving (Show, Eq, Data, Typeable, Functor)
+  deriving (Show, Eq, Data, Typeable, Functor, Generic)
+
+instance (Hashable a) => Hashable (Formula a)
 
 newtype Atoms a = MkAtoms {unAtoms :: Formula a}
   deriving (Show, Eq, Functor)
@@ -57,7 +62,9 @@ instance (Pretty a) => Pretty (Formula a) where
       binary s x y = parens (pPrint x <+> text s <+> pPrint y)
 
 newtype Prop = MkProp {unProp :: String}
-  deriving (Show, Eq, Ord, Data, Typeable)
+  deriving (Show, Eq, Ord, Data, Typeable, Generic)
+
+instance Hashable Prop
 
 instance Pretty Prop where
   pPrint = text . unProp

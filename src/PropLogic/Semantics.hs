@@ -4,10 +4,12 @@ module PropLogic.Semantics where
 
 import Data.Bits qualified as Bits
 import Data.Foldable (toList)
+import Data.Hashable (Hashable)
 import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
 import Data.Monoid (All (..))
+import PropLogic.Semantics.Func (Func, tryApplyWithDefault)
 import PropLogic.Syntax (Atoms (..), Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -24,6 +26,22 @@ eval (FmIff p q) v = eval p v == eval q v
 eval (FmForAll {}) _ = undefined
 eval (FmExists {}) _ = undefined
 eval (FmMetaVar {}) _ = undefined
+
+-- | Maps a function over all atoms in a formula while preserving structure
+onAtoms :: (a -> Formula b) -> Formula a -> Formula b
+onAtoms f = go
+  where
+    go FmFalse = FmFalse
+    go FmTrue = FmTrue
+    go (FmAtom a) = f a
+    go (FmNot p) = FmNot (go p)
+    go (FmAnd p q) = FmAnd (go p) (go q)
+    go (FmOr p q) = FmOr (go p) (go q)
+    go (FmImp p q) = FmImp (go p) (go q)
+    go (FmIff p q) = FmIff (go p) (go q)
+    go (FmForAll x p) = FmForAll x (go p)
+    go (FmExists x p) = FmExists x (go p)
+    go (FmMetaVar s) = FmMetaVar s
 
 overAtoms :: (a -> b -> b) -> Formula a -> b -> b
 overAtoms f fm b = foldr f b (MkAtoms fm)
@@ -90,3 +108,7 @@ unsatisfiable = tautology . FmNot
 
 satisfiable :: Formula Prop -> Bool
 satisfiable = not . unsatisfiable
+
+-- | Substitutes atoms according to a partial function mapping
+psubst :: (Ord a, Hashable a) => Func a (Formula a) -> Formula a -> Formula a
+psubst subfn = onAtoms $ \p -> tryApplyWithDefault subfn p (FmAtom p)
