@@ -51,6 +51,7 @@ let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
   Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
 let false_len = String.length (string_of_bool false)
+let formula_header = "| formula"
 
 let print_truthtable fmt fm =
   let open Format in
@@ -67,7 +68,6 @@ let print_truthtable fmt fm =
     pp_print_newline fmt ();
     true
   in
-  let formula_header = "| formula" in
   let header = List.fold_right (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
   let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
   pp_print_string fmt header;
