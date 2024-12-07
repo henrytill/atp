@@ -161,7 +161,7 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 ### Internals
 
 ```ocaml
-# module Int_operations = Semantics_internal.Atom_operations.Make (Int);;
+# module Int_operations = Semantics_internal.Make (Int);;
 module Int_operations :
   sig
     type atom = int
@@ -169,6 +169,33 @@ module Int_operations :
     val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
     val atoms : atom Syntax.Formula.t -> atom list
     val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
+    val false_len : atom
+    val formula_header : string
+    val print_truthtable : Format.formatter -> atom Syntax.Formula.t -> unit
+    val tautology : atom Syntax.Formula.t -> bool
+    val unsatisfiable : atom Syntax.Formula.t -> bool
+    val satisfiable : atom Syntax.Formula.t -> bool
+    module Function :
+      sig
+        type 'a t =
+          'a Prop_logic.Semantics_internal.Make(Int).Function.t =
+            Empty
+          | Leaf of atom * (atom * 'a) list
+          | Branch of atom * atom * 'a t * 'a t
+        val undefined : 'a t
+        val is_undefined : 'a t -> bool
+        val assocd : (atom * 'a) list -> (atom -> 'a) -> atom -> 'a
+        val applyd : 'a t -> (atom -> 'a) -> atom -> 'a
+        val tryapplyd : 'a t -> atom -> 'a -> 'a
+        val apply : 'a t -> atom -> 'a
+        val make_branch : atom -> 'a t -> atom -> 'a t -> 'a t
+        val define_list : atom * 'a -> (atom * 'a) list -> (atom * 'a) list
+        val ( |-> ) : atom -> 'a -> 'a t -> 'a t
+        val ( |=> ) : atom -> 'a -> 'a t
+      end
+    val psubst :
+      atom Syntax.Formula.t Function.t ->
+      atom Syntax.Formula.t -> atom Syntax.Formula.t
   end
 ```
 
@@ -183,7 +210,7 @@ module Int_operations :
 ```
 
 ```ocaml
-# let read_atoms s = Input.parse_string s |> Option.map Semantics_internal.Prop_operations.atoms in
+# let read_atoms s = Input.parse_string s |> Option.map Semantics.atoms in
   read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
 - : Syntax.Prop.t list option = Some ["p"; "q"; "r"; "s"]
 ```
@@ -371,8 +398,8 @@ val form : string -> Syntax.t = <fun>
 ```ocaml
 # let p = Syntax.Prop.inj "p";;
 val p : Syntax.Prop.t = "p"
-# let f = Semantics.Prop_function.(p |=> form {|p /\ q|});;
-val f : Syntax.t Semantics.Prop_function.t = <abstr>
+# let f = Semantics.Function.(p |=> form {|p /\ q|});;
+val f : Syntax.t Semantics.Function.t = <abstr>
 # Semantics.psubst f (form {|p /\ q /\ p /\ q|});;
 - : Syntax.t =
 (And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))

@@ -8,6 +8,7 @@ module Prop = struct
   let equal = String.equal
   let compare = String.compare
   let hash = String.hash
+  let to_string = Fun.id
 end
 
 module Formula = struct

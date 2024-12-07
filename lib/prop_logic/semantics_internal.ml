@@ -34,104 +34,90 @@ let rec overatoms f fm b =
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
 
-module Atom_operations = struct
-  module type ATOM_TYPE = sig
-    type t
+module type ATOM_TYPE = sig
+  type t
 
-    val compare : t -> t -> int
-  end
-
-  module type S = sig
-    type atom
-
-    val setify : atom list -> atom list
-    val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
-    val atoms : atom Syntax.Formula.t -> atom list
-    val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
-  end
-
-  module Make (Atom : ATOM_TYPE) = struct
-    type atom = Atom.t
-
-    let setify xs = List.sort_uniq Atom.compare xs
-    let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
-    let atoms fm = atom_union (fun a -> [ a ]) fm
-
-    let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
-      let module Atom_map = Map.Make (Atom) in
-      let ats_len = List.length ats in
-      let offset_table =
-        List.fold_left
-          (fun (i, m) a -> (i - 1, Atom_map.add a i m))
-          (ats_len - 1, Atom_map.empty)
-          ats
-        |> snd
-      in
-      let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
-      let num_valuations = Int.shift_left 1 ats_len in
-      Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
-  end
+  val compare : t -> t -> int
+  val hash : t -> int
+  val to_string : t -> string
 end
 
-module Prop_operations : Atom_operations.S with type atom = Syntax.Prop.t =
-  Atom_operations.Make (Syntax.Prop)
+module type S = sig
+  type atom
 
-let false_len = String.length (string_of_bool false)
-let formula_header = "| formula"
+  val setify : atom list -> atom list
+  val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
+  val atoms : atom Syntax.Formula.t -> atom list
+  val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
+  val print_truthtable : Format.formatter -> atom Syntax.Formula.t -> unit
+  val tautology : atom Syntax.Formula.t -> bool
+  val unsatisfiable : atom Syntax.Formula.t -> bool
+  val satisfiable : atom Syntax.Formula.t -> bool
 
-let print_truthtable fmt fm =
-  let open Format in
-  let ats = Prop_operations.atoms fm in
-  let width =
-    List.fold_right (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1
-  in
-  let fixw s = s ^ String.make (width - String.length s) ' ' in
-  let truthstring p = fixw (string_of_bool p) in
-  let mk_row v =
-    let lis = List.map (fun x -> truthstring (v x)) ats in
-    let ans = truthstring (eval fm v) in
-    pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
-    pp_print_newline fmt ();
-    true
-  in
-  let header = List.fold_right (fun s t -> fixw (Syntax.Prop.prj s) ^ t) ats formula_header in
-  let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
-  pp_print_string fmt header;
-  pp_print_newline fmt ();
-  pp_print_string fmt separator;
-  pp_print_newline fmt ();
-  let _ = Seq.for_all Fun.id (Prop_operations.onallvaluations mk_row ats) in
-  pp_print_string fmt separator;
-  pp_print_newline fmt ()
-
-let tautology fm = Seq.for_all Fun.id Prop_operations.(onallvaluations (eval fm) (atoms fm))
-let unsatisfiable fm = tautology (Not fm)
-let satisfiable fm = not (unsatisfiable fm)
-
-module Function = struct
-  module type DOMAIN_TYPE = sig
-    type t
-
-    val compare : t -> t -> int
-    val hash : t -> int
-  end
-
-  module type S = sig
-    type domain
+  module Function : sig
     type 'a t
 
-    val tryapplyd : 'a t -> domain -> 'a -> 'a
-    val applyd : 'a t -> (domain -> 'a) -> domain -> 'a
-    val ( |-> ) : domain -> 'a -> 'a t -> 'a t
-    val ( |=> ) : domain -> 'a -> 'a t
+    val ( |-> ) : Syntax.Prop.t -> 'a -> 'a t -> 'a t
+    val ( |=> ) : Syntax.Prop.t -> 'a -> 'a t
   end
 
-  module Make (Dom : DOMAIN_TYPE) = struct
-    type domain = Dom.t
+  val psubst : Syntax.t Function.t -> Syntax.t -> Syntax.t
+end
 
+module Make (Atom : ATOM_TYPE) = struct
+  type atom = Atom.t
+
+  let setify xs = List.sort_uniq Atom.compare xs
+  let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
+  let atoms fm = atom_union (fun a -> [ a ]) fm
+
+  let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
+    let module Atom_map = Map.Make (Atom) in
+    let ats_len = List.length ats in
+    let offset_table =
+      List.fold_left (fun (i, m) a -> (i - 1, Atom_map.add a i m)) (ats_len - 1, Atom_map.empty) ats
+      |> snd
+    in
+    let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
+    let num_valuations = Int.shift_left 1 ats_len in
+    Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
+
+  let false_len = String.length (string_of_bool false)
+  let formula_header = "| formula"
+
+  let print_truthtable fmt fm =
+    let open Format in
+    let ats = atoms fm in
+    let width =
+      List.fold_right (fun x -> Int.max (String.length (Atom.to_string x))) ats false_len + 1
+    in
+    let fixw s = s ^ String.make (width - String.length s) ' ' in
+    let truthstring p = fixw (string_of_bool p) in
+    let mk_row v =
+      let lis = List.map (fun x -> truthstring (v x)) ats in
+      let ans = truthstring (eval fm v) in
+      pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
+      pp_print_newline fmt ();
+      true
+    in
+    let header = List.fold_right (fun s t -> fixw (Atom.to_string s) ^ t) ats formula_header in
+    let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
+    pp_print_string fmt header;
+    pp_print_newline fmt ();
+    pp_print_string fmt separator;
+    pp_print_newline fmt ();
+    let _ = Seq.for_all Fun.id (onallvaluations mk_row ats) in
+    pp_print_string fmt separator;
+    pp_print_newline fmt ()
+
+  let tautology fm = Seq.for_all Fun.id (onallvaluations (eval fm) (atoms fm))
+  let unsatisfiable fm = tautology (Not fm)
+  let satisfiable fm = not (unsatisfiable fm)
+
+  module Function = struct
     type 'a t =
       | Empty
-      | Leaf of int * (domain * 'a) list
+      | Leaf of int * (atom * 'a) list
       | Branch of int * int * 'a t * 'a t
 
     let undefined = Empty
@@ -141,13 +127,13 @@ module Function = struct
       | Empty -> true
       | _ -> false
 
-    let assocd (l : (domain * 'a) list) (default : domain -> 'a) (x : domain) : 'a =
+    let assocd (l : (atom * 'a) list) (default : atom -> 'a) (x : atom) : 'a =
       match List.assoc_opt x l with
       | Some b -> b
       | None -> default x
 
-    let applyd (f : 'a t) (default : domain -> 'a) (x : domain) : 'a =
-      let k = Dom.hash x in
+    let applyd (f : 'a t) (default : atom -> 'a) (x : atom) : 'a =
+      let k = Atom.hash x in
       let rec look t =
         match t with
         | Leaf (h, l) when h = k -> assocd l default x
@@ -156,8 +142,8 @@ module Function = struct
       in
       look f
 
-    let tryapplyd (f : 'a t) (x : domain) (default : 'a) : 'a = applyd f (fun _ -> default) x
-    let apply (f : 'a t) : domain -> 'a = applyd f (fun _ -> failwith "apply")
+    let tryapplyd (f : 'a t) (x : atom) (default : 'a) : 'a = applyd f (fun _ -> default) x
+    let apply (f : 'a t) : atom -> 'a = applyd f (fun _ -> failwith "apply")
 
     let make_branch p1 t1 p2 t2 =
       (* Find differing bits between the two prefixes *)
@@ -174,7 +160,7 @@ module Function = struct
     let rec define_list ((x, _) as xy) l =
       match l with
       | ((a, _) as ab) :: t ->
-          let c = Dom.compare x a in
+          let c = Atom.compare x a in
           if c = 0 then
             xy :: t
           else if c < 0 then
@@ -184,7 +170,7 @@ module Function = struct
       | [] -> [ xy ]
 
     let ( |-> ) x y =
-      let k = Dom.hash x in
+      let k = Atom.hash x in
       let rec upd t =
         match t with
         | Empty -> Leaf (k, [ (x, y) ])
@@ -198,8 +184,6 @@ module Function = struct
 
     let ( |=> ) x y = (x |-> y) undefined
   end
+
+  let psubst subfn = onatoms (fun p -> Function.tryapplyd subfn p (Syntax.Formula.Atom p))
 end
-
-module Prop_function : Function.S with type domain = Syntax.Prop.t = Function.Make (Syntax.Prop)
-
-let psubst subfn = onatoms (fun p -> Prop_function.tryapplyd subfn p (Syntax.Formula.Atom p))
