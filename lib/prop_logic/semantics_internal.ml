@@ -47,6 +47,7 @@ module Atom_operations = struct
     val setify : atom list -> atom list
     val atom_union : (atom -> atom list) -> atom Syntax.Formula.t -> atom list
     val atoms : atom Syntax.Formula.t -> atom list
+    val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
   end
 
   module Make (Atom : ORDERED_TYPE) = struct
@@ -55,23 +56,25 @@ module Atom_operations = struct
     let setify xs = List.sort_uniq Atom.compare xs
     let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
     let atoms fm = atom_union (fun a -> [ a ]) fm
+
+    let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
+      let module Atom_map = Map.Make (Atom) in
+      let ats_len = List.length ats in
+      let offset_table =
+        List.fold_left
+          (fun (i, m) a -> (i - 1, Atom_map.add a i m))
+          (ats_len - 1, Atom_map.empty)
+          ats
+        |> snd
+      in
+      let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
+      let num_valuations = Int.shift_left 1 ats_len in
+      Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
   end
 end
 
 module Prop_operations : Atom_operations.S with type atom = Syntax.Prop.t =
   Atom_operations.Make (Syntax.Prop)
-
-let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
-    (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
-  let module Atom_map = Map.Make (Atom) in
-  let ats_len = List.length ats in
-  let offset_table =
-    List.fold_left (fun (i, m) a -> (i - 1, Atom_map.add a i m)) (ats_len - 1, Atom_map.empty) ats
-    |> snd
-  in
-  let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
-  let num_valuations = Int.shift_left 1 ats_len in
-  Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
 
 let false_len = String.length (string_of_bool false)
 let formula_header = "| formula"
@@ -97,13 +100,11 @@ let print_truthtable fmt fm =
   pp_print_newline fmt ();
   pp_print_string fmt separator;
   pp_print_newline fmt ();
-  let _ = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) mk_row ats) in
+  let _ = Seq.for_all Fun.id (Prop_operations.onallvaluations mk_row ats) in
   pp_print_string fmt separator;
   pp_print_newline fmt ()
 
-let tautology fm =
-  Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (Prop_operations.atoms fm))
-
+let tautology fm = Seq.for_all Fun.id Prop_operations.(onallvaluations (eval fm) (atoms fm))
 let unsatisfiable fm = tautology (Not fm)
 let satisfiable fm = not (unsatisfiable fm)
 

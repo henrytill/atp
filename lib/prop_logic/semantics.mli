@@ -9,10 +9,9 @@ module Prop_operations : sig
 
   val atoms : Syntax.t -> Syntax.Prop.t list
   (** [atoms fm] returns a list of the atoms in [fm]. *)
-end
 
-val onallvaluations :
-  (module Map.OrderedType with type t = 'a) -> (('a -> bool) -> 'b) -> 'a list -> 'b Seq.t
+  val onallvaluations : ((Syntax.Prop.t -> bool) -> 'a) -> Syntax.Prop.t list -> 'a Seq.t
+end
 
 val print_truthtable : Format.formatter -> Syntax.t -> unit
 (** [print_truthtable fmt fm] prints a truthtable for [fm] using [fmt]. *)
