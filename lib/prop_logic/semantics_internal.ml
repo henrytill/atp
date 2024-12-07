@@ -50,15 +50,15 @@ module Atom_operations = struct
     val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
   end
 
-  module Make (Atom : ORDERED_TYPE) = struct
-    type atom = Atom.t
+  module Make (Ord : ORDERED_TYPE) = struct
+    type atom = Ord.t
 
-    let setify xs = List.sort_uniq Atom.compare xs
+    let setify xs = List.sort_uniq Ord.compare xs
     let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
     let atoms fm = atom_union (fun a -> [ a ]) fm
 
     let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
-      let module Atom_map = Map.Make (Atom) in
+      let module Atom_map = Map.Make (Ord) in
       let ats_len = List.length ats in
       let offset_table =
         List.fold_left
