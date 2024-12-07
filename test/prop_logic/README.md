@@ -164,38 +164,37 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 # module Int_operations = Semantics_internal.Make (Int);;
 module Int_operations :
   sig
-    type atom = int
-    val setify : atom list -> atom list
-    val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
-    val atoms : atom Syntax.Formula.t -> atom list
-    val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
-    val false_len : atom
+    val setify : int list -> int list
+    val atom_union : ('a -> int list) -> 'a Syntax.Formula.t -> int list
+    val atoms : int Syntax.Formula.t -> int list
+    val onallvaluations : ((int -> bool) -> 'a) -> int list -> 'a Seq.t
+    val false_len : int
     val formula_header : string
-    val print_truthtable : Format.formatter -> atom Syntax.Formula.t -> unit
-    val tautology : atom Syntax.Formula.t -> bool
-    val unsatisfiable : atom Syntax.Formula.t -> bool
-    val satisfiable : atom Syntax.Formula.t -> bool
+    val print_truthtable : Format.formatter -> int Syntax.Formula.t -> unit
+    val tautology : int Syntax.Formula.t -> bool
+    val unsatisfiable : int Syntax.Formula.t -> bool
+    val satisfiable : int Syntax.Formula.t -> bool
     module Function :
       sig
         type 'a t =
           'a Prop_logic.Semantics_internal.Make(Int).Function.t =
             Empty
-          | Leaf of atom * (atom * 'a) list
-          | Branch of atom * atom * 'a t * 'a t
+          | Leaf of int * (int * 'a) list
+          | Branch of int * int * 'a t * 'a t
         val undefined : 'a t
         val is_undefined : 'a t -> bool
-        val assocd : (atom * 'a) list -> (atom -> 'a) -> atom -> 'a
-        val applyd : 'a t -> (atom -> 'a) -> atom -> 'a
-        val tryapplyd : 'a t -> atom -> 'a -> 'a
-        val apply : 'a t -> atom -> 'a
-        val make_branch : atom -> 'a t -> atom -> 'a t -> 'a t
-        val define_list : atom * 'a -> (atom * 'a) list -> (atom * 'a) list
-        val ( |-> ) : atom -> 'a -> 'a t -> 'a t
-        val ( |=> ) : atom -> 'a -> 'a t
+        val assocd : (int * 'a) list -> (int -> 'a) -> int -> 'a
+        val applyd : 'a t -> (int -> 'a) -> int -> 'a
+        val tryapplyd : 'a t -> int -> 'a -> 'a
+        val apply : 'a t -> int -> 'a
+        val make_branch : int -> 'a t -> int -> 'a t -> 'a t
+        val define_list : int * 'a -> (int * 'a) list -> (int * 'a) list
+        val ( |-> ) : int -> 'a -> 'a t -> 'a t
+        val ( |=> ) : int -> 'a -> 'a t
       end
     val psubst :
-      atom Syntax.Formula.t Function.t ->
-      atom Syntax.Formula.t -> atom Syntax.Formula.t
+      int Syntax.Formula.t Function.t ->
+      int Syntax.Formula.t -> int Syntax.Formula.t
   end
 ```
 

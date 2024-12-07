@@ -42,36 +42,12 @@ module type ATOM_TYPE = sig
   val to_string : t -> string
 end
 
-module type S = sig
-  type atom
-
-  val setify : atom list -> atom list
-  val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
-  val atoms : atom Syntax.Formula.t -> atom list
-  val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
-  val print_truthtable : Format.formatter -> atom Syntax.Formula.t -> unit
-  val tautology : atom Syntax.Formula.t -> bool
-  val unsatisfiable : atom Syntax.Formula.t -> bool
-  val satisfiable : atom Syntax.Formula.t -> bool
-
-  module Function : sig
-    type 'a t
-
-    val ( |-> ) : Syntax.Prop.t -> 'a -> 'a t -> 'a t
-    val ( |=> ) : Syntax.Prop.t -> 'a -> 'a t
-  end
-
-  val psubst : Syntax.t Function.t -> Syntax.t -> Syntax.t
-end
-
 module Make (Atom : ATOM_TYPE) = struct
-  type atom = Atom.t
-
   let setify xs = List.sort_uniq Atom.compare xs
   let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
   let atoms fm = atom_union (fun a -> [ a ]) fm
 
-  let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
+  let onallvaluations (subfn : (Atom.t -> bool) -> 'a) (ats : Atom.t list) : 'a Seq.t =
     let module Atom_map = Map.Make (Atom) in
     let ats_len = List.length ats in
     let offset_table =
@@ -117,7 +93,7 @@ module Make (Atom : ATOM_TYPE) = struct
   module Function = struct
     type 'a t =
       | Empty
-      | Leaf of int * (atom * 'a) list
+      | Leaf of int * (Atom.t * 'a) list
       | Branch of int * int * 'a t * 'a t
 
     let undefined = Empty
@@ -127,12 +103,12 @@ module Make (Atom : ATOM_TYPE) = struct
       | Empty -> true
       | _ -> false
 
-    let assocd (l : (atom * 'a) list) (default : atom -> 'a) (x : atom) : 'a =
+    let assocd (l : (Atom.t * 'a) list) (default : Atom.t -> 'a) (x : Atom.t) : 'a =
       match List.assoc_opt x l with
       | Some b -> b
       | None -> default x
 
-    let applyd (f : 'a t) (default : atom -> 'a) (x : atom) : 'a =
+    let applyd (f : 'a t) (default : Atom.t -> 'a) (x : Atom.t) : 'a =
       let k = Atom.hash x in
       let rec look t =
         match t with
@@ -142,8 +118,8 @@ module Make (Atom : ATOM_TYPE) = struct
       in
       look f
 
-    let tryapplyd (f : 'a t) (x : atom) (default : 'a) : 'a = applyd f (fun _ -> default) x
-    let apply (f : 'a t) : atom -> 'a = applyd f (fun _ -> failwith "apply")
+    let tryapplyd (f : 'a t) (x : Atom.t) (default : 'a) : 'a = applyd f (fun _ -> default) x
+    let apply (f : 'a t) : Atom.t -> 'a = applyd f (fun _ -> failwith "apply")
 
     let make_branch p1 t1 p2 t2 =
       (* Find differing bits between the two prefixes *)
