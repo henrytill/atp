@@ -45,7 +45,7 @@ module Atom_operations = struct
     type atom
 
     val setify : atom list -> atom list
-    val atom_union : (atom -> atom list) -> atom Syntax.Formula.t -> atom list
+    val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
     val atoms : atom Syntax.Formula.t -> atom list
     val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
   end

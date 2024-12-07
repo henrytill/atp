@@ -5,7 +5,7 @@ val onatoms : ('a -> 'b Syntax.Formula.t) -> 'a Syntax.Formula.t -> 'b Syntax.Fo
 val overatoms : ('a -> 'b -> 'b) -> 'a Syntax.Formula.t -> 'b -> 'b
 
 module Prop_operations : sig
-  val atom_union : (Syntax.Prop.t -> Syntax.Prop.t list) -> Syntax.t -> Syntax.Prop.t list
+  val atom_union : ('a -> Syntax.Prop.t list) -> 'a Syntax.Formula.t -> Syntax.Prop.t list
 
   val atoms : Syntax.t -> Syntax.Prop.t list
   (** [atoms fm] returns a list of the atoms in [fm]. *)
