@@ -20,10 +20,23 @@ val unsatisfiable : Syntax.t -> bool
 val satisfiable : Syntax.t -> bool
 
 module Function : sig
-  type (_, _) t
+  module type ORDERED_TYPE = sig
+    type t
 
-  val ( |-> ) : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-  val ( |=> ) : 'a -> 'b -> ('a, 'b) t
+    val compare : t -> t -> int
+  end
+
+  module type S = sig
+    type domain
+    type 'a t
+
+    val ( |-> ) : domain -> 'a -> 'a t -> 'a t
+    val ( |=> ) : domain -> 'a -> 'a t
+  end
+
+  module Make (Ord : ORDERED_TYPE) : S with type domain = Ord.t
 end
 
-val psubst : ('a, 'a Syntax.Formula.t) Function.t -> 'a Syntax.Formula.t -> 'a Syntax.Formula.t
+module Prop_function : Function.S with type domain = Syntax.Prop.t
+
+val psubst : Syntax.t Prop_function.t -> Syntax.t -> Syntax.t
