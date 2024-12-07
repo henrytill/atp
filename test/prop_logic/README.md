@@ -161,17 +161,28 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 ### Internals
 
 ```ocaml
-# Semantics_internal.setify [ 1; 2; 3; 1; 4; 3 ];;
+# module Int_operations = Semantics_internal.Atom_operations.Make (Int);;
+module Int_operations :
+  sig
+    type atom = int
+    val setify : atom list -> atom list
+    val atom_union : ('a -> atom list) -> 'a Syntax.Formula.t -> atom list
+    val atoms : atom Syntax.Formula.t -> atom list
+  end
+```
+
+```ocaml
+# Int_operations.setify [ 1; 2; 3; 1; 4; 3 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
 ```ocaml
-# Semantics_internal.setify [ 4; 3; 2; 1 ];;
+# Int_operations.setify [ 4; 3; 2; 1 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
 ```ocaml
-# let read_atoms s = Input.parse_string s |> Option.map Semantics.atoms in
+# let read_atoms s = Input.parse_string s |> Option.map Semantics_internal.Prop_operations.atoms in
   read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
 - : Syntax.Prop.t list option = Some ["p"; "q"; "r"; "s"]
 ```

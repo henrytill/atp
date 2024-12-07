@@ -34,9 +34,31 @@ let rec overatoms f fm b =
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
 
-let setify xs = List.sort_uniq compare xs
-let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
-let atoms fm = atom_union (fun a -> [ a ]) fm
+module type ORDERED_TYPE = sig
+  type t
+
+  val compare : t -> t -> int
+end
+
+module Atom_operations = struct
+  module type S = sig
+    type atom
+
+    val setify : atom list -> atom list
+    val atom_union : (atom -> atom list) -> atom Syntax.Formula.t -> atom list
+    val atoms : atom Syntax.Formula.t -> atom list
+  end
+
+  module Make (Atom : ORDERED_TYPE) = struct
+    type atom = Atom.t
+
+    let setify xs = List.sort_uniq Atom.compare xs
+    let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
+    let atoms fm = atom_union (fun a -> [ a ]) fm
+  end
+end
+
+module Prop_operations = Atom_operations.Make (Syntax.Prop)
 
 let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
     (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
@@ -55,7 +77,7 @@ let formula_header = "| formula"
 
 let print_truthtable fmt fm =
   let open Format in
-  let ats = atoms fm in
+  let ats = Prop_operations.atoms fm in
   let width =
     List.fold_right (fun x -> Int.max (String.length (Syntax.Prop.prj x))) ats false_len + 1
   in
@@ -78,15 +100,16 @@ let print_truthtable fmt fm =
   pp_print_string fmt separator;
   pp_print_newline fmt ()
 
-let tautology fm = Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (atoms fm))
+let tautology fm =
+  Seq.for_all Fun.id (onallvaluations (module Syntax.Prop) (eval fm) (Prop_operations.atoms fm))
+
 let unsatisfiable fm = tautology (Not fm)
 let satisfiable fm = not (unsatisfiable fm)
 
 module Function = struct
   module type DOMAIN_TYPE = sig
-    type t
+    include ORDERED_TYPE
 
-    val compare : t -> t -> int
     val hash : t -> int
   end
 
