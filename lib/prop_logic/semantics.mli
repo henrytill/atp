@@ -20,10 +20,11 @@ val unsatisfiable : Syntax.t -> bool
 val satisfiable : Syntax.t -> bool
 
 module Function : sig
-  module type ORDERED_TYPE = sig
+  module type DOMAIN_TYPE = sig
     type t
 
     val compare : t -> t -> int
+    val hash : t -> int
   end
 
   module type S = sig
@@ -34,7 +35,7 @@ module Function : sig
     val ( |=> ) : domain -> 'a -> 'a t
   end
 
-  module Make (Ord : ORDERED_TYPE) : S with type domain = Ord.t
+  module Make (Dom : DOMAIN_TYPE) : S with type domain = Dom.t
 end
 
 module Prop_function : Function.S with type domain = Syntax.Prop.t

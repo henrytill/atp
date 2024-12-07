@@ -7,6 +7,7 @@ module Prop = struct
   let pp = Format.pp_print_string
   let equal = String.equal
   let compare = String.compare
+  let hash = String.hash
 end
 
 module Formula = struct

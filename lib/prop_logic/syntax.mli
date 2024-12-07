@@ -7,6 +7,7 @@ module Prop : sig
   val pp : Format.formatter -> t -> unit
   val equal : t -> t -> bool
   val compare : t -> t -> int
+  val hash : t -> int
 end
 
 module Formula : sig

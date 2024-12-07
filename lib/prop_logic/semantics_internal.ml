@@ -83,10 +83,11 @@ let unsatisfiable fm = tautology (Not fm)
 let satisfiable fm = not (unsatisfiable fm)
 
 module Function = struct
-  module type ORDERED_TYPE = sig
+  module type DOMAIN_TYPE = sig
     type t
 
     val compare : t -> t -> int
+    val hash : t -> int
   end
 
   module type S = sig
@@ -97,8 +98,8 @@ module Function = struct
     val ( |=> ) : domain -> 'a -> 'a t
   end
 
-  module Make (Ord : ORDERED_TYPE) = struct
-    type domain = Ord.t
+  module Make (Dom : DOMAIN_TYPE) = struct
+    type domain = Dom.t
 
     type 'a t =
       | Empty
@@ -118,7 +119,7 @@ module Function = struct
       | None -> default x
 
     let applyd (f : 'a t) (default : domain -> 'a) (x : domain) : 'a =
-      let k = Hashtbl.hash x in
+      let k = Dom.hash x in
       let rec look t =
         match t with
         | Leaf (h, l) when h = k -> assocd l default x
@@ -145,7 +146,7 @@ module Function = struct
     let rec define_list ((x, _) as xy) l =
       match l with
       | ((a, _) as ab) :: t ->
-          let c = Ord.compare x a in
+          let c = Dom.compare x a in
           if c = 0 then
             xy :: t
           else if c < 0 then
@@ -155,7 +156,7 @@ module Function = struct
       | [] -> [ xy ]
 
     let ( |-> ) x y =
-      let k = Hashtbl.hash x in
+      let k = Dom.hash x in
       let rec upd t =
         match t with
         | Empty -> Leaf (k, [ (x, y) ])
