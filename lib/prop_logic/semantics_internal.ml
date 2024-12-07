@@ -58,7 +58,8 @@ module Atom_operations = struct
   end
 end
 
-module Prop_operations = Atom_operations.Make (Syntax.Prop)
+module Prop_operations : Atom_operations.S with type atom = Syntax.Prop.t =
+  Atom_operations.Make (Syntax.Prop)
 
 let onallvaluations (type a b) (module Atom : Map.OrderedType with type t = a)
     (subfn : (a -> bool) -> b) (ats : a list) : b Seq.t =
@@ -117,6 +118,8 @@ module Function = struct
     type domain
     type 'a t
 
+    val tryapplyd : 'a t -> domain -> 'a -> 'a
+    val applyd : 'a t -> (domain -> 'a) -> domain -> 'a
     val ( |-> ) : domain -> 'a -> 'a t -> 'a t
     val ( |=> ) : domain -> 'a -> 'a t
   end
@@ -195,6 +198,6 @@ module Function = struct
   end
 end
 
-module Prop_function = Function.Make (Syntax.Prop)
+module Prop_function : Function.S with type domain = Syntax.Prop.t = Function.Make (Syntax.Prop)
 
 let psubst subfn = onatoms (fun p -> Prop_function.tryapplyd subfn p (Syntax.Formula.Atom p))
