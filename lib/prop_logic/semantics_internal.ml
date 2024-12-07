@@ -34,13 +34,13 @@ let rec overatoms f fm b =
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
 
-module type ORDERED_TYPE = sig
-  type t
-
-  val compare : t -> t -> int
-end
-
 module Atom_operations = struct
+  module type ATOM_TYPE = sig
+    type t
+
+    val compare : t -> t -> int
+  end
+
   module type S = sig
     type atom
 
@@ -50,15 +50,15 @@ module Atom_operations = struct
     val onallvaluations : ((atom -> bool) -> 'a) -> atom list -> 'a Seq.t
   end
 
-  module Make (Ord : ORDERED_TYPE) = struct
-    type atom = Ord.t
+  module Make (Atom : ATOM_TYPE) = struct
+    type atom = Atom.t
 
-    let setify xs = List.sort_uniq Ord.compare xs
+    let setify xs = List.sort_uniq Atom.compare xs
     let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
     let atoms fm = atom_union (fun a -> [ a ]) fm
 
     let onallvaluations (subfn : (atom -> bool) -> 'a) (ats : atom list) : 'a Seq.t =
-      let module Atom_map = Map.Make (Ord) in
+      let module Atom_map = Map.Make (Atom) in
       let ats_len = List.length ats in
       let offset_table =
         List.fold_left
@@ -110,8 +110,9 @@ let satisfiable fm = not (unsatisfiable fm)
 
 module Function = struct
   module type DOMAIN_TYPE = sig
-    include ORDERED_TYPE
+    type t
 
+    val compare : t -> t -> int
     val hash : t -> int
   end
 
