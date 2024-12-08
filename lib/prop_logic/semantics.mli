@@ -20,6 +20,8 @@ val satisfiable : Syntax.t -> bool
 module Function : sig
   type 'a t
 
+  val undefined : 'a t
+  val is_undefined : 'a t -> bool
   val ( |-> ) : Syntax.Prop.t -> 'a -> 'a t -> 'a t
   val ( |=> ) : Syntax.Prop.t -> 'a -> 'a t
 end
