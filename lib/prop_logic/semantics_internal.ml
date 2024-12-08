@@ -105,7 +105,7 @@ module Make (Atom : ATOM_TYPE) = struct
 
     let assocd (l : (Atom.t * 'a) list) (default : Atom.t -> 'a) (x : Atom.t) : 'a =
       match List.assoc_opt x l with
-      | Some b -> b
+      | Some a -> a
       | None -> default x
 
     let applyd (f : 'a t) (default : Atom.t -> 'a) (x : Atom.t) : 'a =
