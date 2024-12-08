@@ -1,0 +1,6 @@
+(library
+ (name ppx_prop)
+ (public_name atp.ppx_prop)
+ (kind ppx_rewriter)
+ (libraries ppxlib prop_logic)
+ (preprocess (pps ppxlib.metaquot)))

@@ -14,6 +14,7 @@ depends: [
   "menhir"
   "alcotest" {with-test & >= "1.7.0"}
   "mdx" {with-test & >= "2.4.1"}
+  "ppxlib" {>= "0.33.0"}
   "zarith" {>= "1.14"}
   "odoc" {with-doc}
 ]

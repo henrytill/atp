@@ -4,3 +4,8 @@
 (mdx
  (deps
   (package atp)))
+
+(test
+ (name ppx_prop_test)
+ (libraries atp.prop_logic)
+ (preprocess (pps atp.ppx_prop)))
