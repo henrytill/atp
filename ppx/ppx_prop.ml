@@ -43,7 +43,9 @@ let expand ~loc ~path:_ s =
   | None -> Location.raise_errorf ~loc "Failed to parse prop"
 
 let extension =
-  Extension.declare "prop" Extension.Context.expression
+  Extension.declare
+    "prop"
+    Extension.Context.expression
     Ast_pattern.(single_expr_payload (pexp_constant (pconst_string __ drop drop)))
     expand
 

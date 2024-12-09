@@ -23,7 +23,9 @@ let expand ~loc ~path:_ s =
   | None -> Location.raise_errorf ~loc "Failed to parse intro"
 
 let extension =
-  Extension.declare "intro" Extension.Context.expression
+  Extension.declare
+    "intro"
+    Extension.Context.expression
     Ast_pattern.(single_expr_payload (pexp_constant (pconst_string __ drop drop)))
     expand
 
