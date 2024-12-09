@@ -90,12 +90,12 @@ module Test_precedence = struct
 end
 
 module Test_simplify = struct
-  let add_0x () =
+  let add_0_x () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| 0 + x |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let add_x0 () =
+  let add_x_0 () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| x + 0 |} in
     Alcotest.(check syntax) same_expr expected actual
@@ -105,12 +105,12 @@ module Test_simplify = struct
     let actual = Semantics.simplify {%intro| 3 - 2 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let sub_x0 () =
+  let sub_x_0 () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| x - 0 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let sub_xx () =
+  let sub_x_x () =
     let expected : Syntax.t = Const 0 in
     let actual = Semantics.simplify {%intro| x - x |} in
     Alcotest.(check syntax) same_expr expected actual
@@ -120,22 +120,22 @@ module Test_simplify = struct
     let actual = Semantics.simplify {%intro| 3 * 4 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let mul_0x () =
+  let mul_0_x () =
     let expected : Syntax.t = Const 0 in
     let actual = Semantics.simplify {%intro| 0 * x |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let mul_x0 () =
+  let mul_x_0 () =
     let expected : Syntax.t = Const 0 in
     let actual = Semantics.simplify {%intro| x * 0 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let mul_1x () =
+  let mul_1_x () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| 1 * x |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let mul_x1 () =
+  let mul_x_1 () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| x * 1 |} in
     Alcotest.(check syntax) same_expr expected actual
@@ -145,22 +145,22 @@ module Test_simplify = struct
     let actual = Semantics.simplify {%intro| 2 ^ 3 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let exp_0x () =
+  let exp_0_x () =
     let expected : Syntax.t = Const 0 in
     let actual = Semantics.simplify {%intro| 0 ^ x |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let exp_x0 () =
+  let exp_x_0 () =
     let expected : Syntax.t = Const 1 in
     let actual = Semantics.simplify {%intro| x ^ 0 |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let exp_1x () =
+  let exp_1_x () =
     let expected : Syntax.t = Const 1 in
     let actual = Semantics.simplify {%intro| 1 ^ x |} in
     Alcotest.(check syntax) same_expr expected actual
 
-  let exp_x1 () =
+  let exp_x_1 () =
     let expected : Syntax.t = Var "x" in
     let actual = Semantics.simplify {%intro| x ^ 1 |} in
     Alcotest.(check syntax) same_expr expected actual
@@ -290,21 +290,21 @@ let intro_tests =
       ] );
     ( "Test_simplify",
       [
-        test_case "Simplify 0 + x" `Quick Test_simplify.add_0x;
-        test_case "Simplify x + 0" `Quick Test_simplify.add_x0;
+        test_case "Simplify 0 + x" `Quick Test_simplify.add_0_x;
+        test_case "Simplify x + 0" `Quick Test_simplify.add_x_0;
         test_case "Simplify sub" `Quick Test_simplify.sub;
-        test_case "Simplify x - 0" `Quick Test_simplify.sub_x0;
-        test_case "Simplify x - x" `Quick Test_simplify.sub_xx;
+        test_case "Simplify x - 0" `Quick Test_simplify.sub_x_0;
+        test_case "Simplify x - x" `Quick Test_simplify.sub_x_x;
         test_case "Simplify mul" `Quick Test_simplify.mul;
-        test_case "Simplify 0 * x" `Quick Test_simplify.mul_0x;
-        test_case "Simplify x * 0" `Quick Test_simplify.mul_x0;
-        test_case "Simplify 1 * x" `Quick Test_simplify.mul_1x;
-        test_case "Simplify x * 1" `Quick Test_simplify.mul_x1;
+        test_case "Simplify 0 * x" `Quick Test_simplify.mul_0_x;
+        test_case "Simplify x * 0" `Quick Test_simplify.mul_x_0;
+        test_case "Simplify 1 * x" `Quick Test_simplify.mul_1_x;
+        test_case "Simplify x * 1" `Quick Test_simplify.mul_x_1;
         test_case "Simplify exp" `Quick Test_simplify.exp;
-        test_case "Simplify 0 ^ x" `Quick Test_simplify.exp_0x;
-        test_case "Simplify x ^ 0" `Quick Test_simplify.exp_x0;
-        test_case "Simplify 1 ^ x" `Quick Test_simplify.exp_1x;
-        test_case "Simplify x ^ 1" `Quick Test_simplify.exp_x1;
+        test_case "Simplify 0 ^ x" `Quick Test_simplify.exp_0_x;
+        test_case "Simplify x ^ 0" `Quick Test_simplify.exp_x_0;
+        test_case "Simplify 1 ^ x" `Quick Test_simplify.exp_1_x;
+        test_case "Simplify x ^ 1" `Quick Test_simplify.exp_x_1;
         test_case "Simplify neg" `Quick Test_simplify.neg;
         test_case "Simplify example" `Quick Test_simplify.example;
       ] );
