@@ -1,7 +1,8 @@
 (test
  (name intro_test)
  (modules intro_test)
- (libraries alcotest intro))
+ (libraries alcotest intro)
+ (preprocess (pps ppx_intro)))
 
 (cram
  (deps %{bin:atp}))

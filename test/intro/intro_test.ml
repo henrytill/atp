@@ -5,178 +5,175 @@ let same_expr = "same expression"
 
 module Test_parse = struct
   let var () =
-    let expected : Syntax.t option = Some (Var "a") in
-    let actual = Input.parse_string {| a |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "a" in
+    let actual = {%intro| a |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let const () =
-    let expected : Syntax.t option = Some (Const 42) in
-    let actual = Input.parse_string {| 42 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 42 in
+    let actual = {%intro| 42 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let add () =
-    let expected : Syntax.t option = Some (Add (Const 42, Const 42)) in
-    let actual = Input.parse_string {| 42 + 42 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Add (Const 42, Const 42) in
+    let actual = {%intro| 42 + 42 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul () =
-    let expected : Syntax.t option = Some (Mul (Const 42, Const 42)) in
-    let actual = Input.parse_string {| 42 * 42 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Mul (Const 42, Const 42) in
+    let actual = {%intro| 42 * 42 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp () =
-    let expected : Syntax.t option = Some (Exp (Const 2, Const 3)) in
-    let actual = Input.parse_string {| 2 ^ 3 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Exp (Const 2, Const 3) in
+    let actual = {%intro| 2 ^ 3 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let neg () =
-    let expected : Syntax.t option = Some (Sub (Var "x", Neg (Neg (Var "x")))) in
-    let actual = Input.parse_string {| x - - - x|} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Sub (Var "x", Neg (Neg (Var "x"))) in
+    let actual = {%intro| x - - - x|} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let compound1 () =
-    let expected : Syntax.t option = Some (Add (Mul (Const 2, Var "x"), Var "y")) in
-    let actual = Input.parse_string {| 2 * x + y |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Add (Mul (Const 2, Var "x"), Var "y") in
+    let actual = {%intro| 2 * x + y |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let compound2 () =
-    let expected : Syntax.t option =
-      Some (Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12))
+    let expected : Syntax.t =
+      Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12)
     in
-    let actual = Input.parse_string {| (0 * x + 1) * 3 + 12 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let actual = {%intro| (0 * x + 1) * 3 + 12 |} in
+    Alcotest.(check syntax) same_expr expected actual
 end
 
 module Test_precedence = struct
   let right () =
-    let expected : Syntax.t option = Some (Add (Const 1, Mul (Const 2, Const 3))) in
-    let actual = Input.parse_string {| 1 + 2 * 3 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Add (Const 1, Mul (Const 2, Const 3)) in
+    let actual = {%intro| 1 + 2 * 3 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let left () =
-    let expected : Syntax.t option = Some (Add (Mul (Const 1, Const 2), Const 3)) in
-    let actual = Input.parse_string {| 1 * 2 + 3 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Add (Mul (Const 1, Const 2), Const 3) in
+    let actual = {%intro| 1 * 2 + 3 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let add () =
-    let expected : Syntax.t option = Some (Add (Add (Var "x", Var "y"), Var "z")) in
-    let actual = Input.parse_string {| x + y + z |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Add (Add (Var "x", Var "y"), Var "z") in
+    let actual = {%intro| x + y + z |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let sub () =
-    let expected : Syntax.t option = Some (Sub (Sub (Var "x", Var "y"), Var "z")) in
-    let actual = Input.parse_string {| x - y - z |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Sub (Sub (Var "x", Var "y"), Var "z") in
+    let actual = {%intro| x - y - z |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul () =
-    let expected : Syntax.t option = Some (Mul (Mul (Var "x", Var "y"), Var "z")) in
-    let actual = Input.parse_string {| x * y * z |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Mul (Mul (Var "x", Var "y"), Var "z") in
+    let actual = {%intro| x * y * z |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp () =
-    let expected : Syntax.t option = Some (Exp (Var "x", Exp (Var "y", Var "z"))) in
-    let acutal = Input.parse_string {| x ^ y ^ z |} in
-    Alcotest.(check (option syntax)) same_expr expected acutal
+    let expected : Syntax.t = Exp (Var "x", Exp (Var "y", Var "z")) in
+    let acutal = {%intro| x ^ y ^ z |} in
+    Alcotest.(check syntax) same_expr expected acutal
 
   let parens_left () =
-    let expected : Syntax.t option = Some (Mul (Add (Const 1, Const 2), Const 3)) in
-    let actual = Input.parse_string {| (1 + 2) * 3 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Mul (Add (Const 1, Const 2), Const 3) in
+    let actual = {%intro| (1 + 2) * 3 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let parens_right () =
-    let expected : Syntax.t option = Some (Mul (Const 1, Add (Const 2, Const 3))) in
-    let actual = Input.parse_string {| 1 * (2 + 3) |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Mul (Const 1, Add (Const 2, Const 3)) in
+    let actual = {%intro| 1 * (2 + 3) |} in
+    Alcotest.(check syntax) same_expr expected actual
 end
 
 module Test_simplify = struct
-  let read_simplify (s : string) : Syntax.t option =
-    Input.parse_string s |> Option.map Semantics.simplify
-
   let add_0x () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| 0 + x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| 0 + x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let add_x0 () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| x + 0 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| x + 0 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let sub () =
-    let expected : Syntax.t option = Some (Const 1) in
-    let actual = read_simplify {| 3 - 2 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 1 in
+    let actual = Semantics.simplify {%intro| 3 - 2 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let sub_x0 () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| x - 0 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| x - 0 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let sub_xx () =
-    let expected : Syntax.t option = Some (Const 0) in
-    let actual = read_simplify {| x - x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 0 in
+    let actual = Semantics.simplify {%intro| x - x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul () =
-    let expected : Syntax.t option = Some (Const 12) in
-    let actual = read_simplify {| 3 * 4 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 12 in
+    let actual = Semantics.simplify {%intro| 3 * 4 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul_0x () =
-    let expected : Syntax.t option = Some (Const 0) in
-    let actual = read_simplify {| 0 * x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 0 in
+    let actual = Semantics.simplify {%intro| 0 * x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul_x0 () =
-    let expected : Syntax.t option = Some (Const 0) in
-    let actual = read_simplify {| x * 0 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 0 in
+    let actual = Semantics.simplify {%intro| x * 0 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul_1x () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| 1 * x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| 1 * x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let mul_x1 () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| x * 1 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| x * 1 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp () =
-    let expected : Syntax.t option = Some (Const 8) in
-    let actual = read_simplify {| 2 ^ 3 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 8 in
+    let actual = Semantics.simplify {%intro| 2 ^ 3 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp_0x () =
-    let expected : Syntax.t option = Some (Const 0) in
-    let actual = read_simplify {| 0 ^ x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 0 in
+    let actual = Semantics.simplify {%intro| 0 ^ x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp_x0 () =
-    let expected : Syntax.t option = Some (Const 1) in
-    let actual = read_simplify {| x ^ 0 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 1 in
+    let actual = Semantics.simplify {%intro| x ^ 0 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp_1x () =
-    let expected : Syntax.t option = Some (Const 1) in
-    let actual = read_simplify {| 1 ^ x |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 1 in
+    let actual = Semantics.simplify {%intro| 1 ^ x |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let exp_x1 () =
-    let expected : Syntax.t option = Some (Var "x") in
-    let actual = read_simplify {| x ^ 1 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Var "x" in
+    let actual = Semantics.simplify {%intro| x ^ 1 |} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let neg () =
-    let expected : Syntax.t option = Some (Const 0) in
-    let actual = read_simplify {| x - - - x|} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 0 in
+    let actual = Semantics.simplify {%intro| x - - - x|} in
+    Alcotest.(check syntax) same_expr expected actual
 
   let example () =
-    let expected : Syntax.t option = Some (Const 15) in
-    let actual = read_simplify {| (0 * x + 1) * 3 + 12 |} in
-    Alcotest.(check (option syntax)) same_expr expected actual
+    let expected : Syntax.t = Const 15 in
+    let actual = Semantics.simplify {%intro| (0 * x + 1) * 3 + 12 |} in
+    Alcotest.(check syntax) same_expr expected actual
 end
 
 let intro_tests =

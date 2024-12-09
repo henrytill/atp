@@ -6,6 +6,7 @@ type t =
   | Sub of t * t
   | Mul of t * t
   | Exp of t * t
+  | Metavar of string
 
 let pp_ast fmt expr =
   let open Format in
@@ -24,6 +25,7 @@ let pp_ast fmt expr =
     | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
     | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
     | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
+    | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
   and wrapped fmt fm = go true fmt fm
   and unwrapped fmt fm = go false fmt fm in
   fprintf fmt "@[<hv 1>%a@]" wrapped expr
@@ -38,6 +40,7 @@ let rec pp fmt expr =
   | Sub (a, b) -> fprintf fmt "@[<h>(%a@ -@ %a)@]" pp a pp b
   | Mul (a, b) -> fprintf fmt "@[<h>(%a@ *@ %a)@]" pp a pp b
   | Exp (a, b) -> fprintf fmt "@[<h>(%a@ ^@ %a)@]" pp a pp b
+  | Metavar s -> fprintf fmt "@[<h>$%s]" s
 
 let rec equal e1 e2 =
   match (e1, e2) with

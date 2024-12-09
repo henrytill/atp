@@ -1,5 +1,9 @@
 {
 open Parser
+
+let drop start buf =
+  let len = String.length buf - start in
+  String.sub buf start len
 }
 
 let int = (['0'-'9']+)
@@ -11,7 +15,8 @@ rule token = parse
   | white   { token lexbuf }
   | newline { Lexing.new_line lexbuf; token lexbuf }
   | int     { NUMERAL (int_of_string (Lexing.lexeme lexbuf)) }
-  | id      { VARIABLE (Lexing.lexeme lexbuf) }
+  | '$' id  { METAVAR (drop 1 (Lexing.lexeme lexbuf)) }
+  | id      { VAR (Lexing.lexeme lexbuf) }
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }

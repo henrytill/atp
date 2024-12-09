@@ -4,7 +4,8 @@ open Syntax
 
 /* Lexemes */
 %token <int> NUMERAL
-%token <string> VARIABLE
+%token <string> METAVAR
+%token <string> VAR
 %token PLUS
 %token MINUS
 %token TIMES
@@ -35,7 +36,8 @@ toplevel:
 ;
 
 expression:
-  | x = VARIABLE                          { Var x }
+  | v = METAVAR                           { Metavar v }
+  | x = VAR                               { Var x }
   | n = NUMERAL                           { Const n }
   | e1 = expression EXP   e2 = expression { Exp (e1, e2) }
   | e1 = expression TIMES e2 = expression { Mul (e1, e2) }

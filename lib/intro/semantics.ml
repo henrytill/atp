@@ -29,6 +29,7 @@ let simplify1 count expr =
   | Exp (Const m, Const n) -> Const (pow m n)
   | Neg (Neg x) -> x
   | Neg (Const m) -> Const (-m)
+  | Metavar _ -> failwith "metavariable"
   | _ -> expr
 
 let simplify_with_count expr =
@@ -54,6 +55,7 @@ let simplify_with_count expr =
     | Neg (Neg x) -> simply x
     | Neg x -> simplify1 count (Neg (go x))
     | Const _ | Var _ -> expr
+    | Metavar _ -> failwith "metavariable"
   in
   let ret = go expr in
   (ret, !count)
