@@ -10,6 +10,7 @@ let rec eval fm v =
   | Imp (p, q) -> (not (eval p v)) || eval q v
   | Iff (p, q) -> Bool.equal (eval p v) (eval q v)
   | Forall _ | Exists _ -> failwith "unimplemented"
+  | Metavar _ -> failwith "metavariable"
 
 let rec onatoms f fm =
   let open Syntax.Formula in
@@ -24,6 +25,7 @@ let rec onatoms f fm =
   | Iff (p, q) -> Iff (onatoms f p, onatoms f q)
   | Forall (x, p) -> Forall (x, onatoms f p)
   | Exists (x, p) -> Exists (x, onatoms f p)
+  | Metavar _ -> failwith "metavariable"
 
 let rec overatoms f fm b =
   let open Syntax.Formula in
@@ -33,6 +35,7 @@ let rec overatoms f fm b =
   | Not p -> overatoms f p b
   | And (p, q) | Or (p, q) | Imp (p, q) | Iff (p, q) -> overatoms f p (overatoms f q b)
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
+  | Metavar _ -> failwith "metavariable"
 
 module type ATOM_TYPE = sig
   type t

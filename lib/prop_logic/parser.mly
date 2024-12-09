@@ -4,6 +4,7 @@ open Syntax
 
 /* Lexemes */
 %token <string> ATOM
+%token <string> METAVAR
 %token FALSE
 %token TRUE
 %token NOT
@@ -37,6 +38,7 @@ toplevel:
 
 formula:
   | a = ATOM                      { Atom (Prop.inj a) }
+  | v = METAVAR                   { Metavar v }
   | FALSE                         { False }
   | TRUE                          { True }
   | f1 = formula AND f2 = formula { And (f1, f2) }

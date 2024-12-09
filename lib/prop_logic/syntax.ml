@@ -23,6 +23,7 @@ module Formula = struct
     | Iff of 'a t * 'a t
     | Forall of string * 'a t
     | Exists of string * 'a t
+    | Metavar of string
 
   let pp_ast atom_pp_ast fmt fm =
     let open Format in
@@ -47,6 +48,7 @@ module Formula = struct
       | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" unwrapped p unwrapped q
       | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x unwrapped p
       | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x unwrapped p
+      | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
     and wrapped fmt fm = go true fmt fm
     and unwrapped fmt fm = go false fmt fm in
     match fm with
@@ -66,6 +68,7 @@ module Formula = struct
       | Imp (p, q) -> fprintf fmt "@[<hv 1>(%a ==>@;<1 0>%a)@]" go p go q
       | Iff (p, q) -> fprintf fmt "@[<hv 1>(%a <=>@;<1 0>%a)@]" go p go q
       | Forall _ | Exists _ -> failwith "unimplemented"
+      | Metavar s -> fprintf fmt "@[<h>$%s]" s
     in
     go fmt fm
 

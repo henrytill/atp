@@ -18,6 +18,7 @@ let rec formula_to_expr ~loc =
   | Imp (p, q) -> [%expr Imp ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
   | Iff (p, q) -> [%expr Iff ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
   | Forall _ | Exists _ -> Location.raise_errorf ~loc "Quantifiers are not supported"
+  | Metavar s -> Ast_builder.Default.evar ~loc s
 
 let expand ~loc ~path:_ s =
   match Prop_logic.Input.parse_string s with

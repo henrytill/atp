@@ -23,6 +23,7 @@ module Formula : sig
     | Iff of 'a t * 'a t
     | Forall of string * 'a t
     | Exists of string * 'a t
+    | Metavar of string
 
   val pp_ast : (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
   val pp : (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit

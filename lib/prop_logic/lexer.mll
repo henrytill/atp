@@ -1,5 +1,9 @@
 {
 open Parser
+
+let drop start buf =
+  let len = String.length buf - start in
+  String.sub buf start len
 }
 
 let id = (['a'-'z' 'A'-'Z']+ ['a'-'z' 'A'-'Z' '0'-'9']*)
@@ -8,6 +12,7 @@ let newline = '\r' | '\n' | "\r\n"
 
 rule token = parse
   | white   { token lexbuf }
+  | '$' id  { METAVAR (drop 1 (Lexing.lexeme lexbuf)) }
   | newline { Lexing.new_line lexbuf; token lexbuf }
   | "false" { FALSE }
   | "true"  { TRUE }
