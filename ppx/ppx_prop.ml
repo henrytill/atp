@@ -1,12 +1,12 @@
 open Ppxlib
 
-let atom_to_expr ~loc p =
+let atom_to_expr ~(loc : location) (p : Prop_logic.Syntax.Prop.t) : expression =
   [%expr
     Atom
       (Prop_logic.Syntax.Prop.inj
          [%e Ast_builder.Default.estring ~loc (Prop_logic.Syntax.Prop.prj p)])]
 
-let rec formula_to_expr ~loc =
+let rec formula_to_expr ~(loc : location) : Prop_logic.Syntax.t -> expression =
   let open Prop_logic.Syntax.Formula in
   function
   | Atom p -> atom_to_expr ~loc p
