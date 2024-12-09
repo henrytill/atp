@@ -17,7 +17,10 @@ let rec formula_to_expr ~(loc : location) : Prop_logic.Syntax.t -> expression =
   | Or (p, q) -> [%expr Or ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
   | Imp (p, q) -> [%expr Imp ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
   | Iff (p, q) -> [%expr Iff ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
-  | Forall _ | Exists _ -> Location.raise_errorf ~loc "Quantifiers are not supported"
+  | Forall (x, p) ->
+      [%expr Forall ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
+  | Exists (x, p) ->
+      [%expr Exists ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
   | Metavar s -> Ast_builder.Default.evar ~loc s
 
 let expand ~loc ~path:_ s =
