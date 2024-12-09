@@ -7,5 +7,12 @@
 
 (test
  (name ppx_prop_test)
- (libraries atp.prop_logic)
- (preprocess (pps atp.ppx_prop)))
+ (modules ppx_prop_test)
+ (libraries prop_logic)
+ (preprocess (pps ppx_prop)))
+
+(test
+ (name prop_logic_test)
+ (modules prop_logic_test)
+ (libraries alcotest prop_logic)
+ (preprocess (pps ppx_prop)))
