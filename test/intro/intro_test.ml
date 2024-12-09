@@ -1,6 +1,6 @@
 open Intro
 
-let syntax = Alcotest.testable Syntax.pp Syntax.equal
+let syntax = Alcotest.testable Syntax.pp_ast Syntax.equal
 let same_expr = "same expression"
 
 module Test_parse = struct
@@ -176,6 +176,93 @@ module Test_simplify = struct
     Alcotest.(check syntax) same_expr expected actual
 end
 
+module Test_count = struct
+  let var () =
+    let expected : Syntax.t * int = (Var "a", 1) in
+    let actual = Semantics.simplify_with_count {%intro| a |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let add_1_1 () =
+    let expected : Syntax.t * int = (Const 2, 4) in
+    let actual = Semantics.simplify_with_count {%intro| 1 + 1 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let mul_compound () =
+    let expected : Syntax.t * int = (Const 21, 10) in
+    let actual = Semantics.simplify_with_count {%intro| (1 + 2) * (3 + 4) |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let add_0_x () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| 0 + x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let add_x_0 () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| x + 0 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let sub_x_0 () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| x - 0 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let sub_x_x () =
+    let expected : Syntax.t * int = (Const 0, 1) in
+    let actual = Semantics.simplify_with_count {%intro| x - x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let mul_0_x () =
+    let expected : Syntax.t * int = (Const 0, 1) in
+    let actual = Semantics.simplify_with_count {%intro| 0 * x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let mul_x_0 () =
+    let expected : Syntax.t * int = (Const 0, 1) in
+    let actual = Semantics.simplify_with_count {%intro| x * 0 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let mul_1_x () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| 1 * x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let mul_x_1 () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| x * 1 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let exp_0_x () =
+    let expected : Syntax.t * int = (Const 0, 1) in
+    let actual = Semantics.simplify_with_count {%intro| 0 ^ x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let exp_x_0 () =
+    let expected : Syntax.t * int = (Const 1, 1) in
+    let actual = Semantics.simplify_with_count {%intro| x ^ 0 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let exp_1_x () =
+    let expected : Syntax.t * int = (Const 1, 1) in
+    let actual = Semantics.simplify_with_count {%intro| 1 ^ x |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let exp_x_1 () =
+    let expected : Syntax.t * int = (Var "x", 3) in
+    let actual = Semantics.simplify_with_count {%intro| x ^ 1 |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let add_compound () =
+    let expected : Syntax.t * int = (Const 0, 5) in
+    let actual = Semantics.simplify_with_count {%intro| 0 + (0 + (1 - 1)) |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+
+  let neg_compound () =
+    let expected : Syntax.t * int = (Const 0, 3) in
+    let actual = Semantics.simplify_with_count {%intro| (- - (1 - 1)) |} in
+    Alcotest.(check (pair syntax int)) same_expr expected actual
+end
+
 let intro_tests =
   let open Alcotest in
   [
@@ -220,6 +307,26 @@ let intro_tests =
         test_case "Simplify x ^ 1" `Quick Test_simplify.exp_x1;
         test_case "Simplify neg" `Quick Test_simplify.neg;
         test_case "Simplify example" `Quick Test_simplify.example;
+      ] );
+    ( "Test_count",
+      [
+        test_case "Simplify a" `Quick Test_count.var;
+        test_case "Simplify 1 + 1" `Quick Test_count.add_1_1;
+        test_case "Simplify (1 + 2) * (3 + 4)" `Quick Test_count.mul_compound;
+        test_case "Simplify 0 + x" `Quick Test_count.add_0_x;
+        test_case "Simplify x + 0" `Quick Test_count.add_x_0;
+        test_case "Simplify x - 0" `Quick Test_count.sub_x_0;
+        test_case "Simplify x - x" `Quick Test_count.sub_x_x;
+        test_case "Simplify 0 * x" `Quick Test_count.mul_0_x;
+        test_case "Simplify x * 0" `Quick Test_count.mul_x_0;
+        test_case "Simplify 1 * x" `Quick Test_count.mul_1_x;
+        test_case "Simplify x * 1" `Quick Test_count.mul_x_1;
+        test_case "Simplify 0 ^ x" `Quick Test_count.exp_0_x;
+        test_case "Simplify x ^ 0" `Quick Test_count.exp_x_0;
+        test_case "Simplify 1 ^ x" `Quick Test_count.exp_1_x;
+        test_case "Simplify x ^ 1" `Quick Test_count.exp_x_1;
+        test_case "Simplify 0 + (0 + (1 - 1))" `Quick Test_count.add_compound;
+        test_case "Simplify (- - (1 - 1))" `Quick Test_count.neg_compound;
       ] );
   ]
 
