@@ -12,8 +12,8 @@ let newline = '\r' | '\n' | "\r\n"
 
 rule token = parse
   | white   { token lexbuf }
-  | '$' id  { METAVAR (drop 1 (Lexing.lexeme lexbuf)) }
   | newline { Lexing.new_line lexbuf; token lexbuf }
+  | '$' id  { METAVAR (drop 1 (Lexing.lexeme lexbuf)) }
   | "false" { FALSE }
   | "true"  { TRUE }
   | id      { ATOM (Lexing.lexeme lexbuf) }
