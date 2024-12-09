@@ -2,25 +2,35 @@ open Ppxlib
 
 let atom_to_expr ~(loc : location) (p : Prop_logic.Syntax.Prop.t) : expression =
   [%expr
-    Atom
+    Prop_logic.Syntax.Formula.Atom
       (Prop_logic.Syntax.Prop.inj
          [%e Ast_builder.Default.estring ~loc (Prop_logic.Syntax.Prop.prj p)])]
 
-let rec formula_to_expr ~(loc : location) : Prop_logic.Syntax.t -> expression =
-  let open Prop_logic.Syntax.Formula in
-  function
+let rec formula_to_expr ~(loc : location) : Prop_logic.Syntax.t -> expression = function
   | Atom p -> atom_to_expr ~loc p
-  | False -> [%expr False]
-  | True -> [%expr True]
-  | Not p -> [%expr Not [%e formula_to_expr ~loc p]]
-  | And (p, q) -> [%expr And ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
-  | Or (p, q) -> [%expr Or ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
-  | Imp (p, q) -> [%expr Imp ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
-  | Iff (p, q) -> [%expr Iff ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
+  | False -> [%expr Prop_logic.Syntax.Formula.False]
+  | True -> [%expr Prop_logic.Syntax.Formula.True]
+  | Not p -> [%expr Prop_logic.Syntax.Formula.Not [%e formula_to_expr ~loc p]]
+  | And (p, q) ->
+      [%expr
+        Prop_logic.Syntax.Formula.And ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
+  | Or (p, q) ->
+      [%expr
+        Prop_logic.Syntax.Formula.Or ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
+  | Imp (p, q) ->
+      [%expr
+        Prop_logic.Syntax.Formula.Imp ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
+  | Iff (p, q) ->
+      [%expr
+        Prop_logic.Syntax.Formula.Iff ([%e formula_to_expr ~loc p], [%e formula_to_expr ~loc q])]
   | Forall (x, p) ->
-      [%expr Forall ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
+      [%expr
+        Prop_logic.Syntax.Formula.Forall
+          ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
   | Exists (x, p) ->
-      [%expr Exists ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
+      [%expr
+        Prop_logic.Syntax.Formula.Exists
+          ([%e Ast_builder.Default.estring ~loc x], [%e formula_to_expr ~loc p])]
   | Metavar s -> Ast_builder.Default.evar ~loc s
 
 let expand ~loc ~path:_ s =
