@@ -13,7 +13,7 @@
 
 (authors "Henry Till <henrytill@gmail.com>")
 
-(maintainers "Maintainer Name")
+(maintainers "Henry Till <henrytill@gmail.com>")
 
 (license Unlicense)
 
