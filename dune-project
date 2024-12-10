@@ -23,7 +23,8 @@
  (description
   "Work from Harrison's \"Handbook of Practical Logic and Automated Reasoning\"")
  (depends
-  ocaml
+  (ocaml
+   (>= 5.2.0))
   dune
   menhir
   (alcotest
