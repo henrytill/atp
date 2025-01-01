@@ -34,10 +34,11 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         on = opam-nix.lib.${system};
-        scope = on.buildOpamProject { resolveArgs.with-test = true; } package ./. {
-          ocaml-base-compiler = "5.2.0";
-        };
-        overlay = final: prev: { atp = prev.atp.overrideAttrs (as: { }); };
+        scope = on.buildOpamProject {
+          resolveArgs.with-test = true;
+          resolveArgs.with-doc = true;
+        } package ./. { ocaml-base-compiler = "5.2.0"; };
+        overlay = final: prev: { ${package} = prev.${package}.overrideAttrs (as: { }); };
       in
       {
         legacyPackages = scope.overrideScope overlay;
