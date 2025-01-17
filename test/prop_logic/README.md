@@ -156,8 +156,8 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 ### Internals
 
 ```ocaml
-# module Int_operations = Semantics_internal.Make (Int);;
-module Int_operations :
+# module Int_semantics = Semantics_internal.Make (Int);;
+module Int_semantics :
   sig
     val setify : int list -> int list
     val atom_union : ('a -> int list) -> 'a Syntax.Formula.t -> int list
@@ -194,12 +194,12 @@ module Int_operations :
 ```
 
 ```ocaml
-# Int_operations.setify [ 1; 2; 3; 1; 4; 3 ];;
+# Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
 ```ocaml
-# Int_operations.setify [ 4; 3; 2; 1 ];;
+# Int_semantics.setify [ 4; 3; 2; 1 ];;
 - : int list = [1; 2; 3; 4]
 ```
 
