@@ -1,6 +1,7 @@
 # Prop_logic
 
 ```ocaml
+# #require "atp.ppx_prop";;
 # #require "atp.prop_logic";;
 # open Prop_logic;;
 ```
@@ -106,12 +107,6 @@ $p \implies q \implies r$
 
 ### Evaluation
 
-```ocaml
-# let read_eval (s : string) (v : Syntax.Prop.t -> bool) : bool option =
-    Input.parse_string s |> Option.map (fun fm -> Semantics.eval fm v);;
-val read_eval : string -> (Syntax.Prop.t -> bool) -> bool option = <fun>
-```
-
 $v〚p〛= \text{true}$
 
 $v〚q〛= \text{false}$
@@ -131,8 +126,8 @@ val v : Syntax.Prop.t -> bool = <fun>
 $〚p \land q \implies q \land r〛_v = \text{true}$
 
 ```ocaml
-# read_eval {| p /\ q ==> q /\ r |} v;;
-- : bool option = Some true
+# Semantics.eval {%prop| p /\ q ==> q /\ r |} v;;
+- : bool = true
 ```
 
 $v〚p〛= \text{true}$
@@ -154,8 +149,8 @@ val v : Syntax.Prop.t -> bool = <fun>
 $〚p \land q \implies q \land r〛_v = \text{false}$
 
 ```ocaml
-# read_eval {| p /\ q ==> q /\ r |} v;;
-- : bool option = Some false
+# Semantics.eval {%prop| p /\ q ==> q /\ r |} v;;
+- : bool = false
 ```
 
 ### Internals
@@ -209,25 +204,21 @@ module Int_operations :
 ```
 
 ```ocaml
-# let read_atoms s = Input.parse_string s |> Option.map Semantics.atoms in
-  read_atoms {| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
-- : Syntax.Prop.t list option = Some ["p"; "q"; "r"; "s"]
+# Semantics.atoms {%prop| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
+- : Syntax.Prop.t list = ["p"; "q"; "r"; "s"]
 ```
 
 ### Truth Tables
 
 ```ocaml
-# let print_truthtable s =
-    Input.parse_string s
-    |> Option.iter
-    @@ Semantics.print_truthtable Format.std_formatter;;
-val print_truthtable : string -> unit = <fun>
+# let print_truthtable = Semantics.print_truthtable Format.std_formatter;;
+val print_truthtable : Syntax.t -> unit = <fun>
 ```
 
 $p \implies q$
 
 ```ocaml
-# print_truthtable {| p ==> q |};;
+# print_truthtable {%prop| p ==> q |};;
 p     q     | formula
 ---------------------
 false false | true
@@ -241,7 +232,7 @@ true  true  | true
 $p \land q \implies q$
 
 ```ocaml
-# print_truthtable {| p /\ q ==> q |};;
+# print_truthtable {%prop| p /\ q ==> q |};;
 p     q     | formula
 ---------------------
 false false | true
@@ -255,7 +246,7 @@ true  true  | true
 $p \land q \implies q \land r$
 
 ```ocaml
-# print_truthtable {| p /\ q ==> q /\ r |};;
+# print_truthtable {%prop| p /\ q ==> q /\ r |};;
 p     q     r     | formula
 ---------------------------
 false false false | true
@@ -275,7 +266,7 @@ true  true  true  | true
 $p \implies q \implies r$
 
 ```ocaml
-# print_truthtable {| p ==> q ==> r |};;
+# print_truthtable {%prop| p ==> q ==> r |};;
 p     q     r     | formula
 ---------------------------
 false false false | true
@@ -295,7 +286,7 @@ true  true  true  | true
 $((p \implies q) \implies p) \implies p$
 
 ```ocaml
-# print_truthtable {| ((p ==> q) ==> p) ==> p |};;
+# print_truthtable {%prop| ((p ==> q) ==> p) ==> p |};;
 p     q     | formula
 ---------------------
 false false | true
@@ -311,7 +302,7 @@ true  true  | true
 $p \land \lnot p$
 
 ```ocaml
-# print_truthtable {| p /\ ~p |};;
+# print_truthtable {%prop| p /\ ~p |};;
 p     | formula
 ---------------
 false | false
@@ -325,7 +316,7 @@ true  | false
 $(p \lor q \land r) \land (\lnot p \lor \lnot r)$
 
 ```ocaml
-# print_truthtable {| (p \/ q /\ r) /\ (~p \/ ~r) |};;
+# print_truthtable {%prop| (p \/ q /\ r) /\ (~p \/ ~r) |};;
 p     q     r     | formula
 ---------------------------
 false false false | false
@@ -342,64 +333,49 @@ true  true  true  | false
 
 ### Tautology
 
-```ocaml
-# let taut s = Input.parse_string s |> Option.map Semantics.tautology;;
-val taut : string -> bool option = <fun>
-```
-
 $\forall v. 〚\top \iff \bot \implies \bot〛_v = \text{true}$
 
 ```ocaml
-# taut {| true <=> false ==> false |};;
-- : bool option = Some true
+# Semantics.tautology {%prop| true <=> false ==> false |};;
+- : bool = true
 ```
 
 $\forall v. 〚\neg p \iff p \implies \bot〛_v = \text{true}$
 
 ```ocaml
-# taut {| ~p <=> p ==> false |};;
-- : bool option = Some true
+# Semantics.tautology {%prop| ~p <=> p ==> false |};;
+- : bool = true
 ```
 
 $\forall v. 〚p \land q \iff (p \implies q \implies \bot) \implies \bot〛_v = \text{true}$
 
 ```ocaml
-# taut {| p /\ q <=> (p ==> q ==> false) ==> false |};;
-- : bool option = Some true
+# Semantics.tautology {%prop| p /\ q <=> (p ==> q ==> false) ==> false |};;
+- : bool = true
 ```
 
 $\forall v. 〚p \lor q \iff (p \implies \bot) \implies q〛_v = \text{true}$
 
 ```ocaml
-# taut {| p \/ q <=> (p ==> false) ==> q |};;
-- : bool option = Some true
+# Semantics.tautology {%prop| p \/ q <=> (p ==> false) ==> q |};;
+- : bool = true
 ```
 
 $\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies \bot) \implies \bot〛_v = \text{true}$
 
 ```ocaml
-# taut {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};;
-- : bool option = Some true
+# Semantics.tautology {%prop| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};;
+- : bool = true
 ```
 
 ### Substitution
 
 ```ocaml
-# let form s = Input.parse_string s |> Option.get;;
-val form : string -> Syntax.t = <fun>
-```
-
-```ocaml
-# form {| p /\ q /\ p /\ q |};;
-- : Syntax.t = (And (Atom "p", And (Atom "q", And (Atom "p", Atom "q"))))
-```
-
-```ocaml
 # let p = Syntax.Prop.inj "p";;
 val p : Syntax.Prop.t = "p"
-# let f = Semantics.Function.(p |=> form {| p /\ q |});;
-val f : Syntax.t Semantics.Function.t = <abstr>
-# Semantics.psubst f (form {| p /\ q /\ p /\ q |});;
+# let f = Semantics.Function.(p |=> {%prop| p /\ q |});;
+val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
+# Semantics.psubst f {%prop| p /\ q /\ p /\ q |};;
 - : Syntax.t =
 (And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
 ```

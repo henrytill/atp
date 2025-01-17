@@ -1,6 +1,7 @@
 (mdx
  (deps
-  (package atp)))
+  (package atp))
+ (libraries ppx_prop))
 
 (test
  (name ppx_prop_test)
