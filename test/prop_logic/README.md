@@ -390,16 +390,16 @@ val form : string -> Syntax.t = <fun>
 ```
 
 ```ocaml
-# form {|p /\ q /\ p /\ q|};;
+# form {| p /\ q /\ p /\ q |};;
 - : Syntax.t = (And (Atom "p", And (Atom "q", And (Atom "p", Atom "q"))))
 ```
 
 ```ocaml
 # let p = Syntax.Prop.inj "p";;
 val p : Syntax.Prop.t = "p"
-# let f = Semantics.Function.(p |=> form {|p /\ q|});;
+# let f = Semantics.Function.(p |=> form {| p /\ q |});;
 val f : Syntax.t Semantics.Function.t = <abstr>
-# Semantics.psubst f (form {|p /\ q /\ p /\ q|});;
+# Semantics.psubst f (form {| p /\ q /\ p /\ q |});;
 - : Syntax.t =
 (And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
 ```
