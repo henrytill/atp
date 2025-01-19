@@ -371,9 +371,9 @@ $\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies 
 ### Substitution
 
 ```ocaml
-# let p = Syntax.Prop.inj "p";;
-val p : Syntax.Prop.t = "p"
-# let f = Semantics.Function.(p |=> {%prop| p /\ q |});;
+# let f =
+    let p = Syntax.Prop.inj "p" in
+    Semantics.Function.(p |=> {%prop| p /\ q |});;
 val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
 # Semantics.psubst f {%prop| p /\ q /\ p /\ q |};;
 - : Syntax.t =
