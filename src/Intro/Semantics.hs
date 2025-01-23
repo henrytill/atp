@@ -72,7 +72,7 @@ simpl ref expr = do
     Neg x -> neg x
     Const m -> constant m
     Var a -> return (Var a)
-    MetaVar _ -> undefined
+    MetaVar a -> return (MetaVar a)
   where
     binary f x y = f <$> simpl ref x <*> simpl ref y >>= simplify1 ref
     add = binary Add
