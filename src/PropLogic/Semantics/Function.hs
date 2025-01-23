@@ -1,4 +1,4 @@
-module PropLogic.Semantics.Func where
+module PropLogic.Semantics.Function where
 
 import Data.Bits
 import Data.Hashable (Hashable, hash)
@@ -6,14 +6,14 @@ import Data.Maybe (fromMaybe)
 import Prelude hiding (undefined)
 
 -- Polymorphic finite partial functions via Patricia trees
-data Func a b
+data Function a b
   = Empty
   | Leaf Int [(a, b)]
-  | Branch Int Int (Func a b) (Func a b)
+  | Branch Int Int (Function a b) (Function a b)
   deriving (Eq, Show)
 
 -- Create a new branch node while maintaining Patricia tree invariants
-mkBranch :: Int -> Func a b -> Int -> Func a b -> Func a b
+mkBranch :: Int -> Function a b -> Int -> Function a b -> Function a b
 mkBranch p1 t1 p2 t2 =
   let zp = p1 `xor` p2 -- Find differing bits between prefixes
       b = zp .&. (-zp) -- Find lowest differing bit aka the branching bit
@@ -22,14 +22,14 @@ mkBranch p1 t1 p2 t2 =
         then Branch p b t1 t2 -- p1 has 0 in branching position
         else Branch p b t2 t1 -- p1 has 1 in branching position
 
-undefined :: Func a b
+undefined :: Function a b
 undefined = Empty
 
-isUndefined :: Func a b -> Bool
+isUndefined :: Function a b -> Bool
 isUndefined Empty = False
 isUndefined _ = True
 
-applyWithDefault :: (Hashable a) => Func a b -> (a -> b) -> a -> b
+applyWithDefault :: (Hashable a) => Function a b -> (a -> b) -> a -> b
 applyWithDefault f def x = look f
   where
     k = hash x -- Get hash of the key
@@ -41,10 +41,10 @@ applyWithDefault f def x = look f
       | (k `xor` p) .&. (b - 1) == 0 = look (if k .&. b == 0 then left else right)
       | otherwise = def x
 
-tryApplyWithDefault :: (Hashable a) => Func a b -> a -> b -> b
+tryApplyWithDefault :: (Hashable a) => Function a b -> a -> b -> b
 tryApplyWithDefault f a def = applyWithDefault f (const def) a
 
-apply :: (Hashable a) => Func a b -> a -> b
+apply :: (Hashable a) => Function a b -> a -> b
 apply f = applyWithDefault f (\_ -> error "apply")
 
 updateAssocList :: (Ord k) => k -> v -> [(k, v)] -> [(k, v)]
@@ -56,7 +56,7 @@ updateAssocList k v pairs@((k', v') : rest) =
     GT -> (k', v') : updateAssocList k v rest
 
 -- Insert or update a value in the function
-insert :: (Ord k, Hashable k) => k -> v -> Func k v -> Func k v
+insert :: (Ord k, Hashable k) => k -> v -> Function k v -> Function k v
 insert x y = update (hash x)
   where
     update k Empty = Leaf k [(x, y)]
@@ -69,9 +69,9 @@ insert x y = update (hash x)
       | otherwise = Branch p b left (update k right)
 
 -- Basic insert operator
-(|->) :: (Ord k, Hashable k) => k -> v -> Func k v -> Func k v
+(|->) :: (Ord k, Hashable k) => k -> v -> Function k v -> Function k v
 (|->) = insert
 
 -- Create a function defined at a single point (undefined elsewhere)
-(|=>) :: (Ord k, Hashable k) => k -> v -> Func k v
+(|=>) :: (Ord k, Hashable k) => k -> v -> Function k v
 x |=> y = (x |-> y) undefined

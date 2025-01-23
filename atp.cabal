@@ -27,7 +27,7 @@ library
                          PropLogic.Parser
                          PropLogic.Quote
                          PropLogic.Semantics
-                         PropLogic.Semantics.Func
+                         PropLogic.Semantics.Function
                          PropLogic.Syntax
     -- other-modules:
     -- other-extensions:

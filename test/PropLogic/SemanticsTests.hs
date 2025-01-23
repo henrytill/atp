@@ -5,7 +5,7 @@ module PropLogic.SemanticsTests where
 
 import PropLogic.Quote (prop)
 import PropLogic.Semantics
-import PropLogic.Semantics.Func ((|=>))
+import PropLogic.Semantics.Function ((|=>))
 import PropLogic.Syntax (Prop (MkProp))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))

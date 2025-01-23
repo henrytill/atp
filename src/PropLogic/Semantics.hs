@@ -9,7 +9,7 @@ import Data.List qualified as List
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
 import Data.Monoid (All (..))
-import PropLogic.Semantics.Func (Func, tryApplyWithDefault)
+import PropLogic.Semantics.Function (Function, tryApplyWithDefault)
 import PropLogic.Syntax (Atoms (..), Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
@@ -110,5 +110,5 @@ satisfiable :: Formula Prop -> Bool
 satisfiable = not . unsatisfiable
 
 -- | Substitutes atoms according to a partial function mapping
-psubst :: (Ord a, Hashable a) => Func a (Formula a) -> Formula a -> Formula a
+psubst :: (Ord a, Hashable a) => Function a (Formula a) -> Formula a -> Formula a
 psubst subfn = onAtoms $ \p -> tryApplyWithDefault subfn p (FmAtom p)
