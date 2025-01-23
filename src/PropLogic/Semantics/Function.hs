@@ -32,7 +32,7 @@ isUndefined _ = True
 applyWithDefault :: (Hashable a) => Function a b -> (a -> b) -> a -> b
 applyWithDefault f def x = look f
   where
-    k = hash x -- Get hash of the key
+    k = hash x
     look Empty = def x
     look (Leaf h pairs)
       | h == k = fromMaybe (def x) (lookup x pairs)
