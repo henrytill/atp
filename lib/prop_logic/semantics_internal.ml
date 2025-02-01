@@ -138,6 +138,7 @@ module Make (Atom : ATOM_TYPE) = struct
 
     let rec define_list ((x, _) as xy) l =
       match l with
+      | [] -> [ xy ]
       | ((a, _) as ab) :: t ->
           let c = Atom.compare x a in
           if c = 0 then
@@ -146,7 +147,6 @@ module Make (Atom : ATOM_TYPE) = struct
             xy :: l
           else
             ab :: define_list xy t
-      | [] -> [ xy ]
 
     let ( |-> ) x y =
       let k = Atom.hash x in
