@@ -44,17 +44,6 @@ library
     default-language:    Haskell98
     default-extensions:  ImportQualifiedPost
 
-executable atp
-    import:              warnings
-    main-is:             Main.hs
-    -- other-modules:
-    -- other-extensions:
-    build-depends:       base >=4.17 && <5,
-                         atp
-    hs-source-dirs:      exe
-    default-language:    Haskell98
-    default-extensions:  ImportQualifiedPost
-
 test-suite atp-test
     import:              warnings
     main-is:             Main.hs
