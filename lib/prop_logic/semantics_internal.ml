@@ -136,7 +136,7 @@ module Make (Atom : ATOM_TYPE) = struct
       else
         Branch (p, b, t2, t1)
 
-    let rec define_list ((x, _) as xy) l =
+    let[@tail_mod_cons] rec define_list ((x, _) as xy) l =
       match l with
       | [] -> [ xy ]
       | ((a, _) as ab) :: t ->
