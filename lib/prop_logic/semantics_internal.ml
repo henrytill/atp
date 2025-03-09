@@ -53,9 +53,11 @@ module Make (Atom : ATOM_TYPE) = struct
   let onallvaluations (subfn : (Atom.t -> bool) -> 'a) (ats : Atom.t list) : 'a Seq.t =
     let module Atom_map = Map.Make (Atom) in
     let ats_len = List.length ats in
-    let offset_table =
-      List.fold_left (fun (i, m) a -> (i - 1, Atom_map.add a i m)) (ats_len - 1, Atom_map.empty) ats
-      |> snd
+    let _, offset_table =
+      List.fold_left
+        (fun (i, m) a -> (pred i, Atom_map.add a i m))
+        (pred ats_len, Atom_map.empty)
+        ats
     in
     let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
     let num_valuations = Int.shift_left 1 ats_len in
@@ -68,7 +70,8 @@ module Make (Atom : ATOM_TYPE) = struct
     let open Format in
     let ats = atoms fm in
     let width =
-      List.fold_right (fun x -> Int.max (String.length (Atom.to_string x))) ats false_len + 1
+      let f a = Atom.to_string a |> String.length |> Int.max in
+      succ (List.fold_right f ats false_len)
     in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
     let truthstring p = fixw (string_of_bool p) in
