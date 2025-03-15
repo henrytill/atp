@@ -15,9 +15,14 @@ let simplify1 count expr =
   match expr with
   | Add (Const 0, x) | Add (x, Const 0) -> x
   | Add (Const m, Const n) -> Const (m + n)
+  | (Add (Sub (e, Const m), Const n) | Add (Const m, Sub (e, Const n))) when m = n -> e
+  | Add (Add (e, Const m), Const n) | Add (Const m, Add (e, Const n)) -> Add (e, Const (m + n))
   | Sub (x, Const 0) -> x
   | Sub (x, y) when equal x y -> Const 0
   | Sub (Const m, Const n) -> Const (m - n)
+  | Sub (Add (e, Const m), Const n) when m = n -> e
+  | Sub (Const m, Add (e, Const n)) when m = n -> Neg e
+  | Sub (Sub (e, Const m), Const n) -> Sub (e, Const (m + n))
   | Mul (Const 0, _) | Mul (_, Const 0) -> Const 0
   | Mul (Const 1, x) | Mul (x, Const 1) -> x
   | Mul (Const m, Const n) -> Const (m * n)
