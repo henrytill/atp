@@ -172,7 +172,7 @@ module Int_semantics :
     module Function :
       sig
         type 'a t =
-          'a Prop_logic.Semantics_internal.Make(Int).Function.t =
+          'a Prop_logic.Function.Make(Int).t =
             Empty
           | Leaf of int * (int * 'a) list
           | Branch of int * int * 'a t * 'a t
