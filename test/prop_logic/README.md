@@ -171,21 +171,14 @@ module Int_semantics :
     val satisfiable : int Syntax.Formula.t -> bool
     module Function :
       sig
-        type 'a t =
-          'a Prop_logic.Function.Make(Int).t =
-            Empty
-          | Leaf of int * (int * 'a) list
-          | Branch of int * int * 'a t * 'a t
+        type key = int
+        type 'a t = 'a Prop_logic.Function.Make(Int).t
         val undefined : 'a t
         val is_undefined : 'a t -> bool
-        val assocd : (int * 'a) list -> (int -> 'a) -> int -> 'a
-        val applyd : 'a t -> (int -> 'a) -> int -> 'a
-        val tryapplyd : 'a t -> int -> 'a -> 'a
-        val apply : 'a t -> int -> 'a
-        val make_branch : int -> 'a t -> int -> 'a t -> 'a t
-        val define_list : int * 'a -> (int * 'a) list -> (int * 'a) list
-        val ( |-> ) : int -> 'a -> 'a t -> 'a t
-        val ( |=> ) : int -> 'a -> 'a t
+        val tryapplyd : 'a t -> key -> 'a -> 'a
+        val apply : 'a t -> key -> 'a
+        val ( |-> ) : key -> 'a -> 'a t -> 'a t
+        val ( |=> ) : key -> 'a -> 'a t
       end
     val psubst :
       int Syntax.Formula.t Function.t ->

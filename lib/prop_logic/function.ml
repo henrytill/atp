@@ -5,10 +5,24 @@ module type KEY_TYPE = sig
   val hash : t -> int
 end
 
+module type S = sig
+  type key
+  type 'a t
+
+  val undefined : 'a t
+  val is_undefined : 'a t -> bool
+  val tryapplyd : 'a t -> key -> 'a -> 'a
+  val apply : 'a t -> key -> 'a
+  val ( |-> ) : key -> 'a -> 'a t -> 'a t
+  val ( |=> ) : key -> 'a -> 'a t
+end
+
 module Make (Key : KEY_TYPE) = struct
+  type key = Key.t
+
   type 'a t =
     | Empty
-    | Leaf of int * (Key.t * 'a) list
+    | Leaf of int * (key * 'a) list
     | Branch of int * int * 'a t * 'a t
 
   let undefined = Empty
@@ -18,12 +32,12 @@ module Make (Key : KEY_TYPE) = struct
     | Empty -> true
     | _ -> false
 
-  let assocd (l : (Key.t * 'a) list) (default : Key.t -> 'a) (x : Key.t) : 'a =
+  let assocd (l : (key * 'a) list) (default : key -> 'a) (x : key) : 'a =
     match List.assoc_opt x l with
     | Some a -> a
     | None -> default x
 
-  let applyd (f : 'a t) (default : Key.t -> 'a) (x : Key.t) : 'a =
+  let applyd (f : 'a t) (default : key -> 'a) (x : key) : 'a =
     let k = Key.hash x in
     let rec look t =
       match t with
@@ -33,8 +47,8 @@ module Make (Key : KEY_TYPE) = struct
     in
     look f
 
-  let tryapplyd (f : 'a t) (x : Key.t) (default : 'a) : 'a = applyd f (fun _ -> default) x
-  let apply (f : 'a t) : Key.t -> 'a = applyd f (fun _ -> failwith "apply")
+  let tryapplyd (f : 'a t) (x : key) (default : 'a) : 'a = applyd f (fun _ -> default) x
+  let apply (f : 'a t) : key -> 'a = applyd f (fun _ -> failwith "apply")
 
   let make_branch p1 t1 p2 t2 =
     (* Find differing bits between the two prefixes *)
