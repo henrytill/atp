@@ -175,6 +175,7 @@ module Int_semantics :
         type 'a t = 'a Prop_logic.Function.Make(Int).t
         val undefined : 'a t
         val is_undefined : 'a t -> bool
+        val applyd : 'a t -> (key -> 'a) -> key -> 'a
         val tryapplyd : 'a t -> key -> 'a -> 'a
         val apply : 'a t -> key -> 'a
         val ( |-> ) : key -> 'a -> 'a t -> 'a t
