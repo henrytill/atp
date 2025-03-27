@@ -54,13 +54,13 @@ atoms = setify . toList . MkAtoms
 
 onAllValuations :: forall a b. (Eq a, Ord a) => ((a -> Bool) -> b) -> [a] -> [b]
 onAllValuations subfn as =
-  [subfn (valuationFor row) | row <- [0 .. (2 ^ asLen) - 1]]
+  [subfn (valuationFor row) | row <- [0 .. pred (2 ^ asLen)]]
   where
     asLen :: Int
     asLen = length as
 
     offsetTable :: Map a Int
-    offsetTable = snd $ List.foldl' (\(i, m) a -> (pred i, Map.insert a i m)) (asLen - 1, Map.empty) as
+    offsetTable = snd $ List.foldl' (\(i, m) a -> (pred i, Map.insert a i m)) (pred asLen, Map.empty) as
 
     valuationFor :: Int -> a -> Bool
     valuationFor row a = Bits.testBit row $ offsetTable ! a
