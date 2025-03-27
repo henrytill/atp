@@ -11,7 +11,7 @@ import PropLogic.Semantics qualified as Semantics
 import PropLogic.Syntax (Formula, Prop)
 import System.FilePath (takeBaseName)
 import Test.Tasty (TestTree, defaultMain, testGroup)
-import Test.Tasty.Golden (findByExtension, goldenVsStringDiff)
+import Test.Tasty.Golden qualified as Golden
 import Text.PrettyPrint (render, text, ($$))
 import Text.PrettyPrint.HughesPJClass (pPrint)
 
@@ -35,7 +35,7 @@ tests =
   ]
 
 mkGoldenTest :: FilePath -> TestTree
-mkGoldenTest outFile = goldenVsStringDiff name cmd outFile test
+mkGoldenTest outFile = Golden.goldenVsStringDiff name cmd outFile test
   where
     name = takeBaseName outFile
     cmd ref new = ["diff", "-u", ref, new]
@@ -43,7 +43,7 @@ mkGoldenTest outFile = goldenVsStringDiff name cmd outFile test
 
 goldenTests :: IO TestTree
 goldenTests = do
-  outFiles <- findByExtension [".out"] "test-golden"
+  outFiles <- Golden.findByExtension [".out"] "test-golden"
   return $ testGroup "Golden Tests" (fmap mkGoldenTest outFiles)
 
 main :: IO ()
