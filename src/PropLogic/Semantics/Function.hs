@@ -30,19 +30,19 @@ isUndefined Empty = False
 isUndefined _ = True
 
 applyWithDefault :: (Hashable a) => Function a b -> (a -> b) -> a -> b
-applyWithDefault f def x = look f
+applyWithDefault f dflt x = look f
   where
     k = hash x
-    look Empty = def x
+    look Empty = dflt x
     look (Leaf h pairs)
-      | h == k = fromMaybe (def x) (lookup x pairs)
-      | otherwise = def x
+      | h == k = fromMaybe (dflt x) (lookup x pairs)
+      | otherwise = dflt x
     look (Branch p b left right)
       | (k `xor` p) .&. (b - 1) == 0 = look (if k .&. b == 0 then left else right)
-      | otherwise = def x
+      | otherwise = dflt x
 
 tryApplyWithDefault :: (Hashable a) => Function a b -> a -> b -> b
-tryApplyWithDefault f a def = applyWithDefault f (const def) a
+tryApplyWithDefault f a dflt = applyWithDefault f (const dflt) a
 
 apply :: (Hashable a) => Function a b -> a -> b
 apply f = applyWithDefault f (\_ -> error "apply")
