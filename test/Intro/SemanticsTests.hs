@@ -2,11 +2,14 @@
 
 module Intro.SemanticsTests where
 
+import Intro.Lexer (AlexPosn (..), lex)
+import Intro.Parser (parseIntro)
 import Intro.Quote (intro)
-import Intro.Semantics (simplifyWithCount)
+import Intro.Semantics (simplify, simplifyWithCount)
 import Intro.Syntax (Expression (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
+import Prelude hiding (lex)
 
 tests :: TestTree
 tests =
@@ -51,3 +54,45 @@ tests =
       testCase "Simplify example compound expression" $ do
         simplifyWithCount [intro| (0 * x + 1) * 3 + 12 |] @?= (Const 15, 10)
     ]
+
+moreTests :: TestTree
+moreTests =
+  let inputs =
+        [ ("7", "1 + 2 * 3"),
+          ("21", "(1 + 2) * (3 + 4)"),
+          ("15", "(0 * x + 1) * 3 + 12"),
+          ("0", "0 + (0 + (1 - 1))"),
+          ("x + 15", "x + 15 - 12 * 0"),
+          ("-x", "-(-(-(x)))"),
+          ("x  + y", "0 + (x + (0 + y))"),
+          ("x * y", "1 * (x * (1 * y))"),
+          ("0", "z * (0 * (x * y))"),
+          ("x - (y - (y - x))", "x - (y - (y - x))"),
+          ("8", "2 ^ (1 + 2)"),
+          ("x + 1", "(x + 0) * (1 + (y - y)) + (z ^ 0)"),
+          ("x + z", "(x + 0) * (1 + (y - y)) + (z ^ 1)"),
+          ("x + 3", "((((x + 1) - 1) + 2) - 2) + 3"),
+          -- Tests for c1 + (x - c2) -> x when c1 == c2
+          ("x", "5 + (x - 5)"),
+          ("y + 3", "7 + ((y + 3) - 7)"),
+          -- Tests for c1 - (x + c2) -> -x when c1 == c2
+          ("-z", "4 - (z + 4)"),
+          ("-(a * b)", "10 - ((a * b) + 10)"),
+          -- More complex nested cases
+          ("x", "3 + ((x - 1) - 2)"),
+          ("-y", "5 - ((3 + (y + 2)))"),
+          ("x * (y + z)", "x * (y + (z * (2 - 1))) + (0 * w)"),
+          ("x * y", "(x * (y + 0)) + (0 * z)"),
+          ("x * y", "x * (y ^ ((0 + 2) - 1))"),
+          ("x", "((x * 1) + 0) - ((y - y) * z)"),
+          ("1", "1 + ((x - x) * (y + z))")
+        ]
+      f :: (String, String) -> TestTree
+      f (expectedStr, actualStr) = testCase actualStr $ actual @?= expected
+        where
+          p :: AlexPosn
+          p = AlexPn 0 0 0
+          expected, actual :: Expression
+          expected = parseIntro . lex p $ expectedStr
+          actual = simplify . parseIntro . lex p $ actualStr
+   in testGroup "Semantics (more)" $ fmap f inputs
