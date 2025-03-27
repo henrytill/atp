@@ -78,7 +78,7 @@ printTruthtable fm = vcat $ header : separator : body
     width = succ $ foldr (max . length . unProp) falseLen as
 
     fixw :: String -> Doc
-    fixw s = text $ s ++ replicate (width - length s) ' '
+    fixw s = text $ s ++ replicate (width - length s) '\SP'
 
     formulaHeader :: String
     formulaHeader = "| formula"
