@@ -22,9 +22,16 @@ simpl1 :: Expression -> Expression
 simpl1 (Add (Const 0) x) = x
 simpl1 (Add x (Const 0)) = x
 simpl1 (Add (Const m) (Const n)) = Const (m + n)
+simpl1 (Add (Sub e (Const m)) (Const n)) | m == n = e
+simpl1 (Add (Const m) (Sub e (Const n))) | m == n = e
+simpl1 (Add (Add e (Const m)) (Const n)) = Add e (Const (m + n))
+simpl1 (Add (Const m) (Add e (Const n))) = Add e (Const (m + n))
 simpl1 (Sub x (Const 0)) = x
 simpl1 (Sub x y) | x == y = Const 0
 simpl1 (Sub (Const m) (Const n)) = Const (m - n)
+simpl1 (Sub (Add e (Const m)) (Const n)) | m == n = e
+simpl1 (Sub (Const m) (Add e (Const n))) | m == n = Neg e
+simpl1 (Sub (Sub e (Const m)) (Const n)) = Sub e (Const (m + n))
 simpl1 (Mul (Const 0) _) = Const 0
 simpl1 (Mul _ (Const 0)) = Const 0
 simpl1 (Mul (Const 1) x) = x
