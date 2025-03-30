@@ -28,8 +28,7 @@ module Make (Key : KEY_TYPE) = struct
 
   let undefined = Empty
 
-  let is_undefined f =
-    match f with
+  let is_undefined = function
     | Empty -> true
     | _ -> false
 
@@ -40,8 +39,7 @@ module Make (Key : KEY_TYPE) = struct
 
   let applyd (f : 'a t) (default : key -> 'a) (x : key) : 'a =
     let k = Key.hash x in
-    let rec look t =
-      match t with
+    let rec look = function
       | Leaf (h, l) when h = k -> assocd l default x
       | Branch (p, b, l, r) when k lxor p land (b - 1) = 0 -> look (if k land b = 0 then l else r)
       | _ -> default x
