@@ -82,7 +82,7 @@ module Make (Atom : ATOM_TYPE) = struct
       pp_print_newline fmt ();
       true
     in
-    let header = List.fold_right (fun s t -> fixw (Atom.to_string s) ^ t) ats formula_header in
+    let header = List.fold_right (fun a h -> fixw (Atom.to_string a) ^ h) ats formula_header in
     let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
     pp_print_string fmt header;
     pp_print_newline fmt ();
