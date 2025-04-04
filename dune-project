@@ -1,4 +1,6 @@
-(lang dune 3.16)
+(lang dune 3.17)
+
+(subst disabled)
 
 (using menhir 3.0)
 
