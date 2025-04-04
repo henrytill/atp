@@ -27,8 +27,6 @@ module Formula = struct
 
   let pp_ast atom_pp_ast fmt fm =
     let open Format in
-    let false_str = "False" in
-    let true_str = "True" in
     let wrap flag fmt fm pp =
       if flag then
         fprintf fmt "@[<hv 1>(%a)@]" pp fm
@@ -38,8 +36,8 @@ module Formula = struct
     let rec go flag fmt fm =
       wrap flag fmt fm @@ fun fmt -> function
       | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
-      | False -> pp_print_string fmt false_str
-      | True -> pp_print_string fmt true_str
+      | False -> pp_print_string fmt "False"
+      | True -> pp_print_string fmt "True"
       | Not (False as p) | Not (True as p) -> fprintf fmt "Not@ %a" unwrapped p
       | Not p -> fprintf fmt "Not@ %a" wrapped p
       | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" unwrapped p unwrapped q
@@ -52,8 +50,7 @@ module Formula = struct
     and wrapped fmt fm = go true fmt fm
     and unwrapped fmt fm = go false fmt fm in
     match fm with
-    | False -> pp_print_string fmt false_str
-    | True -> pp_print_string fmt true_str
+    | False | True -> unwrapped fmt fm
     | _ -> fprintf fmt "@[<hv 1>%a@]" wrapped fm
 
   let pp atom_pp fmt fm =
