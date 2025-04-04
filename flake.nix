@@ -37,7 +37,7 @@
         scope = on.buildOpamProject {
           resolveArgs.with-test = true;
           resolveArgs.with-doc = true;
-        } package ./. { ocaml-base-compiler = "5.2.0"; };
+        } package ./. { ocaml-base-compiler = "5.3.0"; };
         overlay = final: prev: { ${package} = prev.${package}.overrideAttrs (as: { }); };
       in
       {
