@@ -79,8 +79,7 @@ module Make (Atom : ATOM_TYPE) = struct
       let lis = List.map (fun x -> truthstring (v x)) ats in
       let ans = truthstring (eval fm v) in
       pp_print_string fmt (List.fold_right ( ^ ) lis ("| " ^ ans));
-      pp_print_newline fmt ();
-      true
+      pp_print_newline fmt ()
     in
     let header = List.fold_right (fun a h -> fixw (Atom.to_string a) ^ h) ats formula_header in
     let separator = String.make ((width * List.length ats) + String.length formula_header) '-' in
@@ -88,7 +87,7 @@ module Make (Atom : ATOM_TYPE) = struct
     pp_print_newline fmt ();
     pp_print_string fmt separator;
     pp_print_newline fmt ();
-    let _ = Seq.for_all Fun.id (onallvaluations mk_row ats) in
+    Seq.iter Fun.id (onallvaluations mk_row ats);
     pp_print_string fmt separator;
     pp_print_newline fmt ()
 
