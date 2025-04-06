@@ -46,30 +46,8 @@ val satisfiable : Syntax.t -> bool
 (** [satisfiable fm] tests if [fm] is satisfiable (true under some valuation). Returns [true] if
     [fm] is satisfiable, [false] otherwise. *)
 
-module Function : sig
-  (** Implementation of finite partial functions using Patricia trees.
-
-      Maps propositional variables to values using a compressed binary trie data structure. *)
-
-  type 'a t
-  (** The type of partial functions from propositions to values of type ['a]. *)
-
-  val undefined : 'a t
-  (** The empty partial function. *)
-
-  val is_undefined : 'a t -> bool
-  (** [is_undefined f] tests if [f] is the empty partial function. *)
-
-  val ( |-> ) : Syntax.Prop.t -> 'a -> 'a t -> 'a t
-  (** [p |-> v f] extends partial function [f] by mapping proposition [p] to value [v].
-
-      If [p] was already mapped in [f], its value is updated to [v]. *)
-
-  val ( |=> ) : Syntax.Prop.t -> 'a -> 'a t
-  (** [p |=> v] creates a new partial function mapping only proposition [p] to value [v].
-
-      Equivalent to [p |-> v undefined]. *)
-end
+module Function : Function_intf.S with type key = Syntax.Prop.t
+(** Access to the underlying Function module implementation. *)
 
 val psubst : Syntax.t Function.t -> Syntax.t -> Syntax.t
 (** [psubst subfn fm] performs simultaneous substitution in formula [fm] using [subfn].
