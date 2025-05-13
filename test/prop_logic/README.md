@@ -6,7 +6,7 @@
 # open Prop_logic;;
 ```
 
-## Parsing
+## 2.1 The syntax of propositional logic
 
 ```ocaml
 # #install_printer Syntax.Formula.pp_ast;;
@@ -63,7 +63,7 @@ $p \implies q \implies r$
 - : Syntax.t option = Some (Imp (Atom "p", Imp (Atom "q", Atom "r")))
 ```
 
-## Pretty printing
+### Pretty-printing
 
 ```ocaml
 # let roundtrip (s : string) : string option =
@@ -103,9 +103,7 @@ $p \implies q \implies r$
 - : string option = Some "(p ==> (q ==> r))"
 ```
 
-## Semantics
-
-### Evaluation
+## 2.2 The semantics of propositional logic
 
 $v〚p〛= \text{true}$
 
@@ -153,56 +151,12 @@ $〚p \land q \implies q \land r〛_v = \text{false}$
 - : bool = false
 ```
 
-### Internals
-
-```ocaml
-# module Int_semantics = Semantics_internal.Make (Int);;
-module Int_semantics :
-  sig
-    val setify : int list -> int list
-    val atom_union : ('a -> int list) -> 'a Syntax.Formula.t -> int list
-    val atoms : int Syntax.Formula.t -> int list
-    val onallvaluations : ((int -> bool) -> 'a) -> int list -> 'a Seq.t
-    val false_len : int
-    val formula_header : string
-    val print_truthtable : Format.formatter -> int Syntax.Formula.t -> unit
-    val tautology : int Syntax.Formula.t -> bool
-    val unsatisfiable : int Syntax.Formula.t -> bool
-    val satisfiable : int Syntax.Formula.t -> bool
-    module Function :
-      sig
-        type key = int
-        type 'a t = 'a Prop_logic.Function.Make(Int).t
-        val undefined : 'a t
-        val is_undefined : 'a t -> bool
-        val applyd : 'a t -> (key -> 'a) -> key -> 'a
-        val tryapplyd : 'a t -> key -> 'a -> 'a
-        val apply : 'a t -> key -> 'a
-        val ( |-> ) : key -> 'a -> 'a t -> 'a t
-        val ( |=> ) : key -> 'a -> 'a t
-      end
-    val psubst :
-      int Syntax.Formula.t Function.t ->
-      int Syntax.Formula.t -> int Syntax.Formula.t
-  end
-```
-
-```ocaml
-# Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ];;
-- : int list = [1; 2; 3; 4]
-```
-
-```ocaml
-# Int_semantics.setify [ 4; 3; 2; 1 ];;
-- : int list = [1; 2; 3; 4]
-```
+### Truth-tables, mechanized
 
 ```ocaml
 # Semantics.atoms {%prop| p /\ q \/ s ==> ~p \/ (r <=> s) |};;
 - : Syntax.Prop.t list = ["p"; "q"; "r"; "s"]
 ```
-
-### Truth Tables
 
 ```ocaml
 # let print_truthtable = Semantics.print_truthtable Format.std_formatter;;
@@ -223,19 +177,7 @@ true  true  | true
 - : unit = ()
 ```
 
-$p \land q \implies q$
-
-```ocaml
-# print_truthtable {%prop| p /\ q ==> q |};;
-p     q     | formula
----------------------
-false false | true
-false true  | true
-true  false | true
-true  true  | true
----------------------
-- : unit = ()
-```
+**Example, p. 36**
 
 $p \land q \implies q \land r$
 
@@ -255,27 +197,9 @@ true  true  true  | true
 - : unit = ()
 ```
 
-#### Example, p. 36
+## 2.3 Validity, satisﬁability and tautology
 
-$p \implies q \implies r$
-
-```ocaml
-# print_truthtable {%prop| p ==> q ==> r |};;
-p     q     r     | formula
----------------------------
-false false false | true
-false false true  | true
-false true  false | true
-false true  true  | true
-true  false false | true
-true  false true  | true
-true  true  false | false
-true  true  true  | true
----------------------------
-- : unit = ()
-```
-
-#### Peirce's Law, p. 39
+**Peirce's Law, p. 39**
 
 $((p \implies q) \implies p) \implies p$
 
@@ -291,7 +215,7 @@ true  true  | true
 - : unit = ()
 ```
 
-#### A simple contradiction, p. 40
+**A simple contradiction, p. 40**
 
 $p \land \lnot p$
 
@@ -305,27 +229,237 @@ true  | false
 - : unit = ()
 ```
 
-#### Example, p. 56
+### Tautology and satisﬁability checking
 
-$(p \lor q \land r) \land (\lnot p \lor \lnot r)$
+**Examples, p. 41**
+
+$\forall v. 〚p \lor \lnot p〛_v = \text{true}$
 
 ```ocaml
-# print_truthtable {%prop| (p \/ q /\ r) /\ (~p \/ ~r) |};;
-p     q     r     | formula
----------------------------
-false false false | false
-false false true  | false
-false true  false | false
-false true  true  | true
-true  false false | true
-true  false true  | false
-true  true  false | true
-true  true  true  | false
----------------------------
-- : unit = ()
+# Semantics.tautology {%prop| p \/ ~p |};;
+- : bool = true
 ```
 
-### Tautology
+$\forall v. 〚p \lor q \implies p〛_v = \text{false}$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ q ==> p |};;
+- : bool = false
+```
+
+$\forall v. 〚p \lor q \implies q \lor (p \iff q)〛_v = \text{false}$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ q ==> q \/ (p <=> q) |};;
+- : bool = false
+```
+
+$\forall v. 〚(p \lor q) \land \neg (p \land q) \implies (\neg p \iff q)〛_v = \text{true}$
+
+```ocaml
+# Semantics.tautology {%prop| (p \/ q) /\ ~(p /\ q) ==> (~p <=> q) |};;
+- : bool = true
+```
+
+### Substitution
+
+```ocaml
+# let f =
+    let p = Syntax.Prop.inj "p" in
+    Semantics.Function.(p |=> {%prop| p /\ q |});;
+val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
+# Semantics.psubst f {%prop| p /\ q /\ p /\ q |};;
+- : Syntax.t =
+(And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
+```
+
+### Some important tautologies
+
+$\neg \top \iff \bot$
+
+```ocaml
+# Semantics.tautology {%prop| ~true <=> false |};;
+- : bool = true
+```
+
+$\neg \bot \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| ~false <=> true |};;
+- : bool = true
+```
+
+$\neg \neg p \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| ~~p <=> p |};;
+- : bool = true
+```
+
+$p \land \bot \iff \bot$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ false <=> false |};;
+- : bool = true
+```
+
+$p \land \top \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ true <=> p |};;
+- : bool = true
+```
+
+$p \land p \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ p <=> p |};;
+- : bool = true
+```
+
+$p \land \neg p \iff \bot$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ ~p <=> false |};;
+- : bool = true
+```
+
+$p \land q \iff q \land p$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ q <=> q /\ p |};;
+- : bool = true
+```
+
+$p \land (q \land r) \iff (p \land q) \land r$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ (q /\ r) <=> (p /\ q) /\ r |};;
+- : bool = true
+```
+
+$p \lor \bot \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ false <=> p |};;
+- : bool = true
+```
+
+$p \lor \top \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ true <=> true |};;
+- : bool = true
+```
+
+$p \lor p \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ p <=> p |};;
+- : bool = true
+```
+
+$p \lor \neg p \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ ~p <=> true |};;
+- : bool = true
+```
+
+$p \lor q \iff q \lor p$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ q <=> q \/ p |};;
+- : bool = true
+```
+
+$p \lor (q \lor r) \iff (p \lor q) \lor r$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ (q \/ r) <=> (p \/ q) \/ r |};;
+- : bool = true
+```
+
+$p \land (q \lor r) \iff (p \land q) \lor  (p \land r)$
+
+```ocaml
+# Semantics.tautology {%prop| p /\ (q \/ r) <=> (p /\ q) \/ (p /\ r) |};;
+- : bool = true
+```
+
+$p \lor (q \land r) \iff (p \lor q) \land  (p \lor r)$
+
+```ocaml
+# Semantics.tautology {%prop| p \/ (q /\ r) <=> (p \/ q) /\ (p \/ r) |};;
+- : bool = true
+```
+
+$\bot \implies p \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| false ==> p <=> true |};;
+- : bool = true
+```
+
+$p \implies \top \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> true <=> true |};;
+- : bool = true
+```
+
+$p \implies \bot \iff \neg p$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> false <=> ~p |};;
+- : bool = true
+```
+
+$p \implies p \iff \top$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> p <=> true |};;
+- : bool = true
+```
+
+$p \implies q \iff \neg q \implies \neg p$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> q <=> ~q ==> ~p |};;
+- : bool = true
+```
+
+$p \implies q \iff (p \iff p \land q)$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> q <=> (p <=> p /\ q) |};;
+- : bool = true
+```
+
+$p \implies q \iff (q \iff q \lor p)$
+
+```ocaml
+# Semantics.tautology {%prop| p ==> q <=> (q <=> q \/ p) |};;
+- : bool = true
+```
+
+$p \iff q \iff q \iff p$
+
+```ocaml
+# Semantics.tautology {%prop| p <=> q <=> q <=> p |};;
+- : bool = true
+```
+
+$p \iff (q \iff r) \iff (p \iff q) \iff r$
+
+```ocaml
+# Semantics.tautology {%prop| p <=> (q <=> r) <=> (p <=> q) <=> r |};;
+- : bool = true
+```
+
+## 2.4 The De Morgan laws, adequacy and duality
+
+**Examples, p. 47**
 
 $\forall v. 〚\top \iff \bot \implies \bot〛_v = \text{true}$
 
@@ -362,14 +496,22 @@ $\forall v. 〚(p \iff q) \iff ((p \implies q) \implies (q \implies p) \implies 
 - : bool = true
 ```
 
-### Substitution
+**Example, p. 56**
+
+$(p \lor q \land r) \land (\lnot p \lor \lnot r)$
 
 ```ocaml
-# let f =
-    let p = Syntax.Prop.inj "p" in
-    Semantics.Function.(p |=> {%prop| p /\ q |});;
-val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
-# Semantics.psubst f {%prop| p /\ q /\ p /\ q |};;
-- : Syntax.t =
-(And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
+# print_truthtable {%prop| (p \/ q /\ r) /\ (~p \/ ~r) |};;
+p     q     r     | formula
+---------------------------
+false false false | false
+false false true  | false
+false true  false | false
+false true  true  | true
+true  false false | true
+true  false true  | false
+true  true  false | true
+true  true  true  | false
+---------------------------
+- : unit = ()
 ```
