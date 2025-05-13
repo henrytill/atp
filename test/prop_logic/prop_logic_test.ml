@@ -159,6 +159,18 @@ module Test_semantics = struct
     Alcotest.(check bool) same_bool true (Semantics.unsatisfiable fm)
 end
 
+module Test_internals = struct
+  module Int_semantics = Semantics_internal.Make (Int)
+
+  let setify_removes_duplicates () =
+    let actual = Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
+    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] actual
+
+  let setify_correctly_orders () =
+    let actual = Int_semantics.setify [ 4; 3; 2; 1 ] in
+    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] actual
+end
+
 let prop_logic_tests =
   let open Alcotest in
   [
@@ -193,6 +205,11 @@ let prop_logic_tests =
         test_case "The example is satisfiable" `Quick Test_semantics.example_satis;
         test_case "Contradiction is not a tautology" `Quick Test_semantics.contradiction_not_taut;
         test_case "Contradiction is unsatisfiable" `Quick Test_semantics.contradiction_unsatis;
+      ] );
+    ( "Test_internals",
+      [
+        test_case "Setify removes duplicates" `Quick Test_internals.setify_removes_duplicates;
+        test_case "Setify correctly orders" `Quick Test_internals.setify_correctly_orders;
       ] );
   ]
 
