@@ -197,7 +197,7 @@ true  true  true  | true
 - : unit = ()
 ```
 
-## 2.3 Validity, satisﬁability and tautology
+## 2.3 Validity, satisfiability and tautology
 
 **Peirce's Law, p. 39**
 
