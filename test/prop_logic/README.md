@@ -275,182 +275,182 @@ val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
 
 ### Some important tautologies
 
-$\neg \top \iff \bot$
+$\forall v. 〚\neg \top \iff \bot〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| ~true <=> false |};;
 - : bool = true
 ```
 
-$\neg \bot \iff \top$
+$\forall v. 〚\neg \bot \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| ~false <=> true |};;
 - : bool = true
 ```
 
-$\neg \neg p \iff p$
+$\forall v. 〚\neg \neg p \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| ~~p <=> p |};;
 - : bool = true
 ```
 
-$p \land \bot \iff \bot$
+$\forall v. 〚p \land \bot \iff \bot〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ false <=> false |};;
 - : bool = true
 ```
 
-$p \land \top \iff p$
+$\forall v. 〚p \land \top \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ true <=> p |};;
 - : bool = true
 ```
 
-$p \land p \iff p$
+$\forall v. 〚p \land p \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ p <=> p |};;
 - : bool = true
 ```
 
-$p \land \neg p \iff \bot$
+$\forall v. 〚p \land \neg p \iff \bot〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ ~p <=> false |};;
 - : bool = true
 ```
 
-$p \land q \iff q \land p$
+$\forall v. 〚p \land q \iff q \land p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ q <=> q /\ p |};;
 - : bool = true
 ```
 
-$p \land (q \land r) \iff (p \land q) \land r$
+$\forall v. 〚p \land (q \land r) \iff (p \land q) \land r〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ (q /\ r) <=> (p /\ q) /\ r |};;
 - : bool = true
 ```
 
-$p \lor \bot \iff p$
+$\forall v. 〚p \lor \bot \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ false <=> p |};;
 - : bool = true
 ```
 
-$p \lor \top \iff \top$
+$\forall v. 〚p \lor \top \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ true <=> true |};;
 - : bool = true
 ```
 
-$p \lor p \iff p$
+$\forall v. 〚p \lor p \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ p <=> p |};;
 - : bool = true
 ```
 
-$p \lor \neg p \iff \top$
+$\forall v. 〚p \lor \neg p \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ ~p <=> true |};;
 - : bool = true
 ```
 
-$p \lor q \iff q \lor p$
+$\forall v. 〚p \lor q \iff q \lor p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ q <=> q \/ p |};;
 - : bool = true
 ```
 
-$p \lor (q \lor r) \iff (p \lor q) \lor r$
+$\forall v. 〚p \lor (q \lor r) \iff (p \lor q) \lor r〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ (q \/ r) <=> (p \/ q) \/ r |};;
 - : bool = true
 ```
 
-$p \land (q \lor r) \iff (p \land q) \lor  (p \land r)$
+$\forall v. 〚p \land (q \lor r) \iff (p \land q) \lor  (p \land r)〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p /\ (q \/ r) <=> (p /\ q) \/ (p /\ r) |};;
 - : bool = true
 ```
 
-$p \lor (q \land r) \iff (p \lor q) \land  (p \lor r)$
+$\forall v. 〚p \lor (q \land r) \iff (p \lor q) \land  (p \lor r)〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p \/ (q /\ r) <=> (p \/ q) /\ (p \/ r) |};;
 - : bool = true
 ```
 
-$\bot \implies p \iff \top$
+$\forall v. 〚\bot \implies p \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| false ==> p <=> true |};;
 - : bool = true
 ```
 
-$p \implies \top \iff \top$
+$\forall v. 〚p \implies \top \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> true <=> true |};;
 - : bool = true
 ```
 
-$p \implies \bot \iff \neg p$
+$\forall v. 〚p \implies \bot \iff \neg p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> false <=> ~p |};;
 - : bool = true
 ```
 
-$p \implies p \iff \top$
+$\forall v. 〚p \implies p \iff \top〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> p <=> true |};;
 - : bool = true
 ```
 
-$p \implies q \iff \neg q \implies \neg p$
+$\forall v. 〚p \implies q \iff \neg q \implies \neg p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> q <=> ~q ==> ~p |};;
 - : bool = true
 ```
 
-$p \implies q \iff (p \iff p \land q)$
+$\forall v. 〚p \implies q \iff (p \iff p \land q)〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> q <=> (p <=> p /\ q) |};;
 - : bool = true
 ```
 
-$p \implies q \iff (q \iff q \lor p)$
+$\forall v. 〚p \implies q \iff (q \iff q \lor p)〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p ==> q <=> (q <=> q \/ p) |};;
 - : bool = true
 ```
 
-$p \iff q \iff q \iff p$
+$\forall v. 〚p \iff q \iff q \iff p〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p <=> q <=> q <=> p |};;
 - : bool = true
 ```
 
-$p \iff (q \iff r) \iff (p \iff q) \iff r$
+$\forall v. 〚p \iff (q \iff r) \iff (p \iff q) \iff r〛_v = \text{true}$
 
 ```ocaml
 # Semantics.tautology {%prop| p <=> (q <=> r) <=> (p <=> q) <=> r |};;
