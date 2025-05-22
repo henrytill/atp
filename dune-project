@@ -29,6 +29,7 @@
    (>= 5.2.0))
   dune
   menhir
+  conf-pandoc
   (alcotest
    (and
     :with-test
