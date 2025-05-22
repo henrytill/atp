@@ -2,4 +2,5 @@
  (name intro_test)
  (modules intro_test)
  (libraries alcotest intro)
- (preprocess (pps ppx_intro)))
+ (preprocess
+  (pps ppx_intro)))
