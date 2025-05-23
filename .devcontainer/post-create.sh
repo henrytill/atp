@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export TERM=dumb
-export OPAMCONFIRMLEVEL=yes
+export DEBIAN_FRONTEND=noninteractive
+export OPAMCONFIRMLEVEL=unsafe-yes
 
 opam install --deps --with-test --with-doc .
