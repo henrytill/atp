@@ -5,7 +5,7 @@ ARG OPAM_BINARY="opam-${OPAM_VERSION}-x86_64-linux"
 ARG OPAM_BINARY_SIG="${OPAM_BINARY}.sig"
 ARG OPAM_BINARY_URL="https://github.com/ocaml/opam/releases/download/${OPAM_VERSION}/${OPAM_BINARY}"
 ARG OPAM_BINARY_SIG_URL="${OPAM_BINARY_URL}.sig"
-ARG DEFAULT_COMPILER=ocaml-base-compiler.5.2.0
+ARG DEFAULT_COMPILER=ocaml-base-compiler.5.3.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
