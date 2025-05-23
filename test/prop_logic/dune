@@ -35,6 +35,6 @@
    "title=Propositional Logic"
    --wrap=none
    --variable
-   maxwidth=40em
+   "maxwidth=40em"
    -o
    %{target})))
