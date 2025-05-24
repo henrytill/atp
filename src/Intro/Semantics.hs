@@ -1,3 +1,5 @@
+{-# LANGUAGE PatternGuards #-}
+
 module Intro.Semantics (simplify, simplifyWithCount) where
 
 import Control.Monad.ST (ST, runST)
@@ -6,17 +8,17 @@ import Data.STRef (STRef, modifySTRef, newSTRef, readSTRef)
 import Intro.Syntax (Expression (..))
 import Prelude hiding (exp)
 
-errRaiseNegative :: String
-errRaiseNegative = "cannot raise to a negative power"
+errRaiseNegative :: a
+errRaiseNegative = error "cannot raise to a negative power"
 
 pow :: Integer -> Integer -> Integer
 pow _ 0 = 1
 pow m 1 = m
 pow m n
-  | n < 0 = error errRaiseNegative
-  | otherwise = x * x * if even n then 1 else m
-  where
-    x = pow m (n `div` 2)
+  | n < 0 = errRaiseNegative
+  | let x = pow m (n `div` 2),
+    otherwise =
+      x * x * if even n then 1 else m
 
 simpl1 :: Expression -> Expression
 simpl1 (Add (Const 0) x) = x
@@ -41,7 +43,7 @@ simpl1 (Exp _ (Const 0)) = Const 1
 simpl1 (Exp (Const 0) _) = Const 0
 simpl1 (Exp (Const 1) _) = Const 1
 simpl1 (Exp x (Const 1)) = x
-simpl1 (Exp _ (Neg (Const _))) = error errRaiseNegative
+simpl1 (Exp _ (Neg (Const _))) = errRaiseNegative
 simpl1 (Exp (Const m) (Const n)) = Const (pow m n)
 simpl1 (Neg (Neg x)) = x
 simpl1 (Neg (Const m)) = Const (-m)
@@ -73,7 +75,7 @@ simpl ref expr = do
     Exp (Const 0) _ -> constant 0
     Exp (Const 1) _ -> constant 1
     Exp x (Const 1) -> simply x
-    Exp _ (Neg (Const _)) -> error errRaiseNegative
+    Exp _ (Neg (Const _)) -> errRaiseNegative
     Exp x y -> exp x y
     Neg (Neg x) -> simply x
     Neg x -> neg x
