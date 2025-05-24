@@ -16,8 +16,8 @@ pow _ 0 = 1
 pow m 1 = m
 pow m n
   | n < 0 = errRaiseNegative
-  | let x = pow m (n `div` 2),
-    otherwise =
+  | let x = pow m (n `div` 2)
+  , otherwise =
       x * x * if even n then 1 else m
 
 simpl1 :: Expression -> Expression

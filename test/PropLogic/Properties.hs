@@ -16,14 +16,14 @@ instance (Arbitrary a) => Arbitrary (Formula a) where
       genFormula 0 = oneof [pure FmTrue, pure FmFalse, FmAtom <$> arbitrary]
       genFormula n =
         oneof
-          [ pure FmTrue,
-            pure FmFalse,
-            FmAtom <$> arbitrary,
-            FmNot <$> genFormula',
-            FmAnd <$> genFormula' <*> genFormula',
-            FmOr <$> genFormula' <*> genFormula',
-            FmImp <$> genFormula' <*> genFormula',
-            FmIff <$> genFormula' <*> genFormula'
+          [ pure FmTrue
+          , pure FmFalse
+          , FmAtom <$> arbitrary
+          , FmNot <$> genFormula'
+          , FmAnd <$> genFormula' <*> genFormula'
+          , FmOr <$> genFormula' <*> genFormula'
+          , FmImp <$> genFormula' <*> genFormula'
+          , FmIff <$> genFormula' <*> genFormula'
           ]
         where
           genFormula' = genFormula (n `div` 2)
@@ -55,7 +55,7 @@ tests :: TestTree
 tests =
   testGroup
     "Foldable Laws for Atoms"
-    [ QuickCheck.testProperty "foldr-foldMap" prop_foldr_foldMap,
-      QuickCheck.testProperty "foldMap-fold-fmap" prop_foldMap_fold_fmap,
-      QuickCheck.testProperty "foldl-foldMap" prop_foldl_foldMap
+    [ QuickCheck.testProperty "foldr-foldMap" prop_foldr_foldMap
+    , QuickCheck.testProperty "foldMap-fold-fmap" prop_foldMap_fold_fmap
+    , QuickCheck.testProperty "foldl-foldMap" prop_foldl_foldMap
     ]

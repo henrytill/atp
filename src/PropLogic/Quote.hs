@@ -41,8 +41,8 @@ quotePatProp str = do
 prop :: QuasiQuoter
 prop =
   QuasiQuoter
-    { quoteExp = quoteExpProp,
-      quotePat = quotePatProp,
-      quoteType = undefined,
-      quoteDec = undefined
+    { quoteExp = quoteExpProp
+    , quotePat = quotePatProp
+    , quoteType = undefined
+    , quoteDec = undefined
     }

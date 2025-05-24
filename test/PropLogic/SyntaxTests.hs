@@ -12,11 +12,11 @@ tests =
   testGroup
     "Pretty-print"
     [ testCase "Print example" $ do
-        prettyShow [prop| p \/ q ==> r |] @?= "((p \\/ q) ==> r)",
-      testCase "Print another example" $ do
-        prettyShow [prop| p ==> q /\ ~r \/ s |] @?= "(p ==> ((q /\\ (~ r)) \\/ s))",
-      testCase "Print right-associative ands" $ do
-        prettyShow [prop| p /\ q /\ r |] @?= "(p /\\ (q /\\ r))",
-      testCase "Print right-associative imps" $ do
+        prettyShow [prop| p \/ q ==> r |] @?= "((p \\/ q) ==> r)"
+    , testCase "Print another example" $ do
+        prettyShow [prop| p ==> q /\ ~r \/ s |] @?= "(p ==> ((q /\\ (~ r)) \\/ s))"
+    , testCase "Print right-associative ands" $ do
+        prettyShow [prop| p /\ q /\ r |] @?= "(p /\\ (q /\\ r))"
+    , testCase "Print right-associative imps" $ do
         prettyShow [prop| p ==> q ==> r |] @?= "(p ==> (q ==> r))"
     ]

@@ -25,12 +25,12 @@ renderTruthtable = appendNewline . Char8.pack . render . layout
 tests :: [(String, ByteString)]
 tests =
   [ -- Example, p. 36
-    ("truthtable-p036-example", renderTruthtable [prop| p ==> q ==> r |]),
-    -- Peirce's Law, p. 39
-    ("truthtable-p039-peirce", renderTruthtable [prop| ((p ==> q) ==> p) ==> p |]),
-    -- A simple contradiction, p. 40
-    ("truthtable-p040-contradiction", renderTruthtable [prop| p /\ ~p |]),
-    -- Example, p. 56
+    ("truthtable-p036-example", renderTruthtable [prop| p ==> q ==> r |])
+  , -- Peirce's Law, p. 39
+    ("truthtable-p039-peirce", renderTruthtable [prop| ((p ==> q) ==> p) ==> p |])
+  , -- A simple contradiction, p. 40
+    ("truthtable-p040-contradiction", renderTruthtable [prop| p /\ ~p |])
+  , -- Example, p. 56
     ("truthtable-p056-example", renderTruthtable [prop| (p \/ q /\ r) /\ (~p \/ ~r) |])
   ]
 

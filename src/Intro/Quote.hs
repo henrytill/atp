@@ -41,8 +41,8 @@ quotePatIntro str = do
 intro :: QuasiQuoter
 intro =
   QuasiQuoter
-    { quoteExp = quoteExpIntro,
-      quotePat = quotePatIntro,
-      quoteType = undefined,
-      quoteDec = undefined
+    { quoteExp = quoteExpIntro
+    , quotePat = quotePatIntro
+    , quoteType = undefined
+    , quoteDec = undefined
     }
