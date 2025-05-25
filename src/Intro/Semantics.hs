@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternGuards #-}
-
 module Intro.Semantics (simplify, simplifyWithCount) where
 
 import Control.Monad.ST (ST, runST)
@@ -16,9 +14,9 @@ pow _ 0 = 1
 pow m 1 = m
 pow m n
   | n < 0 = errRaiseNegative
-  | let x = pow m (n `div` 2)
-  , otherwise =
-      x * x * if even n then 1 else m
+  | otherwise = x * x * if even n then 1 else m
+  where
+    x = pow m (n `div` 2)
 
 simpl1 :: Expression -> Expression
 simpl1 (Add (Const 0) x) = x
@@ -81,7 +79,7 @@ simpl ref expr = do
     Neg x -> neg x
     Const _ -> return expr
     Var _ -> return expr
-    MetaVar a -> return (MetaVar a)
+    MetaVar _ -> return expr
   where
     binary f x y = f <$> simpl ref x <*> simpl ref y >>= simplify1 ref
     add = binary Add
