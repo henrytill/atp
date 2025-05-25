@@ -28,15 +28,16 @@ import Intro.Syntax
 
 %%
 
-Exp : var               { Var $1 }
-    | metavar           { MetaVar $1 }
-    | const             { Const $1 }
-    | Exp '^' Exp       { Exp $1 $3 }
-    | Exp '*' Exp       { Mul $1 $3 }
-    | Exp '+' Exp       { Add $1 $3 }
-    | Exp '-' Exp       { Sub $1 $3 }
-    | '-' Exp %prec NEG { Neg $2 }
-    | '(' Exp ')'       { $2 }
+Expression
+  : var                       { Var $1 }
+  | metavar                   { MetaVar $1 }
+  | const                     { Const $1 }
+  | Expression '^' Expression { Exp $1 $3 }
+  | Expression '*' Expression { Mul $1 $3 }
+  | Expression '+' Expression { Add $1 $3 }
+  | Expression '-' Expression { Sub $1 $3 }
+  | '-' Expression %prec NEG  { Neg $2 }
+  | '(' Expression ')'        { $2 }
 
 {
 parseError :: [Token] -> a
