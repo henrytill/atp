@@ -4,263 +4,99 @@ let syntax = Alcotest.testable Syntax.pp_ast Syntax.equal
 let same_expr = "same expression"
 
 module Test_parse = struct
-  let var () =
-    let expected : Syntax.t = Var "a" in
-    let actual = Input.parse_string_exn {| a |} in
-    Alcotest.(check syntax) same_expr expected actual
+  let inputs : (Syntax.t * string) list =
+    [
+      (Var "a", {| a |});
+      (Const 42, {| 42 |});
+      (Add (Const 42, Const 42), {| 42 + 42 |});
+      (Mul (Const 42, Const 42), {| 42 * 42 |});
+      (Exp (Const 2, Const 3), {| 2 ^ 3 |});
+      (Sub (Var "x", Neg (Neg (Var "x"))), {| x - - - x |});
+      (Add (Mul (Const 2, Var "x"), Var "y"), {| 2 * x + y |});
+      ( Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12),
+        {| (0 * x + 1) * 3 + 12 |} );
+      (Add (Const 1, Mul (Const 2, Const 3)), {| 1 + 2 * 3 |});
+      (Add (Mul (Const 1, Const 2), Const 3), {| 1 * 2 + 3 |});
+      (Add (Add (Var "x", Var "y"), Var "z"), {| x + y + z |});
+      (Sub (Sub (Var "x", Var "y"), Var "z"), {| x - y - z |});
+      (Mul (Mul (Var "x", Var "y"), Var "z"), {| x * y * z |});
+      (Exp (Var "x", Exp (Var "y", Var "z")), {| x ^ y ^ z |});
+      (Mul (Add (Const 1, Const 2), Const 3), {| (1 + 2) * 3 |});
+      (Mul (Const 1, Add (Const 2, Const 3)), {| 1 * (2 + 3) |});
+    ]
 
-  let const () =
-    let expected : Syntax.t = Const 42 in
-    let actual = Input.parse_string_exn {| 42 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let add () =
-    let expected : Syntax.t = Add (Const 42, Const 42) in
-    let actual = Input.parse_string_exn {| 42 + 42 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul () =
-    let expected : Syntax.t = Mul (Const 42, Const 42) in
-    let actual = Input.parse_string_exn {| 42 * 42 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp () =
-    let expected : Syntax.t = Exp (Const 2, Const 3) in
-    let actual = Input.parse_string_exn {| 2 ^ 3 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let neg () =
-    let expected : Syntax.t = Sub (Var "x", Neg (Neg (Var "x"))) in
-    let actual = Input.parse_string_exn {| x - - - x|} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let compound1 () =
-    let expected : Syntax.t = Add (Mul (Const 2, Var "x"), Var "y") in
-    let actual = Input.parse_string_exn {| 2 * x + y |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let compound2 () =
-    let expected : Syntax.t =
-      Add (Mul (Add (Mul (Const 0, Var "x"), Const 1), Const 3), Const 12)
+  let generate (inputs : (Syntax.t * string) list) =
+    let f (output, input) =
+      let expected = Some output in
+      let actual = Input.parse_string input in
+      let test () = Alcotest.(check (option syntax)) same_expr expected actual in
+      Alcotest.(test_case ("Parse " ^ String.trim input) `Quick test)
     in
-    let actual = Input.parse_string_exn {| (0 * x + 1) * 3 + 12 |} in
-    Alcotest.(check syntax) same_expr expected actual
-end
-
-module Test_precedence = struct
-  let right () =
-    let expected : Syntax.t = Add (Const 1, Mul (Const 2, Const 3)) in
-    let actual = Input.parse_string_exn {| 1 + 2 * 3 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let left () =
-    let expected : Syntax.t = Add (Mul (Const 1, Const 2), Const 3) in
-    let actual = Input.parse_string_exn {| 1 * 2 + 3 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let add () =
-    let expected : Syntax.t = Add (Add (Var "x", Var "y"), Var "z") in
-    let actual = Input.parse_string_exn {| x + y + z |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let sub () =
-    let expected : Syntax.t = Sub (Sub (Var "x", Var "y"), Var "z") in
-    let actual = Input.parse_string_exn {| x - y - z |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul () =
-    let expected : Syntax.t = Mul (Mul (Var "x", Var "y"), Var "z") in
-    let actual = Input.parse_string_exn {| x * y * z |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp () =
-    let expected : Syntax.t = Exp (Var "x", Exp (Var "y", Var "z")) in
-    let acutal = Input.parse_string_exn {| x ^ y ^ z |} in
-    Alcotest.(check syntax) same_expr expected acutal
-
-  let parens_left () =
-    let expected : Syntax.t = Mul (Add (Const 1, Const 2), Const 3) in
-    let actual = Input.parse_string_exn {| (1 + 2) * 3 |} in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let parens_right () =
-    let expected : Syntax.t = Mul (Const 1, Add (Const 2, Const 3)) in
-    let actual = Input.parse_string_exn {| 1 * (2 + 3) |} in
-    Alcotest.(check syntax) same_expr expected actual
+    List.map f inputs
 end
 
 module Test_simplify = struct
-  let add_0_x () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 0 + x |}) in
-    Alcotest.(check syntax) same_expr expected actual
+  let inputs : (Syntax.t * string) list =
+    [
+      (Var "x", {| 0 + x |});
+      (Var "x", {| x + 0 |});
+      (Const 1, {| 3 - 2 |});
+      (Var "x", {| x - 0 |});
+      (Const 0, {| x - x |});
+      (Const 12, {| 3 * 4 |});
+      (Const 0, {| 0 * x |});
+      (Const 0, {| x * 0 |});
+      (Var "x", {| 1 * x |});
+      (Var "x", {| x * 1 |});
+      (Const 8, {| 2 ^ 3 |});
+      (Const 0, {| 0 ^ x |});
+      (Const 1, {| x ^ 0 |});
+      (Const 1, {| 1 ^ x |});
+      (Var "x", {| x ^ 1 |});
+      (Const 0, {| x - - - x |});
+      (Const 15, {| (0 * x + 1) * 3 + 12 |});
+    ]
 
-  let add_x_0 () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x + 0 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let sub () =
-    let expected : Syntax.t = Const 1 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 3 - 2 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let sub_x_0 () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x - 0 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let sub_x_x () =
-    let expected : Syntax.t = Const 0 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x - x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul () =
-    let expected : Syntax.t = Const 12 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 3 * 4 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul_0_x () =
-    let expected : Syntax.t = Const 0 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 0 * x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul_x_0 () =
-    let expected : Syntax.t = Const 0 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x * 0 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul_1_x () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 1 * x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let mul_x_1 () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x * 1 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp () =
-    let expected : Syntax.t = Const 8 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 2 ^ 3 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp_0_x () =
-    let expected : Syntax.t = Const 0 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 0 ^ x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp_x_0 () =
-    let expected : Syntax.t = Const 1 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x ^ 0 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp_1_x () =
-    let expected : Syntax.t = Const 1 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| 1 ^ x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let exp_x_1 () =
-    let expected : Syntax.t = Var "x" in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x ^ 1 |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let neg () =
-    let expected : Syntax.t = Const 0 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| x - - - x |}) in
-    Alcotest.(check syntax) same_expr expected actual
-
-  let example () =
-    let expected : Syntax.t = Const 15 in
-    let actual = Semantics.simplify (Input.parse_string_exn {| (0 * x + 1) * 3 + 12 |}) in
-    Alcotest.(check syntax) same_expr expected actual
+  let generate (inputs : (Syntax.t * string) list) =
+    let f (output, input) =
+      let expected = Some output in
+      let actual = Option.map Semantics.simplify (Input.parse_string input) in
+      let test () = Alcotest.(check (option syntax)) same_expr expected actual in
+      Alcotest.(test_case ("Simplify " ^ String.trim input) `Quick test)
+    in
+    List.map f inputs
 end
 
 module Test_count = struct
-  let var () =
-    let expected : Syntax.t * int = (Var "a", 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| a |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
+  let inputs : (Syntax.t * int * string) list =
+    [
+      (Var "a", 1, {| a |});
+      (Const 2, 4, {| 1 + 1 |});
+      (Const 21, 10, {| (1 + 2) * (3 + 4) |});
+      (Var "x", 3, {| 0 + x |});
+      (Var "x", 3, {| x + 0 |});
+      (Var "x", 3, {| x - 0 |});
+      (Const 0, 1, {| x - x |});
+      (Const 0, 1, {| 0 * x |});
+      (Const 0, 1, {| x * 0 |});
+      (Var "x", 3, {| 1 * x |});
+      (Var "x", 3, {| x * 1 |});
+      (Const 0, 1, {| 0 ^ x |});
+      (Const 1, 1, {| x ^ 0 |});
+      (Const 1, 1, {| 1 ^ x |});
+      (Var "x", 3, {| x ^ 1 |});
+      (Const 0, 5, {| 0 + (0 + (1 - 1)) |});
+      (Const 0, 3, {| (- - (1 - 1)) |});
+    ]
 
-  let add_1_1 () =
-    let expected : Syntax.t * int = (Const 2, 4) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 1 + 1 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let mul_compound () =
-    let expected : Syntax.t * int = (Const 21, 10) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| (1 + 2) * (3 + 4) |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let add_0_x () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 0 + x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let add_x_0 () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x + 0 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let sub_x_0 () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x - 0 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let sub_x_x () =
-    let expected : Syntax.t * int = (Const 0, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x - x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let mul_0_x () =
-    let expected : Syntax.t * int = (Const 0, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 0 * x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let mul_x_0 () =
-    let expected : Syntax.t * int = (Const 0, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x * 0 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let mul_1_x () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 1 * x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let mul_x_1 () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x * 1 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let exp_0_x () =
-    let expected : Syntax.t * int = (Const 0, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 0 ^ x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let exp_x_0 () =
-    let expected : Syntax.t * int = (Const 1, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x ^ 0 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let exp_1_x () =
-    let expected : Syntax.t * int = (Const 1, 1) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 1 ^ x |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let exp_x_1 () =
-    let expected : Syntax.t * int = (Var "x", 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| x ^ 1 |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let add_compound () =
-    let expected : Syntax.t * int = (Const 0, 5) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| 0 + (0 + (1 - 1)) |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
-
-  let neg_compound () =
-    let expected : Syntax.t * int = (Const 0, 3) in
-    let actual = Semantics.simplify_with_count (Input.parse_string_exn {| (- - (1 - 1)) |}) in
-    Alcotest.(check (pair syntax int)) same_expr expected actual
+  let generate (inputs : (Syntax.t * int * string) list) =
+    let f (output, count, input) =
+      let expected = Some (output, count) in
+      let actual = Option.map Semantics.simplify_with_count (Input.parse_string input) in
+      let test () = Alcotest.(check (option (pair syntax int))) same_expr expected actual in
+      Alcotest.(test_case ("Simplify (with count) " ^ String.trim input) `Quick test)
+    in
+    List.map f inputs
 end
 
 module Test_more = struct
@@ -307,70 +143,10 @@ module Test_more = struct
 end
 
 let intro_tests =
-  let open Alcotest in
   [
-    ( "Test_parse",
-      [
-        test_case "Parse variable" `Quick Test_parse.var;
-        test_case "Parse constant" `Quick Test_parse.const;
-        test_case "Parse add" `Quick Test_parse.add;
-        test_case "Parse mul" `Quick Test_parse.mul;
-        test_case "Parse exp" `Quick Test_parse.exp;
-        test_case "Parse neg" `Quick Test_parse.neg;
-        test_case "Parse compound (1)" `Quick Test_parse.compound1;
-        test_case "Parse compound (2)" `Quick Test_parse.compound2;
-      ] );
-    ( "Test_precedence",
-      [
-        test_case "Parse with correct precedence (r)" `Quick Test_precedence.right;
-        test_case "Parse with correct precedence (l)" `Quick Test_precedence.left;
-        test_case "Parse with correct add precedence" `Quick Test_precedence.add;
-        test_case "Parse with correct sub precedence" `Quick Test_precedence.sub;
-        test_case "Parse with correct mul precedence" `Quick Test_precedence.mul;
-        test_case "Parse with correct exp precedence" `Quick Test_precedence.exp;
-        test_case "Parse parens (l)" `Quick Test_precedence.parens_left;
-        test_case "Parse parens (r)" `Quick Test_precedence.parens_right;
-      ] );
-    ( "Test_simplify",
-      [
-        test_case "Simplify 0 + x" `Quick Test_simplify.add_0_x;
-        test_case "Simplify x + 0" `Quick Test_simplify.add_x_0;
-        test_case "Simplify sub" `Quick Test_simplify.sub;
-        test_case "Simplify x - 0" `Quick Test_simplify.sub_x_0;
-        test_case "Simplify x - x" `Quick Test_simplify.sub_x_x;
-        test_case "Simplify mul" `Quick Test_simplify.mul;
-        test_case "Simplify 0 * x" `Quick Test_simplify.mul_0_x;
-        test_case "Simplify x * 0" `Quick Test_simplify.mul_x_0;
-        test_case "Simplify 1 * x" `Quick Test_simplify.mul_1_x;
-        test_case "Simplify x * 1" `Quick Test_simplify.mul_x_1;
-        test_case "Simplify exp" `Quick Test_simplify.exp;
-        test_case "Simplify 0 ^ x" `Quick Test_simplify.exp_0_x;
-        test_case "Simplify x ^ 0" `Quick Test_simplify.exp_x_0;
-        test_case "Simplify 1 ^ x" `Quick Test_simplify.exp_1_x;
-        test_case "Simplify x ^ 1" `Quick Test_simplify.exp_x_1;
-        test_case "Simplify neg" `Quick Test_simplify.neg;
-        test_case "Simplify example" `Quick Test_simplify.example;
-      ] );
-    ( "Test_count",
-      [
-        test_case "Simplify a" `Quick Test_count.var;
-        test_case "Simplify 1 + 1" `Quick Test_count.add_1_1;
-        test_case "Simplify (1 + 2) * (3 + 4)" `Quick Test_count.mul_compound;
-        test_case "Simplify 0 + x" `Quick Test_count.add_0_x;
-        test_case "Simplify x + 0" `Quick Test_count.add_x_0;
-        test_case "Simplify x - 0" `Quick Test_count.sub_x_0;
-        test_case "Simplify x - x" `Quick Test_count.sub_x_x;
-        test_case "Simplify 0 * x" `Quick Test_count.mul_0_x;
-        test_case "Simplify x * 0" `Quick Test_count.mul_x_0;
-        test_case "Simplify 1 * x" `Quick Test_count.mul_1_x;
-        test_case "Simplify x * 1" `Quick Test_count.mul_x_1;
-        test_case "Simplify 0 ^ x" `Quick Test_count.exp_0_x;
-        test_case "Simplify x ^ 0" `Quick Test_count.exp_x_0;
-        test_case "Simplify 1 ^ x" `Quick Test_count.exp_1_x;
-        test_case "Simplify x ^ 1" `Quick Test_count.exp_x_1;
-        test_case "Simplify 0 + (0 + (1 - 1))" `Quick Test_count.add_compound;
-        test_case "Simplify (- - (1 - 1))" `Quick Test_count.neg_compound;
-      ] );
+    ("Test_parse", Test_parse.(generate inputs));
+    ("Test_simplify", Test_simplify.(generate inputs));
+    ("Test_count", Test_count.(generate inputs));
     ("Test_more", Test_more.(generate inputs));
   ]
 
