@@ -1,0 +1,26 @@
+(mdx
+ (deps
+  (package atp))
+ (libraries ppx_prop))
+
+(rule
+ (target prop_logic.html)
+ (deps prop_logic.md)
+ (action
+  (run
+   pandoc
+   %{deps}
+   -f
+   gfm
+   -t
+   html
+   --katex
+   --no-highlight
+   --standalone
+   --metadata
+   "title=Propositional Logic"
+   --wrap=none
+   --variable
+   "maxwidth=40em"
+   -o
+   %{target})))

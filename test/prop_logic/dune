@@ -1,8 +1,3 @@
-(mdx
- (deps
-  (package atp))
- (libraries ppx_prop))
-
 (test
  (name ppx_prop_test)
  (modules ppx_prop_test)
@@ -16,25 +11,3 @@
  (libraries alcotest prop_logic)
  (preprocess
   (pps ppx_prop)))
-
-(rule
- (target prop_logic.html)
- (deps README.md)
- (action
-  (run
-   pandoc
-   %{deps}
-   -f
-   gfm
-   -t
-   html
-   --katex
-   --no-highlight
-   --standalone
-   --metadata
-   "title=Propositional Logic"
-   --wrap=none
-   --variable
-   "maxwidth=40em"
-   -o
-   %{target})))
