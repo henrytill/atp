@@ -8,6 +8,4 @@
 (test
  (name prop_logic_test)
  (modules prop_logic_test)
- (libraries alcotest prop_logic)
- (preprocess
-  (pps ppx_prop)))
+ (libraries alcotest prop_logic))

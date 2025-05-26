@@ -8,14 +8,14 @@ module Test_parse = struct
 
   let atom () =
     let expected : Syntax.t = Atom (Syntax.Prop.inj "a") in
-    let actual = {%prop| a |} in
+    let actual = Input.parse_string_exn {| a |} in
     Alcotest.(check syntax) same_fm expected actual
 
   let example () =
     let expected : Syntax.t =
       Imp (Or (Atom (Syntax.Prop.inj "p"), Atom (Syntax.Prop.inj "q")), Atom (Syntax.Prop.inj "r"))
     in
-    let actual = {%prop| p \/ q ==> r |} in
+    let actual = Input.parse_string_exn {| p \/ q ==> r |} in
     Alcotest.(check syntax) same_fm expected actual
 
   let another_example () =
@@ -26,21 +26,21 @@ module Test_parse = struct
             ( And (Atom (Syntax.Prop.inj "q"), Not (Atom (Syntax.Prop.inj "r"))),
               Atom (Syntax.Prop.inj "s") ) )
     in
-    let actual = {%prop| p ==> q /\ ~ r \/ s |} in
+    let actual = Input.parse_string_exn {| p ==> q /\ ~ r \/ s |} in
     Alcotest.(check syntax) same_fm expected actual
 
   let right_associative_ands () =
     let expected : Syntax.t =
       And (Atom (Syntax.Prop.inj "p"), And (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r")))
     in
-    let actual = {%prop| p /\ q /\ r |} in
+    let actual = Input.parse_string_exn {| p /\ q /\ r |} in
     Alcotest.(check syntax) same_fm expected actual
 
   let right_associative_imps () =
     let expected : Syntax.t =
       Imp (Atom (Syntax.Prop.inj "p"), Imp (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r")))
     in
-    let actual = {%prop| p ==> q ==> r |} in
+    let actual = Input.parse_string_exn {| p ==> q ==> r |} in
     Alcotest.(check syntax) same_fm expected actual
 end
 
@@ -50,22 +50,22 @@ module Test_pp = struct
 
   let example () =
     let expected = "((p \\/ q) ==> r)" in
-    let actual = to_string {%prop| p \/ q ==> r |} in
+    let actual = to_string (Input.parse_string_exn {| p \/ q ==> r |}) in
     Alcotest.(check string) same_string expected actual
 
   let another_example () =
     let expected = "(p ==> ((q /\\ (~ r)) \\/ s))" in
-    let actual = to_string {%prop| p ==> q /\ ~r \/ s |} in
+    let actual = to_string (Input.parse_string_exn {| p ==> q /\ ~r \/ s |}) in
     Alcotest.(check string) same_string expected actual
 
   let right_associative_ands () =
     let expected = "(p /\\ (q /\\ r))" in
-    let actual = to_string {%prop| p /\ q /\ r |} in
+    let actual = to_string (Input.parse_string_exn {| p /\ q /\ r |}) in
     Alcotest.(check string) same_string expected actual
 
   let right_associative_imps () =
     let expected = "(p ==> (q ==> r))" in
-    let actual = to_string {%prop| p ==> q ==> r |} in
+    let actual = to_string (Input.parse_string_exn {| p ==> q ==> r |}) in
     Alcotest.(check string) same_string expected actual
 end
 
@@ -82,7 +82,7 @@ module Test_semantics = struct
       | _ -> failwith "unknown prop"
     in
     let expected = true in
-    let actual = Semantics.eval {%prop| p /\ q ==> q /\ r |} v in
+    let actual = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
     Alcotest.(check bool) same_bool expected actual
 
   let another_example () =
@@ -94,7 +94,7 @@ module Test_semantics = struct
       | _ -> failwith "unknown prop"
     in
     let expected = false in
-    let actual = Semantics.eval {%prop| p /\ q ==> q /\ r |} v in
+    let actual = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
     Alcotest.(check bool) same_bool expected actual
 
   module Int_semantics = Semantics_internal.Make (Int)
@@ -111,51 +111,54 @@ module Test_semantics = struct
 
   let atoms_example () =
     let expected = Syntax.[ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
-    let actual = Semantics.atoms {%prop| p /\ q \/ s ==> ~p \/ (r <=> s) |} in
+    let actual = Semantics.atoms (Input.parse_string_exn {| p /\ q \/ s ==> ~p \/ (r <=> s) |}) in
     Alcotest.(check (list prop)) same_list expected actual
 
   let tautology_examples () =
     let fms =
       [
-        {%prop| true <=> false ==> false |};
-        {%prop| ~p <=> p ==> false |};
-        {%prop| p /\ q <=> (p ==> q ==> false) ==> false |};
-        {%prop| p \/ q <=> (p ==> false) ==> q |};
-        {%prop| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};
+        {| true <=> false ==> false |};
+        {| ~p <=> p ==> false |};
+        {| p /\ q <=> (p ==> q ==> false) ==> false |};
+        {| p \/ q <=> (p ==> false) ==> q |};
+        {| (p <=> q) <=> ((p ==> q) ==> (q ==> p) ==> false) ==> false |};
       ]
     in
-    Alcotest.(check bool) same_bool true (List.for_all Semantics.tautology fms)
+    Alcotest.(check bool)
+      same_bool
+      true
+      (List.for_all (Fun.compose Semantics.tautology Input.parse_string_exn) fms)
 
   let true_taut () =
-    let fm = {%prop| true |} in
+    let fm = Input.parse_string_exn {| true |} in
     Alcotest.(check bool) same_bool true (Semantics.tautology fm)
 
   let true_satis () =
-    let fm = {%prop| true |} in
+    let fm = Input.parse_string_exn {| true |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let peirce_taut () =
-    let fm = {%prop| ((p ==> q) ==> p) ==> p |} in
+    let fm = Input.parse_string_exn {| ((p ==> q) ==> p) ==> p |} in
     Alcotest.(check bool) same_bool true (Semantics.tautology fm)
 
   let peirce_satis () =
-    let fm = {%prop| ((p ==> q) ==> p) ==> p |} in
+    let fm = Input.parse_string_exn {| ((p ==> q) ==> p) ==> p |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let example_not_taut () =
-    let fm = {%prop| p /\ q ==> q /\ r |} in
+    let fm = Input.parse_string_exn {| p /\ q ==> q /\ r |} in
     Alcotest.(check bool) same_bool false (Semantics.tautology fm)
 
   let example_satis () =
-    let fm = {%prop| p /\ q ==> q /\ r |} in
+    let fm = Input.parse_string_exn {| p /\ q ==> q /\ r |} in
     Alcotest.(check bool) same_bool true (Semantics.satisfiable fm)
 
   let contradiction_not_taut () =
-    let fm = {%prop| p /\ ~p |} in
+    let fm = Input.parse_string_exn {| p /\ ~p |} in
     Alcotest.(check bool) same_bool false (Semantics.tautology fm)
 
   let contradiction_unsatis () =
-    let fm = {%prop| p /\ ~p |} in
+    let fm = Input.parse_string_exn {| p /\ ~p |} in
     Alcotest.(check bool) same_bool true (Semantics.unsatisfiable fm)
 end
 
