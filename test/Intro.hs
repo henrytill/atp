@@ -9,4 +9,9 @@ tests :: TestTree
 tests =
   testGroup
     "Intro"
-    [Quote.tests, Semantics.tests, Semantics.moreTests, Syntax.tests]
+    [ Quote.tests
+    , Semantics.simplifyTests
+    , Semantics.simplifyPartialTests
+    , Semantics.simplifyWithCountTests
+    , Syntax.tests
+    ]
