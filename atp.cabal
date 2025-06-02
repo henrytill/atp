@@ -51,6 +51,7 @@ test-suite atp-test
     other-modules:       Intro
                          Intro.QuoteTests
                          Intro.SemanticsTests
+                         Intro.SemanticsTests.Data
                          Intro.SyntaxTests
                          PropLogic
                          PropLogic.Properties
@@ -64,6 +65,7 @@ test-suite atp-test
                          tasty-quickcheck >=0.10 && <0.12,
                          atp
     hs-source-dirs:      test
+    include-dirs:        include
     default-language:    Haskell98
     default-extensions:  ImportQualifiedPost
 
