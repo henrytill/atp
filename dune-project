@@ -29,6 +29,8 @@
    (>= 5.2.0))
   dune
   menhir
+  (cppo
+   (>= 1.8.0))
   conf-pandoc
   (alcotest
    (and

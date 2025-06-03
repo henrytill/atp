@@ -1,0 +1,25 @@
+(* -*- mode: prog; -*- *)
+
+open Intro
+
+let simplify : (Syntax.t * string) list = [
+#define VAR(x, input) (Var x, input);
+#define CONST(x, input) (Const x, input);
+#include "intro_simplify.def"
+#undef VAR
+#undef CONST
+]
+
+let simplify_with_count : (Syntax.t * int * string) list = [
+#define COUNTED_VAR(x, n, input) (Var x, n, input);
+#define COUNTED_CONST(x, n, input) (Const x, n, input);
+#include "intro_simplify_with_count.def"
+#undef COUNTED_VAR
+#undef COUNTED_CONST
+]
+
+let simplify_partial : (string * string) list = [
+#define PARTIAL(output, input) (output, input);
+#include "intro_simplify_partial.def"
+#undef PARTIAL
+]

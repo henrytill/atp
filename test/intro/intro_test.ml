@@ -36,38 +36,7 @@ module Test_parse_string = struct
 end
 
 module Test_simplify = struct
-  let inputs : (Syntax.t * string) list =
-    [
-      (Var "x", {| 0 + x |});
-      (Var "x", {| x + 0 |});
-      (Const 1, {| 3 - 2 |});
-      (Var "x", {| x - 0 |});
-      (Const 0, {| x - x |});
-      (Const 12, {| 3 * 4 |});
-      (Const 0, {| 0 * x |});
-      (Const 0, {| x * 0 |});
-      (Var "x", {| 1 * x |});
-      (Var "x", {| x * 1 |});
-      (Const 8, {| 2 ^ 3 |});
-      (Const 0, {| 0 ^ x |});
-      (Const 1, {| x ^ 0 |});
-      (Const 1, {| 1 ^ x |});
-      (Var "x", {| x ^ 1 |});
-      (Const 0, {| x - - - x |});
-      (Const 15, {| (0 * x + 1) * 3 + 12 |});
-      (Const 7, {| 1 + 2 * 3 |});
-      (Const 21, {| (1 + 2) * (3 + 4) |});
-      (Const 15, {| (0 * x + 1) * 3 + 12 |});
-      (Const 0, {| 0 + (0 + (1 - 1)) |});
-      (Const 0, {| z * (0 * (x * y)) |});
-      (Const 8, {| 2 ^ (1 + 2) |});
-      (Var "x", {| 5 + (x - 5) |});
-      (Var "x", {| 3 + ((x - 1) - 2) |});
-      (Var "x", {| ((x * 1) + 0) - ((y - y) * z) |});
-      (Const 1, {| 1 + ((x - x) * (y + z)) |});
-    ]
-
-  let generate ?(is = inputs) () =
+  let generate ?(is = Intro_test_data.simplify) () =
     let f (output, input) =
       let expected = Some output in
       let actual = Option.map Semantics.simplify (Input.parse_string input) in
@@ -78,28 +47,7 @@ module Test_simplify = struct
 end
 
 module Test_simplify_with_count = struct
-  let inputs : (Syntax.t * int * string) list =
-    [
-      (Var "a", 1, {| a |});
-      (Const 2, 4, {| 1 + 1 |});
-      (Const 21, 10, {| (1 + 2) * (3 + 4) |});
-      (Var "x", 3, {| 0 + x |});
-      (Var "x", 3, {| x + 0 |});
-      (Var "x", 3, {| x - 0 |});
-      (Const 0, 1, {| x - x |});
-      (Const 0, 1, {| 0 * x |});
-      (Const 0, 1, {| x * 0 |});
-      (Var "x", 3, {| 1 * x |});
-      (Var "x", 3, {| x * 1 |});
-      (Const 0, 1, {| 0 ^ x |});
-      (Const 1, 1, {| x ^ 0 |});
-      (Const 1, 1, {| 1 ^ x |});
-      (Var "x", 3, {| x ^ 1 |});
-      (Const 0, 5, {| 0 + (0 + (1 - 1)) |});
-      (Const 0, 3, {| (- - (1 - 1)) |});
-    ]
-
-  let generate ?(is = inputs) () =
+  let generate ?(is = Intro_test_data.simplify_with_count) () =
     let f (output, count, input) =
       let expected = Some (output, count) in
       let actual = Option.map Semantics.simplify_with_count (Input.parse_string input) in
@@ -110,29 +58,7 @@ module Test_simplify_with_count = struct
 end
 
 module Test_simplify_partial = struct
-  let inputs : (string * string) list =
-    [
-      ({| x + 15 |}, {| x + 15 - 12 * 0 |});
-      ({| -x |}, {| -(-(-(x))) |});
-      ({| x  + y |}, {| 0 + (x + (0 + y)) |});
-      ({| x * y |}, {| 1 * (x * (1 * y)) |});
-      ({| x - (y - (y - x)) |}, {| x - (y - (y - x)) |});
-      ({| x + 1 |}, {| (x + 0) * (1 + (y - y)) + (z ^ 0) |});
-      ({| x + z |}, {| (x + 0) * (1 + (y - y)) + (z ^ 1) |});
-      ({| x + 3 |}, {| ((((x + 1) - 1) + 2) - 2) + 3 |});
-      (* Tests for c1 + (x - c2) -> x when c1 == c2 *)
-      ({| y + 3 |}, {| 7 + ((y + 3) - 7) |});
-      (* Tests for c1 - (x + c2) -> -x when c1 == c2 *)
-      ({| -z |}, {| 4 - (z + 4) |});
-      ({| -(a * b) |}, {| 10 - ((a * b) + 10) |});
-      (* More complex nested cases *)
-      ({| -y |}, {| 5 - ((3 + (y + 2))) |});
-      ({| x * (y + z) |}, {| x * (y + (z * (2 - 1))) + (0 * w) |});
-      ({| x * y |}, {| (x * (y + 0)) + (0 * z) |});
-      ({| x * y |}, {| x * (y ^ ((0 + 2) - 1)) |});
-    ]
-
-  let generate ?(is = inputs) () =
+  let generate ?(is = Intro_test_data.simplify_partial) () =
     let f (output, input) =
       let expected = Input.parse_string output in
       let actual = Option.map Semantics.simplify (Input.parse_string input) in

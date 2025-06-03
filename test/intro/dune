@@ -1,4 +1,14 @@
 (test
  (name intro_test)
- (modules intro_test)
+ (modules intro_test intro_test_data)
  (libraries alcotest intro))
+
+(rule
+ (target intro_test_data.ml)
+ (deps
+  intro_test_data.ml.in
+  intro_simplify.def
+  intro_simplify_with_count.def
+  intro_simplify_partial.def)
+ (action
+  (run %{bin:cppo} %{dep:intro_test_data.ml.in} -o %{target})))
