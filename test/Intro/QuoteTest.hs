@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Intro.QuoteTests where
+module Intro.QuoteTest where
 
 import Intro.Quote (intro)
 import Intro.Syntax (Expression (..))

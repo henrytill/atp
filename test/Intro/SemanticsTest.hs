@@ -1,9 +1,9 @@
-module Intro.SemanticsTests where
+module Intro.SemanticsTest where
 
 import Intro.Lexer (alexStartPos, lex)
 import Intro.Parser (parseIntro)
 import Intro.Semantics (simplify, simplifyWithCount)
-import Intro.SemanticsTests.Data qualified as Data
+import Intro.SemanticsTest.Data qualified as Data
 import Intro.Syntax (Expression (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))

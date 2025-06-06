@@ -1,8 +1,8 @@
 module Intro (tests) where
 
-import Intro.QuoteTests qualified as Quote
-import Intro.SemanticsTests qualified as Semantics
-import Intro.SyntaxTests qualified as Syntax
+import Intro.QuoteTest qualified as Quote
+import Intro.SemanticsTest qualified as Semantics
+import Intro.SyntaxTest qualified as Syntax
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree

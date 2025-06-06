@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeApplications #-}
 
-module PropLogic.SemanticsTests where
+module PropLogic.SemanticsTest where
 
 import PropLogic.Quote (prop)
 import PropLogic.Semantics

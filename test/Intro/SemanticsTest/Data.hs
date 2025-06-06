@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 
-module Intro.SemanticsTests.Data where
+module Intro.SemanticsTest.Data where
 
 import Intro.Syntax (Expression (..))
 

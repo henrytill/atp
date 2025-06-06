@@ -49,14 +49,14 @@ test-suite atp-test
     main-is:             Main.hs
     type:                exitcode-stdio-1.0
     other-modules:       Intro
-                         Intro.QuoteTests
-                         Intro.SemanticsTests
-                         Intro.SemanticsTests.Data
-                         Intro.SyntaxTests
+                         Intro.QuoteTest
+                         Intro.SemanticsTest
+                         Intro.SemanticsTest.Data
+                         Intro.SyntaxTest
                          PropLogic
                          PropLogic.Properties
-                         PropLogic.SemanticsTests
-                         PropLogic.SyntaxTests
+                         PropLogic.SemanticsTest
+                         PropLogic.SyntaxTest
     -- other-extensions:
     build-depends:       base        >=4.17 && <5,
                          pretty      >=1.1  && <1.2,

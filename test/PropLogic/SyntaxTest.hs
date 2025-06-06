@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module PropLogic.SyntaxTests where
+module PropLogic.SyntaxTest where
 
 import PropLogic.Quote (prop)
 import Test.Tasty (TestTree, testGroup)
