@@ -5,22 +5,14 @@
 
 (rule
  (target prop_logic.html)
- (deps prop_logic.md)
+ (deps prop_logic.md defaults.yml)
  (action
   (run
    pandoc
-   %{deps}
-   -f
-   gfm
-   -t
-   html
-   --katex
-   --no-highlight
-   --standalone
+   %{dep:prop_logic.md}
+   --defaults
+   %{dep:defaults.yml}
    --metadata
    "title=Propositional Logic"
-   --wrap=none
-   --variable
-   "maxwidth=40em"
-   -o
+   --output
    %{target})))

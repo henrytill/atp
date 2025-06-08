@@ -1,0 +1,8 @@
+from: gfm
+to: html
+standalone: true
+html-math-method: katex
+highlight-style: null
+wrap: none
+variables:
+  maxwidth: 40em
