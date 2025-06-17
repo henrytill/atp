@@ -25,7 +25,7 @@ module Formula = struct
     | Exists of string * 'a t
     | Metavar of string
 
-  let pp_ast atom_pp_ast fmt fm =
+  let pp_ast atom_pp_ast fmt =
     let open Format in
     let wrap flag fmt fm pp =
       if flag then
@@ -47,13 +47,13 @@ module Formula = struct
       | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x unwrapped p
       | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x unwrapped p
       | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
-    and wrapped fmt fm = go true fmt fm
-    and unwrapped fmt fm = go false fmt fm in
-    match fm with
-    | False | True -> unwrapped fmt fm
-    | _ -> fprintf fmt "@[<hv 1>%a@]" wrapped fm
+    and wrapped fmt = go true fmt
+    and unwrapped fmt = go false fmt in
+    function
+    | (False | True) as b -> unwrapped fmt b
+    | fm -> fprintf fmt "@[<hv 1>%a@]" wrapped fm
 
-  let pp atom_pp fmt fm =
+  let pp atom_pp =
     let open Format in
     let rec go fmt = function
       | Atom a -> atom_pp fmt a
@@ -67,7 +67,7 @@ module Formula = struct
       | Forall _ | Exists _ -> failwith "unimplemented"
       | Metavar s -> fprintf fmt "@[<h>$%s]" s
     in
-    go fmt fm
+    go
 
   let rec equal atom_equal fm1 fm2 =
     match (fm1, fm2) with

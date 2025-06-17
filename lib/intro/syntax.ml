@@ -8,7 +8,7 @@ type t =
   | Exp of t * t
   | Metavar of string
 
-let pp_ast fmt expr =
+let pp_ast fmt =
   let open Format in
   let wrap flag fmt x pp =
     if flag then
@@ -26,13 +26,13 @@ let pp_ast fmt expr =
     | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
     | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
     | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
-  and wrapped fmt fm = go true fmt fm
-  and unwrapped fmt fm = go false fmt fm in
-  fprintf fmt "@[<hv 1>%a@]" wrapped expr
+  and wrapped fmt = go true fmt
+  and unwrapped fmt = go false fmt in
+  fprintf fmt "@[<hv 1>%a@]" wrapped
 
-let rec pp fmt expr =
+let rec pp fmt =
   let open Format in
-  match expr with
+  function
   | Var x -> fprintf fmt "%s" x
   | Const m -> fprintf fmt "%d" m
   | Neg a -> fprintf fmt "@[<h>(-@ %a)@]" pp a
