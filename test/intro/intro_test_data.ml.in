@@ -10,16 +10,16 @@ let simplify : (Syntax.t * string) list = [
 #undef CONST
 ]
 
+let simplify_partial : (string * string) list = [
+#define PARTIAL(output, input) (output, input);
+#include "intro_simplify_partial.def"
+#undef PARTIAL
+]
+
 let simplify_with_count : (Syntax.t * int * string) list = [
 #define COUNTED_VAR(x, n, input) (Var x, n, input);
 #define COUNTED_CONST(x, n, input) (Const x, n, input);
 #include "intro_simplify_with_count.def"
 #undef COUNTED_VAR
 #undef COUNTED_CONST
-]
-
-let simplify_partial : (string * string) list = [
-#define PARTIAL(output, input) (output, input);
-#include "intro_simplify_partial.def"
-#undef PARTIAL
 ]
