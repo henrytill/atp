@@ -199,7 +199,7 @@ true  true  true  | true
 
 ## 2.3 Validity, satisfiability and tautology
 
-**Peirce's Law, p. 39**
+#### Peirce's Law, p. 39
 
 $((p \implies q) \implies p) \implies p$
 
@@ -215,7 +215,7 @@ true  true  | true
 - : unit = ()
 ```
 
-**A simple contradiction, p. 40**
+#### A simple contradiction, p. 40
 
 $p \land \lnot p$
 
@@ -231,7 +231,7 @@ true  | false
 
 ### Tautology and satisﬁability checking
 
-**Examples, p. 41**
+#### Examples, p. 41
 
 $\forall v. \llbracket p \lor \lnot p \rrbracket _v = \text{true}$
 
@@ -459,7 +459,112 @@ $\forall v. \llbracket p \iff (q \iff r) \iff (p \iff q) \iff r \rrbracket _v = 
 
 ## 2.4 The De Morgan laws, adequacy and duality
 
-**Examples, p. 47**
+#### The laws
+
+```math
+\forall v. \llbracket \neg (p \lor q) \iff \neg p \land \neg q \rrbracket _v = \text{true}
+```
+
+The statement
+
+> I can not speak either Finnish or Swedish
+
+means the same thing as
+
+> I can not speak Finnish and I can not speak Swedish
+
+```ocaml
+# Semantics.tautology {%prop| ~(p \/ q) <=> ~p /\ ~q |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket \neg (p \land q) \iff \neg p \lor \neg q \rrbracket _v = \text{true}
+```
+
+The statement
+
+> I am not a wife and mother
+
+means the same thing as
+
+> Either I am not a wife or I am not a mother (or both)
+
+```ocaml
+# Semantics.tautology {%prop| ~(p /\ q) <=> ~p \/ ~q |};;
+- : bool = true
+```
+
+#### Variants
+
+These show us how to express either connective $\land$ and $\lor$ in terms of the other:
+
+```math
+\forall v. \llbracket p \lor q \iff \neg (\neg p \land \neg q) \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| p \/ q <=> ~(~p /\ ~q) |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket p \land q \iff \neg (\neg p \lor \neg q) \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| p /\ q <=> ~(~p \/ ~q) |};;
+- : bool = true
+```
+
+Similarly, we can find an equivalent for any formula using only atoms, $\land$, and $\neg$:
+
+```math
+\forall v. \llbracket \bot \iff p \land \neg p \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| false <=> p /\ ~p |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket \top \iff \neg (p \land \neg p) \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| true <=> ~(p /\ ~p) |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket p \lor q \iff \neg (\neg p \land \neg p) \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| p \/ q <=> ~(~p /\ ~q) |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket p \implies q \iff \neg (p \land \neg q)  \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| p ==> q <=> ~(p /\ ~q) |};;
+- : bool = true
+```
+
+```math
+\forall v. \llbracket p \iff q \iff \neg (p \land \neg q) \land \neg (\neg p \land q) \rrbracket _v = \text{true}
+```
+
+```ocaml
+# Semantics.tautology {%prop| p <=> q <=> ~(p /\ ~q) /\ ~(~p /\ q) |};;
+- : bool = true
+```
+
+#### Examples, p. 47
 
 $\forall v. \llbracket \top \iff \bot \implies \bot \rrbracket _v = \text{true}$
 
@@ -496,7 +601,7 @@ $\forall v. \llbracket (p \iff q) \iff ((p \implies q) \implies (q \implies p) \
 - : bool = true
 ```
 
-**Example, p. 56**
+#### Example, p. 56
 
 $(p \lor q \land r) \land (\lnot p \lor \lnot r)$
 
