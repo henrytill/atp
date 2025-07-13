@@ -27,25 +27,6 @@ eval (FmForAll {}) _ = undefined
 eval (FmExists {}) _ = undefined
 eval (FmMetaVar {}) _ = undefined
 
--- | Maps a function over all atoms in a formula while preserving structure
-onAtoms :: (a -> Formula b) -> Formula a -> Formula b
-onAtoms f = go
-  where
-    go FmFalse = FmFalse
-    go FmTrue = FmTrue
-    go (FmAtom a) = f a
-    go (FmNot p) = FmNot (go p)
-    go (FmAnd p q) = FmAnd (go p) (go q)
-    go (FmOr p q) = FmOr (go p) (go q)
-    go (FmImp p q) = FmImp (go p) (go q)
-    go (FmIff p q) = FmIff (go p) (go q)
-    go (FmForAll x p) = FmForAll x (go p)
-    go (FmExists x p) = FmExists x (go p)
-    go (FmMetaVar s) = FmMetaVar s
-
-overAtoms :: (a -> b -> b) -> Formula a -> b -> b
-overAtoms f fm b = foldr f b (MkAtoms fm)
-
 setify :: (Ord a) => [a] -> [a]
 setify = List.sort . List.nub
 
@@ -118,4 +99,4 @@ satisfiable = not . unsatisfiable
 
 -- | Substitutes atoms according to a partial function mapping
 psubst :: (Ord a, Hashable a) => Function a (Formula a) -> Formula a -> Formula a
-psubst subfn = onAtoms $ \p -> tryApplyWithDefault subfn p (FmAtom p)
+psubst subfn fm = fm >>= \p -> tryApplyWithDefault subfn p (FmAtom p)

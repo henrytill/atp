@@ -4,6 +4,7 @@
 
 module PropLogic.Syntax where
 
+import Control.Monad
 import Data.Data (Data, Typeable)
 import Data.Hashable
 import GHC.Generics (Generic)
@@ -26,6 +27,46 @@ data Formula a
 
 instance (Hashable a) => Hashable (Formula a)
 
+instance (Pretty a) => Pretty (Formula a) where
+  pPrint fm =
+    case fm of
+      FmFalse -> text "false"
+      FmTrue -> text "true"
+      FmAtom x -> pPrint x
+      FmNot x -> parens (char '~' <+> pPrint x)
+      FmAnd x y -> binary "/\\" x y
+      FmOr x y -> binary "\\/" x y
+      FmImp x y -> binary "==>" x y
+      FmIff x y -> binary "<=>" x y
+      FmForAll {} -> undefined
+      FmExists {} -> undefined
+      FmMetaVar s -> char '$' <> text s
+    where
+      binary s x y = parens (pPrint x <+> text s <+> pPrint y)
+
+instance Applicative Formula where
+  pure = FmAtom
+  (<*>) = ap
+
+instance Monad Formula where
+  (>>=) = flip onAtoms
+
+-- | Maps a function over all atoms in a formula while preserving structure
+onAtoms :: (a -> Formula b) -> Formula a -> Formula b
+onAtoms f = go
+  where
+    go FmFalse = FmFalse
+    go FmTrue = FmTrue
+    go (FmAtom a) = f a
+    go (FmNot p) = FmNot (go p)
+    go (FmAnd p q) = FmAnd (go p) (go q)
+    go (FmOr p q) = FmOr (go p) (go q)
+    go (FmImp p q) = FmImp (go p) (go q)
+    go (FmIff p q) = FmIff (go p) (go q)
+    go (FmForAll x p) = FmForAll x (go p)
+    go (FmExists x p) = FmExists x (go p)
+    go (FmMetaVar s) = FmMetaVar s
+
 newtype Atoms a = MkAtoms {unAtoms :: Formula a}
   deriving (Show, Eq, Functor)
 
@@ -44,22 +85,8 @@ instance Foldable Atoms where
       FmExists _ p -> foldr f z (MkAtoms p)
       FmMetaVar _ -> z
 
-instance (Pretty a) => Pretty (Formula a) where
-  pPrint fm =
-    case fm of
-      FmFalse -> text "false"
-      FmTrue -> text "true"
-      FmAtom x -> pPrint x
-      FmNot x -> parens (char '~' <+> pPrint x)
-      FmAnd x y -> binary "/\\" x y
-      FmOr x y -> binary "\\/" x y
-      FmImp x y -> binary "==>" x y
-      FmIff x y -> binary "<=>" x y
-      FmForAll {} -> undefined
-      FmExists {} -> undefined
-      FmMetaVar s -> char '$' <> text s
-    where
-      binary s x y = parens (pPrint x <+> text s <+> pPrint y)
+overAtoms :: (a -> b -> b) -> Formula a -> b -> b
+overAtoms f fm b = foldr f b (MkAtoms fm)
 
 newtype Prop = MkProp {unProp :: String}
   deriving (Show, Eq, Ord, Data, Typeable, Generic)
