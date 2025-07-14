@@ -7,6 +7,7 @@ import Data.Bits qualified as Bits
 import Data.Foldable (toList)
 import Data.Hashable (Hashable)
 import Data.List qualified as List
+import Data.List.NonEmpty qualified as NonEmpty
 import Data.Map.Strict (Map, (!))
 import Data.Map.Strict qualified as Map
 import Data.Monoid (All (..))
@@ -29,7 +30,7 @@ eval (FmExists {}) _ = undefined
 eval (FmMetaVar {}) _ = undefined
 
 setify :: (Ord a) => [a] -> [a]
-setify = List.sort . List.nub
+setify = map NonEmpty.head . NonEmpty.group . List.sort
 
 atoms :: (Ord a) => Formula a -> [a]
 atoms = setify . toList . MkAtoms
