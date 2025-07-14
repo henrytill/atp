@@ -1,15 +1,29 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module PropLogic.Semantics.Function where
 
-import Data.Bits
+import Data.Bits (xor, (.&.))
 import Data.Hashable (Hashable, hash)
 import Data.Maybe (fromMaybe)
 import Prelude hiding (undefined)
 
--- Polymorphic finite partial functions via Patricia trees
+-- | Polymorphic finite partial functions via Patricia trees
 data Function a b
   = Empty
-  | Leaf Int [(a, b)]
-  | Branch Int Int (Function a b) (Function a b)
+  | Leaf
+      -- | Key hash
+      Int
+      -- | Key-value pairs
+      [(a, b)]
+  | Branch
+      -- | Common prefix up to branching bit
+      Int
+      -- | Branching bit
+      Int
+      -- | Left branch
+      (Function a b)
+      -- | Right branch
+      (Function a b)
   deriving (Eq, Show)
 
 -- Create a new branch node while maintaining Patricia tree invariants
@@ -29,49 +43,56 @@ isUndefined :: Function a b -> Bool
 isUndefined Empty = False
 isUndefined _ = True
 
-applyWithDefault :: (Hashable a) => Function a b -> (a -> b) -> a -> b
-applyWithDefault f dflt x = look f
+applyWithDefault :: forall a b. (Hashable a) => Function a b -> (a -> b) -> a -> b
+applyWithDefault f def x = look f
   where
     k = hash x
-    look Empty = dflt x
-    look (Leaf h pairs)
-      | h == k = fromMaybe (dflt x) (lookup x pairs)
-      | otherwise = dflt x
-    look (Branch p b left right)
-      | (k `xor` p) .&. (b - 1) == 0 = look (if k .&. b == 0 then left else right)
-      | otherwise = dflt x
+    d = def x
 
-tryApplyWithDefault :: (Hashable a) => Function a b -> a -> b -> b
-tryApplyWithDefault f a dflt = applyWithDefault f (const dflt) a
+    look :: Function a b -> b
+    look Empty = d
+    look (Leaf h pairs)
+      | h == k = fromMaybe d (lookup x pairs)
+      | otherwise = d
+    look (Branch p b left right)
+      | (k `xor` p) .&. (b - 1) == 0 = look $ if k .&. b == 0 then left else right
+      | otherwise = d
+
+tryApplyWithDefault :: (Hashable a) => Function a b -> b -> a -> b
+tryApplyWithDefault f = applyWithDefault f . const
 
 apply :: (Hashable a) => Function a b -> a -> b
-apply f = applyWithDefault f (\_ -> error "apply")
+apply f = applyWithDefault f . const $ error "apply"
 
-updateAssocList :: (Ord k) => k -> v -> [(k, v)] -> [(k, v)]
-updateAssocList k v [] = [(k, v)]
-updateAssocList k v pairs@((k', v') : rest) =
-  case compare k k' of
-    LT -> (k, v) : pairs
-    EQ -> (k, v) : rest
-    GT -> (k', v') : updateAssocList k v rest
+updateAssocList :: (Ord a) => a -> b -> [(a, b)] -> [(a, b)]
+updateAssocList k v = go
+  where
+    go [] = [(k, v)]
+    go (x@(k', _) : xs)
+      | k < k' = (k, v) : x : xs
+      | k == k' = (k, v) : xs
+      | otherwise = x : go xs
 
 -- Insert or update a value in the function
-insert :: (Ord k, Hashable k) => k -> v -> Function k v -> Function k v
-insert x y = update (hash x)
+insert :: forall a b. (Ord a, Hashable a) => a -> b -> Function a b -> Function a b
+insert x y = go
   where
-    update k Empty = Leaf k [(x, y)]
-    update k leaf@(Leaf h pairs)
+    k = hash x
+
+    go :: Function a b -> Function a b
+    go Empty = Leaf k [(x, y)]
+    go leaf@(Leaf h pairs)
       | h == k = Leaf h (updateAssocList x y pairs)
       | otherwise = mkBranch h leaf k (Leaf k [(x, y)])
-    update k branch@(Branch p b left right)
+    go branch@(Branch p b left right)
       | k .&. (b - 1) /= p = mkBranch p branch k (Leaf k [(x, y)])
-      | k .&. b == 0 = Branch p b (update k left) right
-      | otherwise = Branch p b left (update k right)
+      | k .&. b == 0 = Branch p b (go left) right
+      | otherwise = Branch p b left (go right)
 
 -- Basic insert operator
-(|->) :: (Ord k, Hashable k) => k -> v -> Function k v -> Function k v
+(|->) :: (Ord a, Hashable a) => a -> b -> Function a b -> Function a b
 (|->) = insert
 
 -- Create a function defined at a single point (undefined elsewhere)
-(|=>) :: (Ord k, Hashable k) => k -> v -> Function k v
+(|=>) :: (Ord a, Hashable a) => a -> b -> Function a b
 x |=> y = (x |-> y) undefined

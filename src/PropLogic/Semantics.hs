@@ -2,6 +2,7 @@
 
 module PropLogic.Semantics where
 
+import Control.Monad
 import Data.Bits qualified as Bits
 import Data.Foldable (toList)
 import Data.Hashable (Hashable)
@@ -99,4 +100,4 @@ satisfiable = not . unsatisfiable
 
 -- | Substitutes atoms according to a partial function mapping
 psubst :: (Ord a, Hashable a) => Function a (Formula a) -> Formula a -> Formula a
-psubst subfn fm = fm >>= \p -> tryApplyWithDefault subfn p (FmAtom p)
+psubst f fm = fm >>= join (tryApplyWithDefault f . FmAtom)
