@@ -89,8 +89,9 @@ printTruthtable fm = vcat $ header : separator : body
     body = onAllValuations mkRow as
 
 tautology :: Formula Prop -> Bool
-tautology fm = getAll . mconcat . onAllValuations subfn . atoms $ fm
+tautology fm = getAll . mconcat . onAllValuations subfn $ atoms fm
   where
+    subfn :: (Prop -> Bool) -> All
     subfn = All . eval fm
 
 unsatisfiable :: Formula Prop -> Bool
