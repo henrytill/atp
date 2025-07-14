@@ -1,10 +1,10 @@
+{-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module PropLogic.Semantics.Function where
 
 import Data.Bits (xor, (.&.))
 import Data.Hashable (Hashable, hash)
-import Data.Maybe (fromMaybe)
 import Prelude hiding (undefined)
 
 -- | Polymorphic finite partial functions via Patricia trees
@@ -33,8 +33,12 @@ mkBranch p1 t1 p2 t2 =
       b = zp .&. (-zp) -- Find lowest differing bit aka the branching bit
       p = p1 .&. (b - 1) -- Get common prefix up to branching bit
    in if p1 .&. b == 0
-        then Branch p b t1 t2 -- p1 has 0 in branching position
-        else Branch p b t2 t1 -- p1 has 1 in branching position
+        then
+          -- p1 has 0 in branching position
+          Branch p b t1 t2
+        else
+          -- p1 has 1 in branching position
+          Branch p b t2 t1
 
 undefined :: Function a b
 undefined = Empty
@@ -52,10 +56,13 @@ applyWithDefault f def x = look f
     look :: Function a b -> b
     look Empty = d
     look (Leaf h pairs)
-      | h == k = fromMaybe d (lookup x pairs)
+      | h == k
+      , Just y <- lookup x pairs =
+          y
       | otherwise = d
     look (Branch p b left right)
-      | (k `xor` p) .&. (b - 1) == 0 = look $ if k .&. b == 0 then left else right
+      | (k `xor` p) .&. (b - 1) == 0 =
+          look $ if k .&. b == 0 then left else right
       | otherwise = d
 
 tryApplyWithDefault :: (Hashable a) => Function a b -> b -> a -> b
@@ -82,10 +89,10 @@ insert x y = go
     go :: Function a b -> Function a b
     go Empty = Leaf k [(x, y)]
     go leaf@(Leaf h pairs)
-      | h == k = Leaf h (updateAssocList x y pairs)
-      | otherwise = mkBranch h leaf k (Leaf k [(x, y)])
+      | h == k = Leaf h $ updateAssocList x y pairs
+      | otherwise = mkBranch h leaf k $ Leaf k [(x, y)]
     go branch@(Branch p b left right)
-      | k .&. (b - 1) /= p = mkBranch p branch k (Leaf k [(x, y)])
+      | k .&. (b - 1) /= p = mkBranch p branch k $ Leaf k [(x, y)]
       | k .&. b == 0 = Branch p b (go left) right
       | otherwise = Branch p b left (go right)
 
