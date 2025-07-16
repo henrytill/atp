@@ -43,11 +43,12 @@ onAllValuations subfn as =
     asLen = length as
 
     offsetTable :: Map a Int
-    (_, offsetTable) =
-      List.foldl'
-        (\(i, m) a -> (pred i, Map.insert a i m))
-        (pred asLen, Map.empty)
-        as
+    offsetTable =
+      snd
+        . List.foldl'
+          (\(i, m) a -> (pred i, Map.insert a i m))
+          (pred asLen, Map.empty)
+        $ as
 
     valuationFor :: Int -> a -> Bool
     valuationFor row a = Bits.testBit row $ offsetTable ! a
