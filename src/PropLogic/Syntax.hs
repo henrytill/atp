@@ -44,13 +44,6 @@ instance (Pretty a) => Pretty (Formula a) where
     where
       binary s x y = parens (pPrint x <+> text s <+> pPrint y)
 
-instance Applicative Formula where
-  pure = FmAtom
-  (<*>) = ap
-
-instance Monad Formula where
-  (>>=) = flip onAtoms
-
 -- | Maps a function over all atoms in a formula while preserving structure
 onAtoms :: (a -> Formula b) -> Formula a -> Formula b
 onAtoms f = go
