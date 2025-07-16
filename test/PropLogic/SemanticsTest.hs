@@ -33,9 +33,9 @@ tests =
     , testCase "Check atoms against example" $ do
         atoms [prop| p /\ q \/ s ==> ~p \/ (r <=> s) |] @?= MkProp <$> ["p", "q", "r", "s"]
     , testCase "Check that true is a tautology" $ do
-        tautology [prop| true |] @?= True
+        tautology @Prop [prop| true |] @?= True
     , testCase "Check that true is satisfiable" $ do
-        satisfiable [prop| true |] @?= True
+        satisfiable @Prop [prop| true |] @?= True
     , testCase "Check that Peirce's Law is a tautology" $ do
         tautology [prop| ((p ==> q) ==> p) ==> p |] @?= True
     , testCase "Check that Peirce's Law is satisfiable" $ do

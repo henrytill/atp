@@ -16,7 +16,7 @@ import PropLogic.Syntax (Atoms (..), Formula (..), Prop (..))
 import Text.PrettyPrint (Doc, text, vcat, (<>))
 import Prelude hiding ((<>))
 
-eval :: Formula Prop -> (Prop -> Bool) -> Bool
+eval :: Formula a -> (a -> Bool) -> Bool
 eval FmFalse _ = False
 eval FmTrue _ = True
 eval (FmAtom x) v = v x
@@ -88,16 +88,16 @@ printTruthtable fm = vcat $ header : separator : body
     body :: [Doc]
     body = onAllValuations mkRow as
 
-tautology :: Formula Prop -> Bool
+tautology :: forall a. (Eq a, Ord a) => Formula a -> Bool
 tautology fm = getAll . mconcat . onAllValuations subfn $ atoms fm
   where
-    subfn :: (Prop -> Bool) -> All
+    subfn :: (a -> Bool) -> All
     subfn = All . eval fm
 
-unsatisfiable :: Formula Prop -> Bool
+unsatisfiable :: (Eq a, Ord a) => Formula a -> Bool
 unsatisfiable = tautology . FmNot
 
-satisfiable :: Formula Prop -> Bool
+satisfiable :: (Eq a, Ord a) => Formula a -> Bool
 satisfiable = not . unsatisfiable
 
 -- | Substitutes atoms according to a partial function mapping
