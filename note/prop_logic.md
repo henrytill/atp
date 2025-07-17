@@ -566,6 +566,8 @@ Similarly, we can find an equivalent for any formula using only atoms, $\land$, 
 
 #### Examples, p. 47
 
+Similarly, the following equivalences show that $\{ \implies, \bot \}$ is also adequate:
+
 $\forall v. \llbracket \top \iff \bot \implies \bot \rrbracket _v = \text{true}$
 
 ```ocaml
