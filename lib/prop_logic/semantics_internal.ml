@@ -97,5 +97,5 @@ module Make (Atom : ATOM_TYPE) = struct
 
   module Function = Function.Make (Atom)
 
-  let psubst subfn = onatoms (fun p -> Function.tryapplyd subfn p (Syntax.Formula.Atom p))
+  let psubst subfn = onatoms (fun p -> Function.tryapplyd subfn (Syntax.Formula.Atom p) p)
 end

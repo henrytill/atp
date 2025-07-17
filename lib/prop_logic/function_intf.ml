@@ -34,8 +34,8 @@ module type S = sig
 
       If [k] is not mapped in [f], returns [default k]. *)
 
-  val tryapplyd : 'a t -> key -> 'a -> 'a
-  (** [tryapplyd f k default] applies function [f] to key [k].
+  val tryapplyd : 'a t -> 'a -> key -> 'a
+  (** [tryapplyd f default k] applies function [f] to key [k].
 
       If [k] is not mapped in [f], returns [default]. *)
 
