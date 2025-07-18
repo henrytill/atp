@@ -12,9 +12,9 @@ let rec eval fm v =
   | Forall _ | Exists _ -> failwith "unimplemented"
   | Metavar _ -> failwith "metavariable"
 
-let rec onatoms f fm =
+let rec onatoms f =
   let open Syntax.Formula in
-  match fm with
+  function
   | Atom a -> f a
   | False -> False
   | True -> True
