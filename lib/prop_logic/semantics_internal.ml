@@ -1,9 +1,9 @@
 let rec eval fm v =
   let open Syntax.Formula in
   match fm with
+  | Atom a -> v a
   | False -> false
   | True -> true
-  | Atom x -> v x
   | Not p -> not (eval p v)
   | And (p, q) -> eval p v && eval q v
   | Or (p, q) -> eval p v || eval q v
