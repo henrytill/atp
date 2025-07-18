@@ -72,6 +72,7 @@ end
 module Test_semantics = struct
   let same_bool = "same bool"
   let same_list = "same list"
+  let same_fm = "same formula"
 
   let example () =
     let v prop =
@@ -160,6 +161,23 @@ module Test_semantics = struct
   let contradiction_unsatis () =
     let fm = Input.parse_string_exn {| p /\ ~p |} in
     Alcotest.(check bool) same_bool true (Semantics.unsatisfiable fm)
+
+  let psimplify_example () =
+    let expected : Syntax.t =
+      Imp (Not (Atom (Syntax.Prop.inj "x")), Not (Atom (Syntax.Prop.inj "y")))
+    in
+    let actual =
+      Semantics.psimplify
+        (Input.parse_string_exn {| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |})
+    in
+    Alcotest.(check syntax) same_fm expected actual
+
+  let psimplify_constants () =
+    let expected : Syntax.t = True in
+    let actual =
+      Semantics.psimplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |})
+    in
+    Alcotest.(check syntax) same_fm expected actual
 end
 
 module Test_internals = struct
@@ -208,6 +226,8 @@ let prop_logic_tests =
         test_case "The example is satisfiable" `Quick Test_semantics.example_satis;
         test_case "Contradiction is not a tautology" `Quick Test_semantics.contradiction_not_taut;
         test_case "Contradiction is unsatisfiable" `Quick Test_semantics.contradiction_unsatis;
+        test_case "Simplify example" `Quick Test_semantics.psimplify_example;
+        test_case "Simplify formula with constants" `Quick Test_semantics.psimplify_constants;
       ] );
     ( "Test_internals",
       [

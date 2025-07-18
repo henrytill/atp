@@ -629,3 +629,10 @@ true  true  true  | false
 # Semantics.dual {%prop| p \/ ~p |};;
 - : Syntax.Prop.t Syntax.Formula.t = (And (Atom "p", Not (Atom "p")))
 ```
+
+## 2.5 Simplification and negation normal form
+
+```ocaml
+# Semantics.psimplify {%prop| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |};;
+- : Syntax.Prop.t Syntax.Formula.t = (Imp (Not (Atom "x"), Not (Atom "y")))
+```
