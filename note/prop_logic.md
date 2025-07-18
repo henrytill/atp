@@ -622,3 +622,10 @@ true  true  true  | false
 ---------------------------
 - : unit = ()
 ```
+
+### Duality
+
+```ocaml
+# Semantics.dual {%prop| p \/ ~p |};;
+- : Syntax.Prop.t Syntax.Formula.t = (And (Atom "p", Not (Atom "p")))
+```

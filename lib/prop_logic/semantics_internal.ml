@@ -37,6 +37,17 @@ let rec overatoms f fm b =
   | Forall (_, p) | Exists (_, p) -> overatoms f p b
   | Metavar _ -> failwith "metavariable"
 
+let rec dual =
+  let open Syntax.Formula in
+  function
+  | Atom _ as fm -> fm
+  | False -> True
+  | True -> False
+  | Not p -> Not (dual p)
+  | And (p, q) -> Or (dual p, dual q)
+  | Or (p, q) -> And (dual p, dual q)
+  | _ -> failwith "Formula involves connectives ==> or <=>"
+
 module type ATOM_TYPE = sig
   type t
 
