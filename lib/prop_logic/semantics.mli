@@ -19,8 +19,8 @@ val overatoms : ('a -> 'b -> 'b) -> 'a Syntax.Formula.t -> 'b -> 'b
 val dual : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
 (** [dual fm] exchanges [And] with [Or] and [True] with [False] in [fm] *)
 
-val psimplify : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
-(** [psimplify fm] applies routine simplifications to [fm] *)
+val simplify : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
+(** [simplify fm] applies routine simplifications to [fm] *)
 
 val atom_union : ('a -> Syntax.Prop.t list) -> 'a Syntax.Formula.t -> Syntax.Prop.t list
 (** [atom_union f fm] collects and combines lists of atomic propositions from [fm] using [f].

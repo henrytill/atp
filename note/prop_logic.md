@@ -633,6 +633,6 @@ true  true  true  | false
 ## 2.5 Simplification and negation normal form
 
 ```ocaml
-# Semantics.psimplify {%prop| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |};;
+# Semantics.simplify {%prop| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |};;
 - : Syntax.Prop.t Syntax.Formula.t = (Imp (Not (Atom "x"), Not (Atom "y")))
 ```

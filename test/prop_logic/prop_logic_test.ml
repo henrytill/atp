@@ -167,16 +167,14 @@ module Test_semantics = struct
       Imp (Not (Atom (Syntax.Prop.inj "x")), Not (Atom (Syntax.Prop.inj "y")))
     in
     let actual =
-      Semantics.psimplify
+      Semantics.simplify
         (Input.parse_string_exn {| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |})
     in
     Alcotest.(check syntax) same_fm expected actual
 
   let psimplify_constants () =
     let expected : Syntax.t = True in
-    let actual =
-      Semantics.psimplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |})
-    in
+    let actual = Semantics.simplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |}) in
     Alcotest.(check syntax) same_fm expected actual
 end
 

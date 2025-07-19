@@ -48,7 +48,7 @@ let rec dual =
   | Or (p, q) -> And (dual p, dual q)
   | _ -> failwith "Formula involves connectives ==> or <=>"
 
-let psimplify1 =
+let simplify1 =
   let open Syntax.Formula in
   function
   | Not False -> True
@@ -65,14 +65,14 @@ let psimplify1 =
   | Iff (p, False) | Iff (False, p) -> Not p
   | fm -> fm
 
-let rec psimplify =
+let rec simplify =
   let open Syntax.Formula in
   function
-  | Not p -> psimplify1 (Not (psimplify p))
-  | And (p, q) -> psimplify1 (And (psimplify p, psimplify q))
-  | Or (p, q) -> psimplify1 (Or (psimplify p, psimplify q))
-  | Imp (p, q) -> psimplify1 (Imp (psimplify p, psimplify q))
-  | Iff (p, q) -> psimplify1 (Iff (psimplify p, psimplify q))
+  | Not p -> simplify1 (Not (simplify p))
+  | And (p, q) -> simplify1 (And (simplify p, simplify q))
+  | Or (p, q) -> simplify1 (Or (simplify p, simplify q))
+  | Imp (p, q) -> simplify1 (Imp (simplify p, simplify q))
+  | Iff (p, q) -> simplify1 (Iff (simplify p, simplify q))
   | fm -> fm
 
 module type ATOM_TYPE = sig
