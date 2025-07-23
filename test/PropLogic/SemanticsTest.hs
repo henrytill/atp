@@ -53,4 +53,6 @@ tests =
             s = [prop| p /\ q |]
             f = p |=> s
         psubst f [prop| p /\ q /\ p /\ q |] @?= [prop| $s /\ q /\ $s /\ q |]
+    , testCase "Check that simplification works" $ do
+        simplify [prop| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |] @?= [prop| ~x ==> ~y |]
     ]

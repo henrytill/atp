@@ -29,6 +29,36 @@ eval (FmForAll {}) _ = undefined
 eval (FmExists {}) _ = undefined
 eval (FmMetaVar {}) _ = undefined
 
+simplify1 :: Formula a -> Formula a
+simplify1 (FmNot FmFalse) = FmTrue
+simplify1 (FmNot FmTrue) = FmFalse
+simplify1 (FmNot (FmNot p)) = p
+simplify1 (FmAnd _ FmFalse) = FmFalse
+simplify1 (FmAnd FmFalse _) = FmFalse
+simplify1 (FmAnd p FmTrue) = p
+simplify1 (FmAnd FmTrue p) = p
+simplify1 (FmOr p FmFalse) = p
+simplify1 (FmOr FmFalse p) = p
+simplify1 (FmOr _ FmTrue) = FmTrue
+simplify1 (FmOr FmTrue _) = FmTrue
+simplify1 (FmImp FmFalse _) = FmTrue
+simplify1 (FmImp _ FmTrue) = FmTrue
+simplify1 (FmImp FmTrue p) = p
+simplify1 (FmImp p FmFalse) = FmNot p
+simplify1 (FmIff p FmTrue) = p
+simplify1 (FmIff FmTrue p) = p
+simplify1 (FmIff p FmFalse) = FmNot p
+simplify1 (FmIff FmFalse p) = FmNot p
+simplify1 fm = fm
+
+simplify :: Formula a -> Formula a
+simplify (FmNot p) = simplify1 (FmNot (simplify p))
+simplify (FmAnd p q) = simplify1 (FmAnd (simplify p) (simplify q))
+simplify (FmOr p q) = simplify1 (FmOr (simplify p) (simplify q))
+simplify (FmImp p q) = simplify1 (FmImp (simplify p) (simplify q))
+simplify (FmIff p q) = simplify1 (FmIff (simplify p) (simplify q))
+simplify fm = fm
+
 setify :: (Ord a) => [a] -> [a]
 setify = map NonEmpty.head . NonEmpty.group . List.sort
 
