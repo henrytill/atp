@@ -52,12 +52,17 @@ simplify1 (FmIff FmFalse p) = FmNot p
 simplify1 fm = fm
 
 simplify :: Formula a -> Formula a
-simplify (FmNot p) = simplify1 (FmNot (simplify p))
-simplify (FmAnd p q) = simplify1 (FmAnd (simplify p) (simplify q))
-simplify (FmOr p q) = simplify1 (FmOr (simplify p) (simplify q))
-simplify (FmImp p q) = simplify1 (FmImp (simplify p) (simplify q))
-simplify (FmIff p q) = simplify1 (FmIff (simplify p) (simplify q))
-simplify fm = fm
+simplify fm =
+  case fm of
+    FmNot p -> unary FmNot p
+    FmAnd p q -> binary FmAnd p q
+    FmOr p q -> binary FmOr p q
+    FmImp p q -> binary FmImp p q
+    FmIff p q -> binary FmIff p q
+    _ -> fm
+  where
+    unary f = simplify1 . f . simplify
+    binary f p q = simplify1 $ f (simplify p) (simplify q)
 
 setify :: (Ord a) => [a] -> [a]
 setify = map NonEmpty.head . NonEmpty.group . List.sort
