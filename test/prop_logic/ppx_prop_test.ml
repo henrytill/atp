@@ -20,8 +20,7 @@ let () =
     [| ("is_equiv", is_equiv); ("meta_works", meta_works); ("meta_fn_works", meta_fn_works) |]
   in
   let ret = ref 0 in
-  for i = 0 to Array.length tests - 1 do
-    let name, f = tests.(i) in
+  let run (name, f) =
     print_string ("Testing " ^ name ^ ": ");
     let passed = f () in
     if passed then
@@ -29,5 +28,6 @@ let () =
     else (
       print_endline "FAILED";
       ret := 1)
-  done;
+  in
+  Array.iter run tests;
   exit !ret
