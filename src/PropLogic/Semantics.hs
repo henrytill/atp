@@ -61,7 +61,7 @@ simplify fm =
     FmIff p q -> binary FmIff p q
     _ -> fm
   where
-    unary f = simplify1 . f . simplify
+    unary f p = simplify1 $ f (simplify p)
     binary f p q = simplify1 $ f (simplify p) (simplify q)
 
 setify :: (Ord a) => [a] -> [a]
