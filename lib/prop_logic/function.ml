@@ -43,24 +43,23 @@ module Make (Key : KEY_TYPE) = struct
     else
       Branch (p, b, t2, t1)
 
-  let[@tail_mod_cons] rec define_list ((x, _) as xy) l =
-    match l with
-    | [] -> [ xy ]
-    | ((a, _) as ab) :: t ->
-        let c = Key.compare x a in
+  let[@tail_mod_cons] rec assoc_add ((k, _) as kv) = function
+    | [] -> [ kv ]
+    | ((k', _) as kv') :: t ->
+        let c = Key.compare k k' in
         if c = 0 then
-          xy :: t
+          kv :: t
         else if c < 0 then
-          xy :: l
+          kv :: kv' :: t
         else
-          ab :: define_list xy t
+          kv' :: assoc_add kv t
 
   let ( |-> ) x y =
     let k = Key.hash x in
     let rec upd t =
       match t with
       | Empty -> Leaf (k, [ (x, y) ])
-      | Leaf (h, l) when h = k -> Leaf (h, define_list (x, y) l)
+      | Leaf (h, l) when h = k -> Leaf (h, assoc_add (x, y) l)
       | Leaf (h, _) -> make_branch h t k (Leaf (k, [ (x, y) ]))
       | Branch (p, b, _, _) when k land (b - 1) <> p -> make_branch p t k (Leaf (k, [ (x, y) ]))
       | Branch (p, b, l, r) when k land b = 0 -> Branch (p, b, upd l, r)
