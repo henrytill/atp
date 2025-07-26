@@ -28,7 +28,7 @@ module Make (Key : KEY_TYPE) = struct
     in
     look f
 
-  let tryapplyd (f : 'a t) (default : 'a) (x : key) : 'a = applyd f (fun _ -> default) x
+  let tryapplyd (f : 'a t) (default : 'a) : key -> 'a = applyd f (fun _ -> default)
   let apply (f : 'a t) : key -> 'a = applyd f (fun _ -> failwith "apply")
 
   let make_branch p1 t1 p2 t2 =
