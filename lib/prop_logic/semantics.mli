@@ -30,6 +30,9 @@ val negative : 'a Syntax.Formula.t -> bool
 val positive : 'a Syntax.Formula.t -> bool
 (** Dual of {!negative}. *)
 
+val nnf : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
+(** [nnf fm] returns [fm] in negation normal form. *)
+
 val atom_union : ('a -> Syntax.Prop.t list) -> 'a Syntax.Formula.t -> Syntax.Prop.t list
 (** [atom_union f fm] collects and combines lists of atomic propositions from [fm] using [f].
 

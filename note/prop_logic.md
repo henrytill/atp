@@ -641,3 +641,10 @@ true  true  true  | false
 # Semantics.simplify {%prop| ((x ==> y) ==> true) \/ ~false |};;
 - : Syntax.Prop.t Syntax.Formula.t = True
 ```
+
+```ocaml
+# #install_printer Syntax.pp;;
+# Semantics.nnf {%prop| (p <=> q) <=> ~(r ==> s) |};;
+- : Syntax.Prop.t Syntax.Formula.t =
+((((p /\ q) \/ ((~ p) /\ (~ q))) /\ (r /\ (~ s))) \/ (((p /\ (~ q)) \/ ((~ p) /\ q)) /\ ((~ r) \/ s)))
+```

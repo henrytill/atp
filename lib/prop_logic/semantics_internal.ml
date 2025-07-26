@@ -84,6 +84,23 @@ let negative =
 
 let positive lit = not (negative lit)
 
+let nnf fm =
+  let rec go =
+    let open Syntax.Formula in
+    function
+    | And (p, q) -> And (go p, go q)
+    | Or (p, q) -> Or (go p, go q)
+    | Imp (p, q) -> Or (go (Not p), go q)
+    | Iff (p, q) -> Or (And (go p, go q), And (go (Not p), go (Not q)))
+    | Not (Not p) -> go p
+    | Not (And (p, q)) -> Or (go (Not p), go (Not q))
+    | Not (Or (p, q)) -> And (go (Not p), go (Not q))
+    | Not (Imp (p, q)) -> And (go p, go (Not q))
+    | Not (Iff (p, q)) -> Or (And (go p, go (Not q)), And (go (Not p), go q))
+    | fm -> fm
+  in
+  go (simplify fm)
+
 module type ATOM_TYPE = sig
   type t
 
