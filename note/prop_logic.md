@@ -636,3 +636,8 @@ true  true  true  | false
 # Semantics.simplify {%prop| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |};;
 - : Syntax.Prop.t Syntax.Formula.t = (Imp (Not (Atom "x"), Not (Atom "y")))
 ```
+
+```ocaml
+# Semantics.simplify {%prop| ((x ==> y) ==> true) \/ ~false |};;
+- : Syntax.Prop.t Syntax.Formula.t = True
+```
