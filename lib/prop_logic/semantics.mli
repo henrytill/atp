@@ -22,6 +22,14 @@ val dual : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
 val simplify : 'a Syntax.Formula.t -> 'a Syntax.Formula.t
 (** [simplify fm] applies routine simplifications to [fm] *)
 
+val negative : 'a Syntax.Formula.t -> bool
+(** [negative lit] is [true] if a literal [lit] is of the form {m \neg p}, otherwise [false].
+
+    A literal is either an atomic formula or the negation of one. *)
+
+val positive : 'a Syntax.Formula.t -> bool
+(** Dual of {!negative}. *)
+
 val atom_union : ('a -> Syntax.Prop.t list) -> 'a Syntax.Formula.t -> Syntax.Prop.t list
 (** [atom_union f fm] collects and combines lists of atomic propositions from [fm] using [f].
 

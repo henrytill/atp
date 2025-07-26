@@ -75,6 +75,15 @@ let rec simplify =
   | Iff (p, q) -> simplify1 (Iff (simplify p, simplify q))
   | fm -> fm
 
+let negative =
+  let open Syntax.Formula in
+  function
+  | Atom _ -> false
+  | Not (Atom _) -> true
+  | _ -> failwith "Not a literal: a literal is either an atomic formula or the negation of one"
+
+let positive lit = not (negative lit)
+
 module type ATOM_TYPE = sig
   type t
 

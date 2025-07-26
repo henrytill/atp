@@ -176,6 +176,22 @@ module Test_semantics = struct
     let expected : Syntax.t = True in
     let actual = Semantics.simplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |}) in
     Alcotest.(check syntax) same_fm expected actual
+
+  let negative_not_p () =
+    let actual = Semantics.negative (Input.parse_string_exn {| ~p |}) in
+    Alcotest.(check bool) same_bool true actual
+
+  let positive_not_p () =
+    let actual = Semantics.positive (Input.parse_string_exn {| ~p |}) in
+    Alcotest.(check bool) same_bool false actual
+
+  let negative_p () =
+    let actual = Semantics.negative (Input.parse_string_exn {| p |}) in
+    Alcotest.(check bool) same_bool false actual
+
+  let positive_p () =
+    let actual = Semantics.positive (Input.parse_string_exn {| p |}) in
+    Alcotest.(check bool) same_bool true actual
 end
 
 module Test_internals = struct
@@ -226,6 +242,10 @@ let prop_logic_tests =
         test_case "Contradiction is unsatisfiable" `Quick Test_semantics.contradiction_unsatis;
         test_case "Simplify example" `Quick Test_semantics.psimplify_example;
         test_case "Simplify formula with constants" `Quick Test_semantics.psimplify_constants;
+        test_case "~p is negative" `Quick Test_semantics.negative_not_p;
+        test_case "~p is not positive" `Quick Test_semantics.positive_not_p;
+        test_case "p is not negative" `Quick Test_semantics.negative_p;
+        test_case "p is positive" `Quick Test_semantics.positive_p;
       ] );
     ( "Test_internals",
       [
