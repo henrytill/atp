@@ -7,6 +7,7 @@
   PARTIAL("x + z", "(x + 0) * (1 + (y - y)) + (z ^ 1)")
   PARTIAL("x + 3", "((((x + 1) - 1) + 2) - 2) + 3")
   PARTIAL("y + 3", "7 + ((y + 3) - 7)")
+  PARTIAL("y + 3", "((y + 3) - 7) + 7")
   PARTIAL("-z", "4 - (z + 4)")
   PARTIAL("-(a * b)", "10 - ((a * b) + 10)")
   PARTIAL("-y", "5 - ((3 + (y + 2)))")
