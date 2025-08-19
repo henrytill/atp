@@ -134,7 +134,7 @@ module Make (Atom : ATOM_TYPE) = struct
     let open Format in
     let ats = atoms fm in
     let width =
-      let f a = Atom.to_string a |> String.length |> Int.max in
+      let f a = Int.max (String.length (Atom.to_string a)) in
       succ (List.fold_right f ats false_len)
     in
     let fixw s = s ^ String.make (width - String.length s) ' ' in
