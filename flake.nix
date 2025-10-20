@@ -10,7 +10,6 @@
       inputs.opam-repository.follows = "opam-repository";
     };
     flake-utils = {
-      url = "github:numtide/flake-utils";
       follows = "opam-nix/flake-utils";
     };
     flake-compat = {
@@ -32,17 +31,35 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
+        devPackagesQuery = {
+          ocaml-lsp-server = "*";
+          ocamlformat = "*";
+        };
+        query = devPackagesQuery // {
+          ocaml-base-compiler = "5.3.0";
+        };
         pkgs = nixpkgs.legacyPackages.${system};
         on = opam-nix.lib.${system};
         scope = on.buildOpamProject {
           resolveArgs.with-test = true;
           resolveArgs.with-doc = true;
-        } package ./. { ocaml-base-compiler = "5.3.0"; };
+        } package ./. query;
         overlay = final: prev: { ${package} = prev.${package}.overrideAttrs (as: { }); };
+        legacyPackages = scope.overrideScope overlay;
+        devPackages = builtins.attrValues (
+          pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) legacyPackages
+        );
+        atpShell = pkgs.mkShell {
+          inputsFrom = with legacyPackages; [
+            atp
+          ];
+          packages = devPackages ++ [ ];
+        };
       in
       {
-        legacyPackages = scope.overrideScope overlay;
+        inherit legacyPackages;
         packages.default = self.legacyPackages.${system}.${package};
+        devShells.default = atpShell;
       }
     );
 }
