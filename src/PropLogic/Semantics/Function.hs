@@ -29,16 +29,20 @@ data Function a b
 -- Create a new branch node while maintaining Patricia tree invariants
 mkBranch :: Int -> Function a b -> Int -> Function a b -> Function a b
 mkBranch p1 t1 p2 t2 =
-  let zp = p1 `xor` p2 -- Find differing bits between prefixes
-      b = zp .&. (-zp) -- Find lowest differing bit aka the branching bit
-      p = p1 .&. (b - 1) -- Get common prefix up to branching bit
-   in if p1 .&. b == 0
-        then
-          -- p1 has 0 in branching position
-          Branch p b t1 t2
-        else
-          -- p1 has 1 in branching position
-          Branch p b t2 t1
+  if p1 .&. b == 0
+    then
+      -- p1 has 0 in branching position
+      Branch p b t1 t2
+    else
+      -- p1 has 1 in branching position
+      Branch p b t2 t1
+  where
+    -- Find differing bits between prefixes
+    zp = p1 `xor` p2
+    -- Find lowest differing bit aka the branching bit
+    b = zp .&. (-zp)
+    -- Get common prefix up to branching bit
+    p = p1 .&. (b - 1)
 
 undefined :: Function a b
 undefined = Empty
