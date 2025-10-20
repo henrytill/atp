@@ -18,36 +18,47 @@
       ...
     }:
     let
-      makeAtp =
-        pkgs:
-        {
-          compiler ? "ghc948",
-          doCheck ? true,
-        }:
-        let
-          call = compiler: pkgs.haskell.packages.${compiler}.callCabal2nixWithOptions;
-          flags = "";
-          src = builtins.path {
-            path = ./.;
-            name = "atp-src";
+      ghcName = "ghc9103";
+      atp-src = builtins.path {
+        path = ./.;
+        name = "atp-src";
+      };
+      overlay = final: prev: {
+        haskell = prev.haskell // {
+          packages = prev.haskell.packages // {
+            ${ghcName} = prev.haskell.packages.${ghcName}.override {
+              overrides = hfinal: hprev: {
+                atp = hfinal.callCabal2nix "atp" atp-src { };
+              };
+            };
           };
-          atp_ = call compiler "atp" src flags { };
-        in
-        pkgs.haskell.lib.overrideCabal atp_ (_: {
-          inherit doCheck;
-          isExecutable = true;
-          isLibrary = true;
-          doHaddock = false;
-        });
+        };
+      };
     in
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ overlay ];
+        };
       in
       {
-        packages.atp = makeAtp pkgs { };
+        packages.atp = pkgs.haskell.packages.${ghcName}.atp;
         packages.default = self.packages.${system}.atp;
+        devShells.default = pkgs.haskell.packages.${ghcName}.shellFor {
+          packages = hpkgs: [
+            hpkgs.atp
+          ];
+          withHoogle = true;
+          nativeBuildInputs = with pkgs; [
+            cabal-install
+            haskell.packages.${ghcName}.fourmolu
+            haskell.packages.${ghcName}.ghc-tags
+            haskell.packages.${ghcName}.hlint
+            haskell.packages.${ghcName}.weeder
+          ];
+        };
       }
     );
 }
