@@ -44,7 +44,17 @@
           resolveArgs.with-test = true;
           resolveArgs.with-doc = true;
         } package ./. query;
-        overlay = final: prev: { ${package} = prev.${package}.overrideAttrs (as: { }); };
+        overlay = final: prev: {
+          ${package} = prev.${package}.overrideAttrs (as: {
+            postBuild = ''
+              dune build @doc
+            '';
+            postInstall = ''
+              mkdir -p $out/share/doc/${package}
+              cp -r _build/default/_doc/_html $out/share/doc/${package}/html
+            '';
+          });
+        };
         legacyPackages = scope.overrideScope overlay;
         devPackages = builtins.attrValues (
           pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) legacyPackages
