@@ -43,7 +43,7 @@
         scope = on.buildOpamProject {
           resolveArgs.with-test = true;
           resolveArgs.with-doc = true;
-        } package ./. query;
+        } package self query;
         overlay = final: prev: {
           ${package} = prev.${package}.overrideAttrs (as: {
             postBuild = ''
