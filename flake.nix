@@ -40,10 +40,11 @@
         };
         pkgs = nixpkgs.legacyPackages.${system};
         on = opam-nix.lib.${system};
+        src = self;
         scope = on.buildOpamProject {
           resolveArgs.with-test = true;
           resolveArgs.with-doc = true;
-        } package self query;
+        } package src query;
         overlay = final: prev: {
           ${package} = prev.${package}.overrideAttrs (as: {
             postBuild = ''
