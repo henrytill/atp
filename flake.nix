@@ -19,16 +19,12 @@
     }:
     let
       ghcName = "ghc9103";
-      atp-src = builtins.path {
-        path = ./.;
-        name = "atp-src";
-      };
       overlay = final: prev: {
         haskell = prev.haskell // {
           packages = prev.haskell.packages // {
             ${ghcName} = prev.haskell.packages.${ghcName}.override {
               overrides = hfinal: hprev: {
-                atp = hfinal.callCabal2nix "atp" atp-src { };
+                atp = hfinal.callCabal2nix "atp" self { };
               };
             };
           };
