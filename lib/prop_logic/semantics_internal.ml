@@ -110,12 +110,13 @@ module type ATOM_TYPE = sig
 end
 
 module Make (Atom : ATOM_TYPE) = struct
+  module Atom_map = Map.Make (Atom)
+
   let setify xs = List.sort_uniq Atom.compare xs
   let atom_union f fm = setify (overatoms (fun h t -> f h @ t) fm [])
   let atoms fm = atom_union (fun a -> [ a ]) fm
 
   let onallvaluations (subfn : (Atom.t -> bool) -> 'a) (ats : Atom.t list) : 'a Seq.t =
-    let module Atom_map = Map.Make (Atom) in
     let ats_len = List.length ats in
     let _, offset_table =
       List.fold_left
