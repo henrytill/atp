@@ -8,39 +8,31 @@ type t =
   | Exp of t * t
   | Metavar of string
 
-let pp_ast fmt =
-  let open Format in
-  let wrap flag fmt x pp =
-    if flag then
-      fprintf fmt "@[<hv 1>(%a)@]" pp x
-    else
-      pp fmt x
+let pp_ast =
+  let rec go fmt = function
+    | Var x -> Fmt.pf fmt "Var %a" Fmt.(quote string) x
+    | Const m -> Fmt.pf fmt "Const %d" m
+    | Neg a -> Fmt.pf fmt "Neg %a" pp_expr a
+    | Add (a, b) -> Fmt.pf fmt "Add %a" Fmt.(parens (pair ~sep:comma go go)) (a, b)
+    | Sub (a, b) -> Fmt.pf fmt "Sub %a" Fmt.(parens (pair ~sep:comma go go)) (a, b)
+    | Mul (a, b) -> Fmt.pf fmt "Mul %a" Fmt.(parens (pair ~sep:comma go go)) (a, b)
+    | Exp (a, b) -> Fmt.pf fmt "Exp %a" Fmt.(parens (pair ~sep:comma go go)) (a, b)
+    | Metavar s -> Fmt.pf fmt "Metavar %a" Fmt.(quote string) s
+  and pp_expr fmt = function
+    | Const _ as atom -> go fmt atom
+    | expr -> Fmt.parens go fmt expr
   in
-  let rec go flag fmt fm =
-    wrap flag fmt fm @@ fun fmt -> function
-    | Var x -> fprintf fmt "Var %S" x
-    | Const m -> fprintf fmt "Const %d" m
-    | Neg a -> fprintf fmt "@[<hv 1>Neg@;<1 0>%a@]" wrapped a
-    | Add (a, b) -> fprintf fmt "@[<hv 1>Add@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
-    | Sub (a, b) -> fprintf fmt "@[<hv 1>Sub@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
-    | Mul (a, b) -> fprintf fmt "@[<hv 1>Mul@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
-    | Exp (a, b) -> fprintf fmt "@[<hv 1>Exp@;<1 0>(%a,@, %a)@]" unwrapped a unwrapped b
-    | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
-  and wrapped fmt = go true fmt
-  and unwrapped fmt = go false fmt in
-  fprintf fmt "@[<hv 1>%a@]" wrapped
+  pp_expr
 
-let rec pp fmt =
-  let open Format in
-  function
-  | Var x -> fprintf fmt "%s" x
-  | Const m -> fprintf fmt "%d" m
-  | Neg a -> fprintf fmt "@[<h>(-@ %a)@]" pp a
-  | Add (a, b) -> fprintf fmt "@[<h>(%a@ +@ %a)@]" pp a pp b
-  | Sub (a, b) -> fprintf fmt "@[<h>(%a@ -@ %a)@]" pp a pp b
-  | Mul (a, b) -> fprintf fmt "@[<h>(%a@ *@ %a)@]" pp a pp b
-  | Exp (a, b) -> fprintf fmt "@[<h>(%a@ ^@ %a)@]" pp a pp b
-  | Metavar s -> fprintf fmt "@[<h>$%s]" s
+let rec pp fmt = function
+  | Var x -> Fmt.string fmt x
+  | Const m -> Fmt.int fmt m
+  | Neg a -> Fmt.pf fmt "(- %a)" pp a
+  | Add (a, b) -> Fmt.pf fmt "(%a + %a)" pp a pp b
+  | Sub (a, b) -> Fmt.pf fmt "(%a - %a)" pp a pp b
+  | Mul (a, b) -> Fmt.pf fmt "(%a * %a)" pp a pp b
+  | Exp (a, b) -> Fmt.pf fmt "(%a ^ %a)" pp a pp b
+  | Metavar s -> Fmt.pf fmt "$%s" s
 
 let rec equal e1 e2 =
   match (e1, e2) with

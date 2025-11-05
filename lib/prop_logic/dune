@@ -7,4 +7,4 @@
 (library
  (name prop_logic)
  (public_name atp.prop_logic)
- (libraries zarith))
+ (libraries fmt zarith))

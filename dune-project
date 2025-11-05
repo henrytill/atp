@@ -29,6 +29,8 @@
    (>= 5.2.0))
   dune
   menhir
+  (fmt
+   (>= 0.11.0))
   (cppo
    (>= 1.8.0))
   conf-pandoc

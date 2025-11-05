@@ -6,4 +6,5 @@
 
 (library
  (name intro)
- (public_name atp.intro))
+ (public_name atp.intro)
+ (libraries fmt))

@@ -3,8 +3,8 @@ module Prop = struct
 
   let inj = Fun.id
   let prj = Fun.id
-  let pp_ast fmt = Format.fprintf fmt "%S"
-  let pp = Format.pp_print_string
+  let pp_ast = Fmt.(quote string)
+  let pp = Fmt.string
   let equal = String.equal
   let compare = String.compare
   let hash = String.hash
@@ -25,49 +25,38 @@ module Formula = struct
     | Exists of string * 'a t
     | Metavar of string
 
-  let pp_ast atom_pp_ast fmt =
-    let open Format in
-    let wrap flag fmt fm pp =
-      if flag then
-        fprintf fmt "@[<hv 1>(%a)@]" pp fm
-      else
-        pp fmt fm
-    in
-    let rec go flag fmt fm =
-      wrap flag fmt fm @@ fun fmt -> function
-      | Atom a -> fprintf fmt "Atom %a" atom_pp_ast a
-      | False -> pp_print_string fmt "False"
-      | True -> pp_print_string fmt "True"
-      | Not (False as p) | Not (True as p) -> fprintf fmt "Not@ %a" unwrapped p
-      | Not p -> fprintf fmt "Not@ %a" wrapped p
-      | And (p, q) -> fprintf fmt "@[<h>And@ (%a,@ %a)@]" unwrapped p unwrapped q
-      | Or (p, q) -> fprintf fmt "@[<h>Or@ (%a,@ %a)@]" unwrapped p unwrapped q
-      | Imp (p, q) -> fprintf fmt "@[<hv 1>Imp@;<1 0>(%a,@, %a)@]" unwrapped p unwrapped q
-      | Iff (p, q) -> fprintf fmt "@[<hv 1>Iff@;<1 0>(%a,@, %a)@]" unwrapped p unwrapped q
-      | Forall (x, p) -> fprintf fmt "@[<hv 1>Forall@;<1 0>(%S,@, %a)@]" x unwrapped p
-      | Exists (x, p) -> fprintf fmt "@[<hv 1>Exists@;<1 0>(%S,@, %a)@]" x unwrapped p
-      | Metavar s -> fprintf fmt "@[<hv 1>Metavar@;<1 0>%S@]" s
-    and wrapped fmt = go true fmt
-    and unwrapped fmt = go false fmt in
-    function
-    | (False | True) as b -> unwrapped fmt b
-    | fm -> fprintf fmt "@[<hv 1>%a@]" wrapped fm
-
-  let pp atom_pp =
-    let open Format in
+  let pp_ast atom_pp_ast =
     let rec go fmt = function
-      | Atom a -> atom_pp fmt a
-      | False -> fprintf fmt "false"
-      | True -> fprintf fmt "true"
-      | Not p -> fprintf fmt "@[<hv 1>(~ %a)@]" go p
-      | And (p, q) -> fprintf fmt "@[<h>(%a@ /\\@ %a)@]" go p go q
-      | Or (p, q) -> fprintf fmt "@[<h>(%a@ \\/@ %a)@]" go p go q
-      | Imp (p, q) -> fprintf fmt "@[<hv 1>(%a ==>@;<1 0>%a)@]" go p go q
-      | Iff (p, q) -> fprintf fmt "@[<hv 1>(%a <=>@;<1 0>%a)@]" go p go q
-      | Forall _ | Exists _ -> failwith "unimplemented"
-      | Metavar s -> fprintf fmt "@[<h>$%s]" s
+      | Atom a -> Fmt.pf fmt "Atom %a" atom_pp_ast a
+      | False -> Fmt.string fmt "False"
+      | True -> Fmt.string fmt "True"
+      | Not p -> Fmt.pf fmt "Not %a" pp_expr p
+      | And (p, q) -> Fmt.pf fmt "And %a" Fmt.(parens (pair ~sep:comma go go)) (p, q)
+      | Or (p, q) -> Fmt.pf fmt "Or %a" Fmt.(parens (pair ~sep:comma go go)) (p, q)
+      | Imp (p, q) -> Fmt.pf fmt "Imp %a" Fmt.(parens (pair ~sep:comma go go)) (p, q)
+      | Iff (p, q) -> Fmt.pf fmt "Iff %a" Fmt.(parens (pair ~sep:comma go go)) (p, q)
+      | Forall (x, p) ->
+          Fmt.pf fmt "Forall %a" Fmt.(parens (pair ~sep:comma (quote string) go)) (x, p)
+      | Exists (x, p) ->
+          Fmt.pf fmt "Exists %a" Fmt.(parens (pair ~sep:comma (quote string) go)) (x, p)
+      | Metavar s -> Fmt.pf fmt "Metavar %a" Fmt.(quote string) s
+    and pp_expr fmt = function
+      | (False | True) as boolean -> go fmt boolean
+      | expr -> Fmt.parens go fmt expr
     in
-    go
+    pp_expr
+
+  let rec pp atom_pp fmt = function
+    | Atom a -> atom_pp fmt a
+    | False -> Fmt.string fmt "false"
+    | True -> Fmt.string fmt "true"
+    | Not p -> Fmt.pf fmt "(~ %a)" (pp atom_pp) p
+    | And (p, q) -> Fmt.pf fmt "(%a /\\ %a)" (pp atom_pp) p (pp atom_pp) q
+    | Or (p, q) -> Fmt.pf fmt "(%a \\/ %a)" (pp atom_pp) p (pp atom_pp) q
+    | Imp (p, q) -> Fmt.pf fmt "(%a ==> %a)" (pp atom_pp) p (pp atom_pp) q
+    | Iff (p, q) -> Fmt.pf fmt "(%a <=> %a)" (pp atom_pp) p (pp atom_pp) q
+    | Forall _ | Exists _ -> failwith "unimplemented"
+    | Metavar s -> Fmt.pf fmt "$%s" s
 
   let rec equal atom_equal fm1 fm2 =
     match (fm1, fm2) with

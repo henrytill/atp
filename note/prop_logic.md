@@ -270,7 +270,8 @@ $\forall v. \llbracket (p \lor q) \land \neg (p \land q) \implies (\neg p \iff q
 val f : Syntax.Prop.t Syntax.Formula.t Semantics.Function.t = <abstr>
 # Semantics.psubst f {%prop| p /\ q /\ p /\ q |};;
 - : Syntax.t =
-(And (And (Atom "p", Atom "q"), And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
+(And (And (Atom "p", Atom "q"),
+      And (Atom "q", And (And (Atom "p", Atom "q"), Atom "q"))))
 ```
 
 ### Some important tautologies
