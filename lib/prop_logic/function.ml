@@ -16,8 +16,8 @@ module Make (Key : KEY_TYPE) = struct
 
   let assocd (l : (key * 'a) list) (default : key -> 'a) (x : key) : 'a =
     match List.assoc_opt x l with
-    | Some a -> a
     | None -> default x
+    | Some a -> a
 
   let applyd (f : 'a t) (default : key -> 'a) (x : key) : 'a =
     let k = Key.hash x in

@@ -19,8 +19,8 @@ let rec syntax_to_expression ~(loc : location) : Intro.Syntax.t -> expression = 
 
 let expand ~loc ~path:_ s =
   match Intro.Input.parse_string s with
-  | Some syntax -> syntax_to_expression ~loc syntax
   | None -> Location.raise_errorf ~loc "Failed to parse intro"
+  | Some syntax -> syntax_to_expression ~loc syntax
 
 let extension =
   Extension.declare
