@@ -31,7 +31,7 @@ module Make (Key : KEY_TYPE) = struct
   let tryapplyd (f : 'a t) (default : 'a) : key -> 'a = applyd f (fun _ -> default)
   let apply (f : 'a t) : key -> 'a = applyd f (fun _ -> failwith "apply")
 
-  let make_branch p1 t1 p2 t2 =
+  let mkbranch p1 t1 p2 t2 =
     (* Find differing bits between the two prefixes *)
     let zp = p1 lxor p2 in
     (* Find lowest differing bit aka the branching bit *)
@@ -60,8 +60,8 @@ module Make (Key : KEY_TYPE) = struct
       match t with
       | Empty -> Leaf (k, [ (x, y) ])
       | Leaf (h, l) when h = k -> Leaf (h, assoc_add (x, y) l)
-      | Leaf (h, _) -> make_branch h t k (Leaf (k, [ (x, y) ]))
-      | Branch (p, b, _, _) when k land (b - 1) <> p -> make_branch p t k (Leaf (k, [ (x, y) ]))
+      | Leaf (h, _) -> mkbranch h t k (Leaf (k, [ (x, y) ]))
+      | Branch (p, b, _, _) when k land (b - 1) <> p -> mkbranch p t k (Leaf (k, [ (x, y) ]))
       | Branch (p, b, l, r) when k land b = 0 -> Branch (p, b, upd l, r)
       | Branch (p, b, l, r) -> Branch (p, b, l, upd r)
     in
