@@ -25,9 +25,10 @@ let () =
     let passed = f () in
     if passed then
       print_endline "PASSED"
-    else (
+    else begin
       print_endline "FAILED";
-      ret := 1)
+      ret := 1
+    end
   in
   Array.iter run tests;
   exit !ret
