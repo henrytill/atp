@@ -5,6 +5,7 @@ module PropLogic.Semantics where
 import Control.Monad
 import Data.Bits qualified as Bits
 import Data.Foldable (toList)
+import Data.Function ((&))
 import Data.Hashable (Hashable)
 import Data.List qualified as List
 import Data.List.NonEmpty qualified as NonEmpty
@@ -79,11 +80,11 @@ onAllValuations subfn as =
 
     offsetTable :: Map a Int
     offsetTable =
-      snd
-        . List.foldl'
+      as
+        & List.foldl'
           (\(i, m) a -> (pred i, Map.insert a i m))
           (pred asLen, Map.empty)
-        $ as
+        & snd
 
     valuationFor :: Int -> a -> Bool
     valuationFor row a = Bits.testBit row $ offsetTable ! a
