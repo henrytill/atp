@@ -1,7 +1,5 @@
 (lang dune 3.17)
 
-(subst disabled)
-
 (using menhir 3.0)
 
 (using mdx 0.2)
