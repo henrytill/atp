@@ -28,8 +28,8 @@ module Test_parse_string = struct
   let generate ?(is = inputs) () =
     let f (output, input) =
       let expected = Some output in
-      let actual = Input.parse_string input in
-      let test () = Alcotest.(check (option syntax)) same_expr expected actual in
+      let obtained = Input.parse_string input in
+      let test () = Alcotest.(check (option syntax)) same_expr expected obtained in
       Alcotest.(test_case ("Parse " ^ String.trim input) `Quick test)
     in
     List.map f is
@@ -39,8 +39,8 @@ module Test_simplify = struct
   let generate ?(is = Intro_test_data.simplify) () =
     let f (output, input) =
       let expected = Some output in
-      let actual = Option.map Semantics.simplify (Input.parse_string input) in
-      let test () = Alcotest.(check (option syntax)) same_expr expected actual in
+      let obtained = Option.map Semantics.simplify (Input.parse_string input) in
+      let test () = Alcotest.(check (option syntax)) same_expr expected obtained in
       Alcotest.(test_case ("Simplify " ^ String.trim input) `Quick test)
     in
     List.map f is
@@ -50,8 +50,8 @@ module Test_simplify_partial = struct
   let generate ?(is = Intro_test_data.simplify_partial) () =
     let f (output, input) =
       let expected = Input.parse_string output in
-      let actual = Option.map Semantics.simplify (Input.parse_string input) in
-      let test () = Alcotest.(check (option syntax)) same_expr expected actual in
+      let obtained = Option.map Semantics.simplify (Input.parse_string input) in
+      let test () = Alcotest.(check (option syntax)) same_expr expected obtained in
       Alcotest.(test_case ("Simplify (partial) " ^ String.trim input) `Quick test)
     in
     List.map f is
@@ -61,8 +61,8 @@ module Test_simplify_with_count = struct
   let generate ?(is = Intro_test_data.simplify_with_count) () =
     let f (output, count, input) =
       let expected = Some (output, count) in
-      let actual = Option.map Semantics.simplify_with_count (Input.parse_string input) in
-      let test () = Alcotest.(check (option (pair syntax int))) same_expr expected actual in
+      let obtained = Option.map Semantics.simplify_with_count (Input.parse_string input) in
+      let test () = Alcotest.(check (option (pair syntax int))) same_expr expected obtained in
       Alcotest.(test_case ("Simplify (with count) " ^ String.trim input) `Quick test)
     in
     List.map f is

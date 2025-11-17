@@ -8,15 +8,15 @@ module Test_parse = struct
 
   let atom () =
     let expected : Syntax.t = Atom (Syntax.Prop.inj "a") in
-    let actual = Input.parse_string_exn {| a |} in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained = Input.parse_string_exn {| a |} in
+    Alcotest.(check syntax) same_fm expected obtained
 
   let example () =
     let expected : Syntax.t =
       Imp (Or (Atom (Syntax.Prop.inj "p"), Atom (Syntax.Prop.inj "q")), Atom (Syntax.Prop.inj "r"))
     in
-    let actual = Input.parse_string_exn {| p \/ q ==> r |} in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained = Input.parse_string_exn {| p \/ q ==> r |} in
+    Alcotest.(check syntax) same_fm expected obtained
 
   let another_example () =
     let expected : Syntax.t =
@@ -26,22 +26,22 @@ module Test_parse = struct
             ( And (Atom (Syntax.Prop.inj "q"), Not (Atom (Syntax.Prop.inj "r"))),
               Atom (Syntax.Prop.inj "s") ) )
     in
-    let actual = Input.parse_string_exn {| p ==> q /\ ~ r \/ s |} in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained = Input.parse_string_exn {| p ==> q /\ ~ r \/ s |} in
+    Alcotest.(check syntax) same_fm expected obtained
 
   let right_associative_ands () =
     let expected : Syntax.t =
       And (Atom (Syntax.Prop.inj "p"), And (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r")))
     in
-    let actual = Input.parse_string_exn {| p /\ q /\ r |} in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained = Input.parse_string_exn {| p /\ q /\ r |} in
+    Alcotest.(check syntax) same_fm expected obtained
 
   let right_associative_imps () =
     let expected : Syntax.t =
       Imp (Atom (Syntax.Prop.inj "p"), Imp (Atom (Syntax.Prop.inj "q"), Atom (Syntax.Prop.inj "r")))
     in
-    let actual = Input.parse_string_exn {| p ==> q ==> r |} in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained = Input.parse_string_exn {| p ==> q ==> r |} in
+    Alcotest.(check syntax) same_fm expected obtained
 end
 
 module Test_pp = struct
@@ -50,23 +50,23 @@ module Test_pp = struct
 
   let example () =
     let expected = "((p \\/ q) ==> r)" in
-    let actual = to_string (Input.parse_string_exn {| p \/ q ==> r |}) in
-    Alcotest.(check string) same_string expected actual
+    let obtained = to_string (Input.parse_string_exn {| p \/ q ==> r |}) in
+    Alcotest.(check string) same_string expected obtained
 
   let another_example () =
     let expected = "(p ==> ((q /\\ (~ r)) \\/ s))" in
-    let actual = to_string (Input.parse_string_exn {| p ==> q /\ ~r \/ s |}) in
-    Alcotest.(check string) same_string expected actual
+    let obtained = to_string (Input.parse_string_exn {| p ==> q /\ ~r \/ s |}) in
+    Alcotest.(check string) same_string expected obtained
 
   let right_associative_ands () =
     let expected = "(p /\\ (q /\\ r))" in
-    let actual = to_string (Input.parse_string_exn {| p /\ q /\ r |}) in
-    Alcotest.(check string) same_string expected actual
+    let obtained = to_string (Input.parse_string_exn {| p /\ q /\ r |}) in
+    Alcotest.(check string) same_string expected obtained
 
   let right_associative_imps () =
     let expected = "(p ==> (q ==> r))" in
-    let actual = to_string (Input.parse_string_exn {| p ==> q ==> r |}) in
-    Alcotest.(check string) same_string expected actual
+    let obtained = to_string (Input.parse_string_exn {| p ==> q ==> r |}) in
+    Alcotest.(check string) same_string expected obtained
 end
 
 module Test_semantics = struct
@@ -83,8 +83,8 @@ module Test_semantics = struct
       | _ -> failwith "unknown prop"
     in
     let expected = true in
-    let actual = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
-    Alcotest.(check bool) same_bool expected actual
+    let obtained = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
+    Alcotest.(check bool) same_bool expected obtained
 
   let another_example () =
     let v prop =
@@ -95,25 +95,25 @@ module Test_semantics = struct
       | _ -> failwith "unknown prop"
     in
     let expected = false in
-    let actual = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
-    Alcotest.(check bool) same_bool expected actual
+    let obtained = Semantics.eval (Input.parse_string_exn {| p /\ q ==> q /\ r |}) v in
+    Alcotest.(check bool) same_bool expected obtained
 
   module Int_semantics = Semantics_internal.Make (Int)
 
   let setify_example () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
-    Alcotest.(check (list int)) same_list expected actual
+    let obtained = Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
+    Alcotest.(check (list int)) same_list expected obtained
 
   let setify_reverse () =
     let expected = [ 1; 2; 3; 4 ] in
-    let actual = Int_semantics.setify [ 4; 3; 2; 1 ] in
-    Alcotest.(check (list int)) same_list expected actual
+    let obtained = Int_semantics.setify [ 4; 3; 2; 1 ] in
+    Alcotest.(check (list int)) same_list expected obtained
 
   let atoms_example () =
     let expected = Syntax.[ Prop.inj "p"; Prop.inj "q"; Prop.inj "r"; Prop.inj "s" ] in
-    let actual = Semantics.atoms (Input.parse_string_exn {| p /\ q \/ s ==> ~p \/ (r <=> s) |}) in
-    Alcotest.(check (list prop)) same_list expected actual
+    let obtained = Semantics.atoms (Input.parse_string_exn {| p /\ q \/ s ==> ~p \/ (r <=> s) |}) in
+    Alcotest.(check (list prop)) same_list expected obtained
 
   let tautology_examples () =
     let fms =
@@ -166,44 +166,46 @@ module Test_semantics = struct
     let expected : Syntax.t =
       Imp (Not (Atom (Syntax.Prop.inj "x")), Not (Atom (Syntax.Prop.inj "y")))
     in
-    let actual =
+    let obtained =
       Semantics.simplify
         (Input.parse_string_exn {| (true ==> (x <=> false)) ==> ~(y \/ false /\ z) |})
     in
-    Alcotest.(check syntax) same_fm expected actual
+    Alcotest.(check syntax) same_fm expected obtained
 
   let psimplify_constants () =
     let expected : Syntax.t = True in
-    let actual = Semantics.simplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |}) in
-    Alcotest.(check syntax) same_fm expected actual
+    let obtained =
+      Semantics.simplify (Input.parse_string_exn {| ((x ==> y) ==> true) \/ ~false |})
+    in
+    Alcotest.(check syntax) same_fm expected obtained
 
   let negative_not_p () =
-    let actual = Semantics.negative (Input.parse_string_exn {| ~p |}) in
-    Alcotest.(check bool) same_bool true actual
+    let obtained = Semantics.negative (Input.parse_string_exn {| ~p |}) in
+    Alcotest.(check bool) same_bool true obtained
 
   let positive_not_p () =
-    let actual = Semantics.positive (Input.parse_string_exn {| ~p |}) in
-    Alcotest.(check bool) same_bool false actual
+    let obtained = Semantics.positive (Input.parse_string_exn {| ~p |}) in
+    Alcotest.(check bool) same_bool false obtained
 
   let negative_p () =
-    let actual = Semantics.negative (Input.parse_string_exn {| p |}) in
-    Alcotest.(check bool) same_bool false actual
+    let obtained = Semantics.negative (Input.parse_string_exn {| p |}) in
+    Alcotest.(check bool) same_bool false obtained
 
   let positive_p () =
-    let actual = Semantics.positive (Input.parse_string_exn {| p |}) in
-    Alcotest.(check bool) same_bool true actual
+    let obtained = Semantics.positive (Input.parse_string_exn {| p |}) in
+    Alcotest.(check bool) same_bool true obtained
 end
 
 module Test_internals = struct
   module Int_semantics = Semantics_internal.Make (Int)
 
   let setify_removes_duplicates () =
-    let actual = Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
-    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] actual
+    let obtained = Int_semantics.setify [ 1; 2; 3; 1; 4; 3 ] in
+    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] obtained
 
   let setify_correctly_orders () =
-    let actual = Int_semantics.setify [ 4; 3; 2; 1 ] in
-    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] actual
+    let obtained = Int_semantics.setify [ 4; 3; 2; 1 ] in
+    Alcotest.(check (list int)) "same list" [ 1; 2; 3; 4 ] obtained
 end
 
 let prop_logic_tests =
