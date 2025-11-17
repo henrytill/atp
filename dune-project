@@ -25,7 +25,6 @@
  (depends
   (ocaml
    (>= 5.2.0))
-  dune
   menhir
   (fmt
    (>= 0.11.0))
