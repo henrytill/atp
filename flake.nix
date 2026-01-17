@@ -12,10 +12,6 @@
     flake-utils = {
       follows = "opam-nix/flake-utils";
     };
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
   };
   outputs =
     {
