@@ -56,16 +56,16 @@ module Make (Key : KEY_TYPE) = struct
 
   let ( |-> ) x y =
     let k = Key.hash x in
-    let rec upd t =
+    let rec go t =
       match t with
       | Empty -> Leaf (k, [ (x, y) ])
       | Leaf (h, l) when h = k -> Leaf (h, assoc_add (x, y) l)
       | Leaf (h, _) -> mkbranch h t k (Leaf (k, [ (x, y) ]))
       | Branch (p, b, _, _) when k land (b - 1) <> p -> mkbranch p t k (Leaf (k, [ (x, y) ]))
-      | Branch (p, b, l, r) when k land b = 0 -> Branch (p, b, upd l, r)
-      | Branch (p, b, l, r) -> Branch (p, b, l, upd r)
+      | Branch (p, b, l, r) when k land b = 0 -> Branch (p, b, go l, r)
+      | Branch (p, b, l, r) -> Branch (p, b, l, go r)
     in
-    upd
+    go
 
   let ( |=> ) x y = (x |-> y) undefined
 end
