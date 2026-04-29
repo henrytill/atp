@@ -2,12 +2,10 @@ open Ppxlib
 
 let prop_to_expression ~(loc : location) (p : Prop_logic.Syntax.Prop.t) : expression =
   [%expr
-    Prop_logic.Syntax.Formula.Atom
-      (Prop_logic.Syntax.Prop.inj
-         [%e Ast_builder.Default.estring ~loc (Prop_logic.Syntax.Prop.prj p)])]
+    Prop_logic.Syntax.Prop.inj [%e Ast_builder.Default.estring ~loc (Prop_logic.Syntax.Prop.prj p)]]
 
 let rec syntax_to_expression ~(loc : location) : Prop_logic.Syntax.t -> expression = function
-  | Atom p -> prop_to_expression ~loc p
+  | Atom p -> [%expr Prop_logic.Syntax.Formula.Atom [%e prop_to_expression ~loc p]]
   | False -> [%expr Prop_logic.Syntax.Formula.False]
   | True -> [%expr Prop_logic.Syntax.Formula.True]
   | Not p -> [%expr Prop_logic.Syntax.Formula.Not [%e syntax_to_expression ~loc p]]
