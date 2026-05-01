@@ -16,7 +16,7 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - run: nix build -L
       - name: Upload html documentation as artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         id: deployment
         with:
           path: result/share/doc/atp/html/
