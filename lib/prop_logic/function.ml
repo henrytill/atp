@@ -14,19 +14,19 @@ module Make (Key : KEY_TYPE) = struct
     | Empty -> true
     | _ -> false
 
-  let assocd (l : (key * 'a) list) (default : key -> 'a) (x : key) : 'a =
+  let assocd (x : key) (default : key -> 'a) (l : (key * 'a) list) : 'a =
     match List.assoc_opt x l with
     | None -> default x
     | Some a -> a
 
   let applyd (f : 'a t) (default : key -> 'a) (x : key) : 'a =
     let k = Key.hash x in
-    let rec look = function
-      | Leaf (h, l) when h = k -> assocd l default x
-      | Branch (p, b, l, r) when k lxor p land (b - 1) = 0 -> look (if k land b = 0 then l else r)
+    let rec go = function
+      | Leaf (h, l) when h = k -> assocd x default l
+      | Branch (p, b, l, r) when k lxor p land (b - 1) = 0 -> go (if k land b = 0 then l else r)
       | _ -> default x
     in
-    look f
+    go f
 
   let tryapplyd (f : 'a t) (default : 'a) : key -> 'a = applyd f (fun _ -> default)
   let apply (f : 'a t) : key -> 'a = applyd f (fun _ -> failwith "apply")
