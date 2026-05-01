@@ -46,7 +46,9 @@ let rec dual =
   | Not p -> Not (dual p)
   | And (p, q) -> Or (dual p, dual q)
   | Or (p, q) -> And (dual p, dual q)
-  | _ -> failwith "Formula involves connectives ==> or <=>"
+  | Forall _ | Exists _ -> failwith "Formula involves a quantifier"
+  | Imp _ | Iff _ -> failwith "Formula involves connectives ==> or <=>"
+  | Metavar _ -> failwith "metavariable"
 
 let simplify1 =
   let open Syntax.Formula in
