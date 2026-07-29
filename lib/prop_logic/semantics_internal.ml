@@ -126,9 +126,9 @@ module Make (Atom : ATOM_TYPE) = struct
         (pred ats_len, Atom_map.empty)
         ats
     in
-    let valuation_for row a = Z.testbit row (Atom_map.find a offset_table) in
+    let valuation_for row a = Z.testbit (Z.of_int row) (Atom_map.find a offset_table) in
     let num_valuations = Int.shift_left 1 ats_len in
-    Seq.init num_valuations (fun row -> subfn (valuation_for (Z.of_int row)))
+    Seq.init num_valuations (fun row -> subfn (valuation_for row))
 
   let false_len = String.length (string_of_bool false)
   let formula_header = "| formula"
