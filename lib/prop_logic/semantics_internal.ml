@@ -154,7 +154,7 @@ module Make (Atom : ATOM_TYPE) = struct
     pp_print_newline fmt ();
     pp_print_string fmt separator;
     pp_print_newline fmt ();
-    Seq.iter Fun.id (onallvaluations mk_row ats);
+    Seq.iter ignore (onallvaluations mk_row ats);
     pp_print_string fmt separator;
     pp_print_newline fmt ()
 
